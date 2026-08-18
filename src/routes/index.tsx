@@ -21,20 +21,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 
 import { listarClientes, salvarCliente, removerCliente } from "@/lib/clientes.functions";
 import {
@@ -49,11 +35,6 @@ import {
   type Cliente,
   type Manutencao,
 } from "@/lib/clientes.types";
-import {
-  lerClientesLocais,
-  salvarClientesLocais,
-  mesclarClientes,
-} from "@/lib/clientes.storage";
 import {
   buscarClientesSupabase,
   salvarClienteSupabase,
@@ -104,62 +85,47 @@ function Index() {
   const salvar = useServerFn(salvarCliente);
   const remover = useServerFn(removerCliente);
 
+  // Limpa resquícios antigos do localStorage para eliminar duplicatas
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("alarm_clientes_data_v1");
+    }
+  }, []);
+
   const { data: clientes = [], isLoading } = useQuery({
     queryKey: ["clientes"],
     queryFn: async () => {
-      try {
-        const local = lerClientesLocais();
-        const supa = await buscarClientesSupabase();
-
-        let lista = local;
-        if (supa && Array.isArray(supa) && supa.length > 0) {
-          lista = mesclarClientes(supa, local);
-        } else {
-          try {
-            const srv = await listar();
-            if (srv && Array.isArray(srv) && srv.length > 0) {
-              lista = mesclarClientes(srv, lista);
-            }
-          } catch (e) {
-            console.warn("Erro ao ler do servidor:", e);
-          }
-        }
-        salvarClientesLocais(lista);
-        return lista;
-      } catch (e) {
-        console.error("Erro na busca de clientes:", e);
-        return lerClientesLocais();
+      // 1. Busca exclusivamente no Supabase
+      const supa = await buscarClientesSupabase();
+      if (supa && Array.isArray(supa)) {
+        return supa;
       }
+
+      // 2. Fallback para servidor se Supabase ainda não configurado
+      try {
+        const srv = await listar();
+        if (srv && Array.isArray(srv)) return srv;
+      } catch (e) {
+        console.warn("Erro ao listar clientes do servidor:", e);
+      }
+      return [];
     },
   });
 
   const criar = useMutation({
     mutationFn: async (dados: typeof vazio) => {
-      const doSupabase = await salvarClienteSupabase(dados);
-
-      const novo: Cliente = doSupabase || {
-        ...dados,
-        id: gerarId(),
-        status: "ativo",
-        criadoEm: new Date().toISOString(),
-        manutencoes: [],
-      };
-
-      const atuais = lerClientesLocais();
-      const atualizados = [novo, ...atuais.filter((c) => c.id !== novo.id)];
-      salvarClientesLocais(atualizados);
-
-      try {
-        await salvar({ data: dados });
-      } catch (e) {
-        console.warn("Erro ao salvar no servidor:", e);
+      // Salva unicamente no Supabase
+      const resSupabase = await salvarClienteSupabase(dados);
+      if (!resSupabase) {
+        // Fallback servidor se Supabase não tiver tabela pronta
+        return await salvar({ data: dados });
       }
-      return novo;
+      return resSupabase;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["clientes"] });
       setForm(vazio);
-      toast.success("Cliente cadastrado com sucesso.");
+      toast.success("Cliente cadastrado no Supabase com sucesso!");
     },
     onError: (err) => {
       console.error("Erro ao salvar cadastro:", err);
@@ -178,13 +144,7 @@ function Index() {
 
       const manutsAtualizadas = [nova, ...(cliente.manutencoes || [])];
       
-      // Salva no localStorage e no Supabase
-      const atuais = lerClientesLocais();
-      const atualizados = atuais.map((c) =>
-        c.id === cliente.id ? { ...c, manutencoes: manutsAtualizadas } : c
-      );
-      salvarClientesLocais(atualizados);
-
+      // Salva exclusivamente no Supabase
       await atualizarManutencoesSupabase(cliente.id, manutsAtualizadas);
 
       return { clienteId: cliente.id, dataHora: agora };
@@ -193,29 +153,26 @@ function Index() {
       qc.invalidateQueries({ queryKey: ["clientes"] });
       setClienteManutencao(null);
       setDescricaoManutencao("");
-      toast.success(`Manutenção salva com sucesso! Data/Hora: ${formatarData(res.dataHora)}`);
+      toast.success(`Manutenção salva no Supabase! Data/Hora: ${formatarData(res.dataHora)}`);
     },
     onError: () => toast.error("Falha ao salvar a manutenção."),
   });
 
   const excluir = useMutation({
     mutationFn: async (id: string) => {
-      await removerClienteSupabase(id);
-
-      const atuais = lerClientesLocais();
-      const atualizados = atuais.filter((c) => c.id !== id);
-      salvarClientesLocais(atualizados);
-
-      try {
-        await remover({ data: { id } });
-      } catch (e) {
-        console.warn("Remoção no servidor ignorada:", e);
+      const ok = await removerClienteSupabase(id);
+      if (!ok) {
+        try {
+          await remover({ data: { id } });
+        } catch (e) {
+          console.warn("Remoção no servidor ignorada:", e);
+        }
       }
       return { id };
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["clientes"] });
-      toast.success("Cadastro removido.");
+      toast.success("Cadastro removido do Supabase.");
     },
   });
 
@@ -254,7 +211,7 @@ function Index() {
             }
           }
           qc.invalidateQueries({ queryKey: ["clientes"] });
-          toast.success(`${parsed.length} cadastro(s) importado(s) para o banco!`);
+          toast.success(`${parsed.length} cadastro(s) importado(s) para o Supabase!`);
         } else {
           toast.error("Arquivo JSON inválido.");
         }
@@ -479,11 +436,11 @@ function Index() {
           </div>
 
           <div className="mt-5 space-y-4">
-            {isLoading && <p className="text-sm text-muted-foreground">Carregando...</p>}
+            {isLoading && <p className="text-sm text-muted-foreground">Carregando do Supabase...</p>}
             {!isLoading && filtrados.length === 0 && (
               <div className="rounded-lg border border-dashed p-10 text-center">
                 <p className="text-sm text-muted-foreground">
-                  Nenhum cadastro encontrado. Registre o primeiro cliente ao lado.
+                  Nenhum cadastro encontrado no Supabase. Registre o primeiro cliente ao lado.
                 </p>
               </div>
             )}
@@ -648,7 +605,7 @@ function Index() {
                   {formatarData(new Date().toISOString())}
                 </div>
                 <p className="text-[11px] text-muted-foreground">
-                  A data e hora atuais são capturadas e registradas automaticamente.
+                  A data e hora atuais são capturadas e registradas automaticamente no Supabase.
                 </p>
               </div>
 
