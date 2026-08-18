@@ -49,10 +49,11 @@ export const OPCOES_GARANTIA_PADRAO = [
 ];
 
 export const PERIODOS_VALIDADE_GARANTIA = [
-  "90 dias (Padrão - Lei do Consumidor CDC)",
-  "180 dias (6 meses)",
-  "365 dias (1 ano)",
-  "30 dias (Serviços pontuais)",
+  "90 dias (CDC) + 3 meses estendida (Total: 6 meses)",
+  "90 dias (CDC) + 6 meses estendida (Total: 9 meses)",
+  "90 dias (CDC) + 9 meses estendida (Total: 1 ano)",
+  "90 dias (CDC) + 1 ano estendida (Total: 1 ano e 3 meses)",
+  "90 dias (Apenas Garantia Legal CDC)",
   "Conforme contrato de manutenção",
 ];
 

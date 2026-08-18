@@ -420,11 +420,11 @@ function Index() {
 
               {coberturasGarantia.length === 0 ? (
                 <div className="rounded-md bg-amber-50/90 dark:bg-amber-950/40 p-2.5 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-950 dark:text-amber-200 leading-tight">
-                  ⚖️ <strong>Garantia Legal Padrão de 90 dias</strong> (Art. 26 do CDC) ativa. Aplica-se automaticamente quando o cliente não contrata coberturas adicionais.
+                  ⚖️ <strong>Garantia Legal de 90 dias (CDC)</strong>: Ativa automaticamente. Cobrindo todos os serviços executados conforme a lei do consumidor.
                 </div>
               ) : (
                 <div className="rounded-md bg-emerald-50/90 dark:bg-emerald-950/40 p-2.5 border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-950 dark:text-emerald-200 leading-tight">
-                  🛡️ <strong>Garantia Personalizada / Estendida</strong> ativa com {coberturasGarantia.length} cobertura(s) selecionada(s).
+                  🛡️ <strong>90 Dias Legais (CDC) + Garantia Estendida</strong>: O prazo adicional selecionado abaixo se <u>soma aos 90 dias obrigatórios da lei</u> com {coberturasGarantia.length} cobertura(s) incluída(s).
                 </div>
               )}
 
@@ -435,13 +435,13 @@ function Index() {
                   variant="outline"
                   onClick={() => {
                     setCoberturasGarantia([]);
-                    setValidadeGarantia("90 dias (Padrão - Lei do Consumidor CDC)");
+                    setValidadeGarantia("90 dias (Apenas Garantia Legal CDC)");
                   }}
                   className={`text-[11px] h-7 flex-1 font-medium ${
                     coberturasGarantia.length === 0 ? "border-amber-500 bg-amber-50 text-amber-900 font-bold" : ""
                   }`}
                 >
-                  ⚖️ Padrão 90 Dias (CDC)
+                  ⚖️ Apenas 90 Dias (CDC)
                 </Button>
                 <Button
                   type="button"
@@ -449,6 +449,7 @@ function Index() {
                   variant="outline"
                   onClick={() => {
                     setCoberturasGarantia([...OPCOES_GARANTIA_PADRAO]);
+                    setValidadeGarantia("90 dias (CDC) + 3 meses estendida (Total: 6 meses)");
                   }}
                   className={`text-[11px] h-7 flex-1 font-medium ${
                     coberturasGarantia.length === OPCOES_GARANTIA_PADRAO.length ? "border-blue-500 bg-blue-50 text-blue-900 font-bold" : ""

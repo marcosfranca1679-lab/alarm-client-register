@@ -282,13 +282,24 @@ function Documento() {
                 </p>
               </div>
 
-              {/* 4. Validade */}
+              {/* 4. Validade e Composição */}
               <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
                 <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
-                  4. PRAZO DE VALIDADE:
+                  4. COMPOSIÇÃO DO PRAZO (90 DIAS LEGAIS + PRAZO ESTENDIDO):
                 </h3>
                 <p className="text-[11px] leading-relaxed">
-                  A garantia padrão é de <strong>90 (noventa) dias</strong> (conforme Art. 26 do CDC), com validade estipulada em <strong>{garantia.validade}</strong> a contar da data de conclusão do serviço/cadastro ({formatarData(cliente.criadoEm)}).
+                  A garantia total fornecida pela <strong>WS Segurança Residencial</strong> é estruturada cumulativamente:
+                </p>
+                <ul className="list-disc list-inside space-y-1 text-[11px] pl-1 text-slate-700 dark:text-slate-300">
+                  <li>
+                    <strong>Garantia Legal Obrigatória (90 dias)</strong>: Prevista no Art. 26, II do Código de Defesa do Consumidor (CDC), cobrindo integralmente todos os serviços executados contra falhas técnicas ou vícios de funcionamento.
+                  </li>
+                  <li>
+                    <strong>Garantia Estendida / Contratual Adicional</strong>: Prazo adicional contratado pelo cliente que se <u>soma aos 90 dias da lei</u>, assegurando cobertura contínua e reposição dos componentes selecionados no presente termo.
+                  </li>
+                </ul>
+                <p className="text-[11px] font-bold text-blue-950 dark:text-blue-200 mt-1 bg-blue-100/60 dark:bg-blue-900/40 p-2 rounded border border-blue-200 dark:border-blue-800">
+                  Validade Total Acordada: {garantia.validade} (a contar de {formatarData(cliente.criadoEm)}).
                 </p>
               </div>
 
