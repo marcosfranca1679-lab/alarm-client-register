@@ -409,13 +409,53 @@ function Index() {
                   <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                   <span>Termo de Garantia da Manutenção</span>
                 </div>
-                <span className="text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded-full">
-                  Lei do Consumidor (CDC)
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                  coberturasGarantia.length === 0
+                    ? "text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/60"
+                    : "text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60"
+                }`}>
+                  {coberturasGarantia.length === 0 ? "Padrão CDC 90 dias" : "Personalizada"}
                 </span>
               </div>
 
-              <div className="rounded-md bg-emerald-50/80 dark:bg-emerald-950/40 p-2 border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-900 dark:text-emerald-300 leading-tight">
-                🛡️ <strong>Garantia Legal de 90 dias</strong> inclusa obrigatoriamente para todos os serviços e peças conforme o Art. 26 do Código de Defesa do Consumidor.
+              {coberturasGarantia.length === 0 ? (
+                <div className="rounded-md bg-amber-50/90 dark:bg-amber-950/40 p-2.5 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-950 dark:text-amber-200 leading-tight">
+                  ⚖️ <strong>Garantia Legal Padrão de 90 dias</strong> (Art. 26 do CDC) ativa. Aplica-se automaticamente quando o cliente não contrata coberturas adicionais.
+                </div>
+              ) : (
+                <div className="rounded-md bg-emerald-50/90 dark:bg-emerald-950/40 p-2.5 border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-950 dark:text-emerald-200 leading-tight">
+                  🛡️ <strong>Garantia Personalizada / Estendida</strong> ativa com {coberturasGarantia.length} cobertura(s) selecionada(s).
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setCoberturasGarantia([]);
+                    setValidadeGarantia("90 dias (Padrão - Lei do Consumidor CDC)");
+                  }}
+                  className={`text-[11px] h-7 flex-1 font-medium ${
+                    coberturasGarantia.length === 0 ? "border-amber-500 bg-amber-50 text-amber-900 font-bold" : ""
+                  }`}
+                >
+                  ⚖️ Padrão 90 Dias (CDC)
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setCoberturasGarantia([...OPCOES_GARANTIA_PADRAO]);
+                  }}
+                  className={`text-[11px] h-7 flex-1 font-medium ${
+                    coberturasGarantia.length === OPCOES_GARANTIA_PADRAO.length ? "border-blue-500 bg-blue-50 text-blue-900 font-bold" : ""
+                  }`}
+                >
+                  ➕ Marcar Todas
+                </Button>
               </div>
 
               <div className="space-y-1">
@@ -435,7 +475,7 @@ function Index() {
 
               <div className="space-y-2">
                 <p className="field-label text-xs font-semibold">
-                  Selecione o que esta garantia cobre:
+                  Selecione o que o cliente aceitou/contratou:
                 </p>
                 <div className="space-y-1.5">
                   {OPCOES_GARANTIA_PADRAO.map((op) => {
@@ -584,13 +624,20 @@ function Index() {
 
                   {/* Badge de Garantia e Observações */}
                   <div className="flex flex-wrap items-center gap-2 pt-1">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded-md">
-                      <ShieldCheck className="h-3 w-3 text-blue-600" />
-                      <span>Garantia: {garantia.validade}</span>
-                      <span className="text-blue-500 font-normal">
-                        ({garantia.coberturas.length} coberturas ativas)
+                    {garantia.coberturas.length === 0 ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 px-2 py-0.5 rounded-md">
+                        <ShieldCheck className="h-3 w-3 text-amber-600" />
+                        <span>Garantia Legal: 90 dias (Padrão CDC)</span>
                       </span>
-                    </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-md">
+                        <ShieldCheck className="h-3 w-3 text-emerald-600" />
+                        <span>Garantia Contratada: {garantia.validade}</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-normal">
+                          ({garantia.coberturas.length} coberturas)
+                        </span>
+                      </span>
+                    )}
 
                     {obsLimpa && (
                       <span className="text-[11px] text-muted-foreground truncate max-w-xs">

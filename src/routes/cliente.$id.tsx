@@ -190,24 +190,38 @@ function Documento() {
                 A <strong>WS Segurança Residencial</strong> oferece garantia sobre os serviços de manutenção realizados, conforme as condições descritas abaixo.
               </p>
 
-              {/* Destaque Garantia Legal CDC 90 dias */}
-              <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 p-3.5 space-y-1">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-900 dark:text-emerald-200">
-                  <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                  <span>GARANTIA LEGAL DE 90 DIAS (LEI DO CONSUMIDOR — ART. 26, II DO CDC)</span>
+              {/* Destaque da Modalidade de Garantia */}
+              {garantia.coberturas.length === 0 ? (
+                <div className="rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 p-4 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950 dark:text-amber-200">
+                    <ShieldCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                    <span>MODALIDADE: GARANTIA LEGAL PADRÃO DE 90 DIAS (LEI DO CONSUMIDOR — ART. 26 DO CDC)</span>
+                  </div>
+                  <p className="text-[11px] text-amber-900 dark:text-amber-300 leading-relaxed">
+                    O cliente <strong>não contratou coberturas adicionais ou estendidas</strong>. Portanto, vigora exclusivamente a <strong>Garantia Legal Obrigatória de 90 (noventa) dias</strong> prevista no Artigo 26, Inciso II da Lei nº 8.078/1990 (Código de Defesa do Consumidor), cobrindo a execução dos serviços realizados contra vícios ou defeitos técnicos aparentes ou ocultos.
+                  </p>
                 </div>
-                <p className="text-[11px] text-emerald-800 dark:text-emerald-300 leading-relaxed">
-                  Em estrito cumprimento ao <strong>Artigo 26, Inciso II da Lei nº 8.078/1990 (Código de Defesa do Consumidor — CDC)</strong>, todos os serviços de instalação, reparo e componentes fornecidos possuem <strong>garantia legal obrigatória de 90 (noventa) dias</strong>, abrangendo a totalidade dos serviços executados contra quaisquer vícios, falhas de funcionamento ou defeitos de execução.
-                </p>
-              </div>
+              ) : (
+                <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 p-4 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-950 dark:text-emerald-200">
+                    <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <span>MODALIDADE: GARANTIA PERSONALIZADA / ESTENDIDA CONTRATADA</span>
+                  </div>
+                  <p className="text-[11px] text-emerald-900 dark:text-emerald-300 leading-relaxed">
+                    O cliente contratou coberturas técnicas específicas para os serviços de manutenção, com prazo de <strong>{garantia.validade}</strong>, além da garantia legal obrigatória conforme o Código de Defesa do Consumidor.
+                  </p>
+                </div>
+              )}
 
               {/* 1. O que a garantia cobre */}
               <div className="space-y-1.5">
                 <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase">
-                  1. ITENS ESPECÍFICOS E COBERTURAS CONTRATADAS:
+                  1. COBERTURAS DO TERMO:
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
-                  Além da garantia legal obrigatória de 90 dias, a garantia técnica abrange os itens selecionados abaixo:
+                  {garantia.coberturas.length === 0
+                    ? "Nenhuma cobertura adicional foi contratada. Vigência exclusiva da garantia legal de 90 dias do CDC para o serviço realizado:"
+                    : "Itens técnicos e serviços cobertos conforme contratação do cliente:"}
                 </p>
                 <div className="grid gap-1.5 pt-1">
                   {OPCOES_GARANTIA_PADRAO.map((item) => {
@@ -227,9 +241,13 @@ function Documento() {
                           <XCircle className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
                         )}
                         <span className="leading-snug">{item}</span>
-                        {incluso && (
+                        {incluso ? (
                           <span className="ml-auto text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-200">
                             INCLUSO
+                          </span>
+                        ) : (
+                          <span className="ml-auto text-[10px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border">
+                            NÃO CONTRATADO
                           </span>
                         )}
                       </div>
