@@ -58,55 +58,78 @@ export const PERIODOS_VALIDADE_GARANTIA = [
 ];
 
 export function extrairGarantia(observacoes: string): { obsLimpa: string; garantia: TermoGarantia } {
+  const padrao: TermoGarantia = {
+    validade: "90 dias (Apenas Garantia Legal CDC)",
+    coberturas: [],
+  };
+
   if (!observacoes) {
-    return {
-      obsLimpa: "",
-      garantia: {
-        validade: "90 dias (Padrão - Lei do Consumidor CDC)",
-        coberturas: [
-          OPCOES_GARANTIA_PADRAO[0],
-          OPCOES_GARANTIA_PADRAO[1],
-          OPCOES_GARANTIA_PADRAO[2],
-        ],
-      },
-    };
+    return { obsLimpa: "", garantia: padrao };
   }
 
-  const match = observacoes.match(/\[GARANTIA_CONFIG:(.*?)\]/s);
-  if (match && match[1]) {
+  // 1. Tenta formato com delimitador seguro <!--GARANTIA_START-->...<!--GARANTIA_END-->
+  const delimitadorMatch = observacoes.match(/<!--GARANTIA_START-->([\s\S]*?)<!--GARANTIA_END-->/);
+  if (delimitadorMatch && delimitadorMatch[1]) {
     try {
-      const parsed = JSON.parse(match[1]);
-      const obsLimpa = observacoes.replace(/\[GARANTIA_CONFIG:.*?\]\n?/s, "").trim();
+      const parsed = JSON.parse(delimitadorMatch[1]);
+      const obsLimpa = observacoes
+        .replace(/<!--GARANTIA_START-->[\s\S]*?<!--GARANTIA_END-->\n?/g, "")
+        .replace(/\[GARANTIA_CONFIG:[\s\S]*?\}\]\n?/g, "")
+        .trim();
       return {
         obsLimpa,
         garantia: {
-          validade: parsed.validade || "90 dias (Padrão - Lei do Consumidor CDC)",
-          coberturas: Array.isArray(parsed.coberturas)
-            ? parsed.coberturas
-            : [OPCOES_GARANTIA_PADRAO[0], OPCOES_GARANTIA_PADRAO[1]],
+          validade: parsed.validade || padrao.validade,
+          coberturas: Array.isArray(parsed.coberturas) ? parsed.coberturas : [],
         },
       };
     } catch {}
   }
 
-  return {
-    obsLimpa: observacoes,
-    garantia: {
-      validade: "90 dias (Padrão - Lei do Consumidor CDC)",
-      coberturas: [
-        OPCOES_GARANTIA_PADRAO[0],
-        OPCOES_GARANTIA_PADRAO[1],
-        OPCOES_GARANTIA_PADRAO[2],
-      ],
-    },
-  };
+  // 2. Tenta formato legado [GARANTIA_CONFIG:{...}]
+  const startIndex = observacoes.indexOf("[GARANTIA_CONFIG:");
+  if (startIndex !== -1) {
+    const jsonStart = startIndex + "[GARANTIA_CONFIG:".length;
+    const jsonEnd = observacoes.lastIndexOf("}]");
+    if (jsonEnd > jsonStart) {
+      const jsonStr = observacoes.substring(jsonStart, jsonEnd + 1);
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const fullTag = observacoes.substring(startIndex, jsonEnd + 2);
+        const obsLimpa = observacoes.replace(fullTag, "").trim();
+        return {
+          obsLimpa,
+          garantia: {
+            validade: parsed.validade || padrao.validade,
+            coberturas: Array.isArray(parsed.coberturas) ? parsed.coberturas : [],
+          },
+        };
+      } catch {}
+    }
+  }
+
+  // Se por qualquer motivo ainda sobrou alguma tag, limpa da observacao visivel
+  const obsLimpa = observacoes
+    .replace(/\[GARANTIA_CONFIG:[\s\S]*?\}\]/g, "")
+    .replace(/\[GARANTIA_CONFIG:[\s\S]*?\]/g, "")
+    .replace(/<!--GARANTIA_START-->[\s\S]*?<!--GARANTIA_END-->/g, "")
+    .trim();
+
+  return { obsLimpa, garantia: padrao };
 }
 
 export function embutirGarantia(obs: string, garantia: TermoGarantia): string {
   const config = JSON.stringify(garantia);
-  const prefix = `[GARANTIA_CONFIG:${config}]`;
-  const limpa = (obs || "").replace(/\[GARANTIA_CONFIG:.*?\]\n?/s, "").trim();
-  return limpa ? `${prefix}\n${limpa}` : prefix;
+  const tag = `<!--GARANTIA_START-->${config}<!--GARANTIA_END-->`;
+
+  // Limpa configuracoes anteriores da observacao digitada
+  const limpa = (obs || "")
+    .replace(/<!--GARANTIA_START-->[\s\S]*?<!--GARANTIA_END-->\n?/g, "")
+    .replace(/\[GARANTIA_CONFIG:[\s\S]*?\}\]\n?/g, "")
+    .replace(/\[GARANTIA_CONFIG:[\s\S]*?\]\n?/g, "")
+    .trim();
+
+  return limpa ? `${tag}\n${limpa}` : tag;
 }
 
 export function apenasDigitos(valor: string) {
