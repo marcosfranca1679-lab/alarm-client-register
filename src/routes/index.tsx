@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import {
   Search,
@@ -68,6 +68,7 @@ const vazio = {
 };
 
 function Index() {
+  const [mounted, setMounted] = useState(false);
   const [form, setForm] = useState(vazio);
   const [busca, setBusca] = useState("");
   const [clienteManutencao, setClienteManutencao] = useState<Cliente | null>(null);
@@ -75,6 +76,10 @@ function Index() {
   const [historicoExpandido, setHistoricoExpandido] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const qc = useQueryClient();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // ── Busca clientes direto do Supabase (APENAS no browser, nunca no servidor) ──
   const { data: clientes = [], isLoading } = useQuery({

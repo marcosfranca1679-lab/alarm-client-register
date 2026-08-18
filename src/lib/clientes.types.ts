@@ -78,8 +78,19 @@ export function cpfValido(valor: string) {
 }
 
 export function formatarData(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+  if (!iso) return "—";
+  try {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    const dia = String(d.getDate()).padStart(2, "0");
+    const mes = String(d.getMonth() + 1).padStart(2, "0");
+    const ano = d.getFullYear();
+    const hora = String(d.getHours()).padStart(2, "0");
+    const min = String(d.getMinutes()).padStart(2, "0");
+    return `${dia}/${mes}/${ano} ${hora}:${min}`;
+  } catch {
+    return iso;
+  }
 }
 
 export function gerarId(): string {
