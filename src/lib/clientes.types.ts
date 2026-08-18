@@ -6,6 +6,11 @@ export type Manutencao = {
   descricao: string;
 };
 
+export type TermoGarantia = {
+  validade: string;
+  coberturas: string[];
+};
+
 export type Cliente = {
   id: string;
   nome: string;
@@ -18,10 +23,10 @@ export type Cliente = {
   status: StatusCliente;
   criadoEm: string;
   manutencoes?: Manutencao[];
+  garantia?: TermoGarantia;
 };
 
-export type NovoCliente = Omit<Cliente, "id" | "criadoEm" | "status" | "manutencoes">;
-
+export type NovoCliente = Omit<Cliente, "id" | "criadoEm" | "status" | "manutencoes" | "garantia">;
 
 export const MODELOS_CENTRAL = [
   "Intelbras AMT 8000",
@@ -35,6 +40,73 @@ export const MODELOS_CENTRAL = [
   "Compatec Onix 8",
   "Outro modelo",
 ];
+
+export const OPCOES_GARANTIA_PADRAO = [
+  "Falhas relacionadas ao serviço de manutenção realizado",
+  "Troca de pilhas e baterias, quando incluída na contratação",
+  "Defeitos de fabricação dos componentes substituídos, conforme avaliação técnica",
+  "Danos causados por fenômenos atmosféricos, incluindo raios e surtos elétricos",
+];
+
+export const PERIODOS_VALIDADE_GARANTIA = [
+  "30 dias",
+  "90 dias (3 meses)",
+  "180 dias (6 meses)",
+  "365 dias (1 ano)",
+  "Conforme contrato de manutenção",
+];
+
+export function extrairGarantia(observacoes: string): { obsLimpa: string; garantia: TermoGarantia } {
+  if (!observacoes) {
+    return {
+      obsLimpa: "",
+      garantia: {
+        validade: "90 dias (3 meses)",
+        coberturas: [
+          OPCOES_GARANTIA_PADRAO[0],
+          OPCOES_GARANTIA_PADRAO[1],
+          OPCOES_GARANTIA_PADRAO[2],
+        ],
+      },
+    };
+  }
+
+  const match = observacoes.match(/\[GARANTIA_CONFIG:(.*?)\]/s);
+  if (match && match[1]) {
+    try {
+      const parsed = JSON.parse(match[1]);
+      const obsLimpa = observacoes.replace(/\[GARANTIA_CONFIG:.*?\]\n?/s, "").trim();
+      return {
+        obsLimpa,
+        garantia: {
+          validade: parsed.validade || "90 dias (3 meses)",
+          coberturas: Array.isArray(parsed.coberturas)
+            ? parsed.coberturas
+            : [OPCOES_GARANTIA_PADRAO[0], OPCOES_GARANTIA_PADRAO[1]],
+        },
+      };
+    } catch {}
+  }
+
+  return {
+    obsLimpa: observacoes,
+    garantia: {
+      validade: "90 dias (3 meses)",
+      coberturas: [
+        OPCOES_GARANTIA_PADRAO[0],
+        OPCOES_GARANTIA_PADRAO[1],
+        OPCOES_GARANTIA_PADRAO[2],
+      ],
+    },
+  };
+}
+
+export function embutirGarantia(obs: string, garantia: TermoGarantia): string {
+  const config = JSON.stringify(garantia);
+  const prefix = `[GARANTIA_CONFIG:${config}]`;
+  const limpa = (obs || "").replace(/\[GARANTIA_CONFIG:.*?\]\n?/s, "").trim();
+  return limpa ? `${prefix}\n${limpa}` : prefix;
+}
 
 export function apenasDigitos(valor: string) {
   return valor.replace(/\D/g, "");

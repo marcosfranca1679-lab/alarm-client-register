@@ -1,14 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { ShieldCheck, CheckCircle, XCircle, FileCheck, ArrowLeft, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatarData } from "@/lib/clientes.types";
+import {
+  formatarData,
+  extrairGarantia,
+  OPCOES_GARANTIA_PADRAO,
+} from "@/lib/clientes.types";
 import { buscarClientesSupabase } from "@/lib/clientes.supabase";
 
 export const Route = createFileRoute("/cliente/$id")({
   head: () => ({
     meta: [
-      { title: "Documento de Cadastro — WS Segurança Residencial" },
-      { name: "description", content: "Ficha de cadastro do cliente e da central de alarme." },
+      { title: "Documento de Cadastro & Termo de Garantia — WS Segurança Residencial" },
+      {
+        name: "description",
+        content: "Ficha de cadastro e termo de garantia de manutenção de alarme.",
+      },
     ],
   }),
   component: Documento,
@@ -16,9 +24,11 @@ export const Route = createFileRoute("/cliente/$id")({
 
 function Linha({ rotulo, valor, mono }: { rotulo: string; valor: string; mono?: boolean }) {
   return (
-    <div className="border-b py-3">
-      <p className="field-label">{rotulo}</p>
-      <p className={`mt-1 text-sm ${mono ? "font-mono" : ""}`}>{valor || "—"}</p>
+    <div className="border-b border-slate-200 dark:border-slate-800 py-2.5">
+      <p className="field-label text-xs text-muted-foreground">{rotulo}</p>
+      <p className={`mt-0.5 text-sm font-medium text-slate-900 dark:text-slate-100 ${mono ? "font-mono" : ""}`}>
+        {valor || "—"}
+      </p>
     </div>
   );
 }
@@ -32,88 +42,124 @@ function Documento() {
       const lista = await buscarClientesSupabase();
       return lista ?? [];
     },
-    enabled: typeof window !== "undefined",  // ← NUNCA roda no servidor SSR
+    enabled: typeof window !== "undefined",
     staleTime: 30_000,
     retry: 1,
   });
 
   const cliente = clientes.find((c) => c.id === id);
+  const { obsLimpa, garantia } = cliente
+    ? extrairGarantia(cliente.observacoes)
+    : { obsLimpa: "", garantia: { validade: "90 dias (3 meses)", coberturas: [] } };
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen py-8 bg-slate-100/60 dark:bg-slate-950">
       <div className="mx-auto max-w-3xl px-5">
         <div className="no-print mb-6 flex items-center gap-3">
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/">← Voltar</Link>
+          <Button asChild variant="ghost" size="sm" className="cursor-pointer">
+            <Link to="/">
+              <ArrowLeft className="h-4 w-4 mr-1.5" />
+              Voltar ao Início
+            </Link>
           </Button>
-          <Button size="sm" onClick={() => window.print()}>
+          <Button
+            size="sm"
+            onClick={() => window.print()}
+            className="ml-auto bg-slate-900 text-white hover:bg-slate-800 cursor-pointer shadow-sm"
+          >
+            <Printer className="h-4 w-4 mr-1.5" />
             Imprimir / Salvar PDF
           </Button>
         </div>
 
         {isLoading && (
-          <p className="text-sm text-muted-foreground">Carregando...</p>
+          <div className="card-elevated p-8 text-center bg-white dark:bg-slate-900">
+            <p className="text-sm text-muted-foreground">Carregando dados do documento...</p>
+          </div>
         )}
 
         {!isLoading && !cliente && (
-          <div className="card-elevated p-8 text-center">
+          <div className="card-elevated p-8 text-center bg-white dark:bg-slate-900">
             <p className="text-sm text-muted-foreground">Cadastro não encontrado.</p>
           </div>
         )}
 
         {cliente && (
-          <article className="card-elevated print-sheet p-8">
-            <header className="flex items-center gap-4 border-b pb-6">
+          <article className="card-elevated print-sheet p-8 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-7">
+            {/* ── Cabeçalho Oficial ── */}
+            <header className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
               <img
                 src="/logo.jpg"
                 alt="WS Segurança Residencial"
-                className="h-14 w-14 rounded-2xl object-cover border border-slate-200 shadow-sm"
+                className="h-16 w-16 rounded-2xl object-cover border border-slate-200 shadow-sm ring-2 ring-blue-500/10"
               />
               <div>
-                <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">
+                <h1 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
                   WS SEGURANÇA RESIDENCIAL
                 </h1>
-                <p className="text-xs text-slate-600 font-medium">
-                  Ficha de Cadastro de Alarme & Manutenção Eletrônica
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">
+                  Ficha de Cadastro & Termo de Garantia da Manutenção
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Sistema Eletrônico de Alarme e Monitoramento
                 </p>
               </div>
               <div className="ml-auto text-right">
-                <p className="field-label">Protocolo</p>
-                <p className="font-mono text-xs font-bold text-slate-900">
+                <p className="field-label text-xs">Protocolo</p>
+                <p className="font-mono text-sm font-bold text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border">
                   {cliente.id.slice(0, 8).toUpperCase()}
                 </p>
               </div>
             </header>
 
-            <section className="mt-6">
-              <h2 className="text-sm font-bold uppercase tracking-wide">Dados do cliente</h2>
+            {/* ── Seção 1: Dados do Cliente ── */}
+            <section>
+              <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+                <FileCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                  1. Dados do Cliente e Instalação
+                </h2>
+              </div>
               <div className="mt-2 grid gap-x-8 sm:grid-cols-2">
                 <Linha rotulo="Nome completo" valor={cliente.nome} />
                 <Linha rotulo="CPF" valor={cliente.cpf} mono />
-                <Linha rotulo="Telefone" valor={cliente.telefone} />
+                <Linha rotulo="Telefone para contato" valor={cliente.telefone} />
                 <Linha rotulo="Data do cadastro" valor={formatarData(cliente.criadoEm)} />
               </div>
-              <Linha rotulo="Endereço da instalação" valor={cliente.endereco} />
+              <Linha rotulo="Endereço completo da instalação" valor={cliente.endereco} />
             </section>
 
-            <section className="mt-6">
-              <h2 className="text-sm font-bold uppercase tracking-wide">Dados da central</h2>
+            {/* ── Seção 2: Dados da Central de Alarme ── */}
+            <section>
+              <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+                <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                  2. Dados do Equipamento / Central
+                </h2>
+              </div>
               <div className="mt-2 grid gap-x-8 sm:grid-cols-2">
                 <Linha rotulo="Modelo da central" valor={cliente.modeloCentral} />
-                <Linha rotulo="MAC da central" valor={cliente.macCentral} mono />
+                <Linha rotulo="MAC Address da central" valor={cliente.macCentral} mono />
               </div>
-              <Linha rotulo="Observações" valor={cliente.observacoes} />
+              {obsLimpa && (
+                <Linha rotulo="Observações técnicas" valor={obsLimpa} />
+              )}
             </section>
 
+            {/* ── Seção 3: Histórico de Manutenções (se houver) ── */}
             {cliente.manutencoes && cliente.manutencoes.length > 0 && (
-              <section className="mt-6">
-                <h2 className="text-sm font-bold uppercase tracking-wide">
-                  Histórico de Manutenções
-                </h2>
-                <div className="mt-2 space-y-2">
+              <section>
+                <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                    3. Histórico de Manutenções Registradas
+                  </h2>
+                </div>
+                <div className="mt-2 divide-y divide-slate-100 dark:divide-slate-800 text-xs">
                   {cliente.manutencoes.map((m) => (
-                    <div key={m.id} className="flex justify-between border-b py-2 text-sm">
-                      <span className="font-mono font-medium">{formatarData(m.dataHora)}</span>
+                    <div key={m.id} className="flex justify-between py-2">
+                      <span className="font-mono font-medium text-slate-800 dark:text-slate-200">
+                        📅 {formatarData(m.dataHora)}
+                      </span>
                       <span className="text-muted-foreground">{m.descricao}</span>
                     </div>
                   ))}
@@ -121,9 +167,132 @@ function Documento() {
               </section>
             )}
 
-            <footer className="mt-10 border-t pt-6 text-xs text-muted-foreground">
-              <p>Documento gerado automaticamente — WS Segurança Residencial.</p>
-              <p className="mt-1">Data de impressão: {formatarData(new Date().toISOString())}</p>
+            {/* ── Seção Oficial: Termo de Garantia da Manutenção ── */}
+            <section className="rounded-xl border border-blue-200/80 bg-blue-50/40 dark:bg-blue-950/20 dark:border-blue-900/60 p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-blue-200/70 dark:border-blue-900/50 pb-3">
+                <div>
+                  <h2 className="text-sm font-extrabold text-blue-950 dark:text-blue-200 uppercase tracking-wide flex items-center gap-1.5">
+                    <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    TERMO DE GARANTIA DA MANUTENÇÃO
+                  </h2>
+                  <p className="text-[11px] font-semibold text-blue-800 dark:text-blue-300">
+                    WS SEGURANÇA RESIDENCIAL
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className="inline-block text-[11px] font-bold bg-blue-600 text-white px-2.5 py-1 rounded-md shadow-xs">
+                    Validade: {garantia.validade}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                A <strong>WS Segurança Residencial</strong> oferece garantia sobre os serviços de manutenção realizados, conforme as condições descritas abaixo.
+              </p>
+
+              {/* 1. O que a garantia cobre */}
+              <div className="space-y-1.5">
+                <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase">
+                  1. O QUE A GARANTIA COBRE:
+                </h3>
+                <p className="text-[11px] text-muted-foreground">
+                  A garantia abrange exclusivamente os itens contratados e marcados abaixo:
+                </p>
+                <div className="grid gap-1.5 pt-1">
+                  {OPCOES_GARANTIA_PADRAO.map((item) => {
+                    const incluso = garantia.coberturas.includes(item);
+                    return (
+                      <div
+                        key={item}
+                        className={`flex items-start gap-2 rounded-md p-2 text-xs transition-colors ${
+                          incluso
+                            ? "bg-white dark:bg-slate-900 font-semibold text-blue-950 dark:text-blue-200 border border-blue-200 dark:border-blue-800 shadow-2xs"
+                            : "bg-slate-100/50 dark:bg-slate-800/30 text-muted-foreground line-through opacity-60 border border-dashed border-slate-200"
+                        }`}
+                      >
+                        {incluso ? (
+                          <CheckCircle className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                        ) : (
+                          <XCircle className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
+                        )}
+                        <span className="leading-snug">{item}</span>
+                        {incluso && (
+                          <span className="ml-auto text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-200">
+                            INCLUSO
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 2. Situações não cobertas */}
+              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
+                  2. SITUAÇÕES NÃO COBERTAS:
+                </h3>
+                <p className="text-[11px] text-muted-foreground">A garantia não cobre danos provocados por:</p>
+                <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-600 dark:text-slate-400 pl-1">
+                  <li>Mau uso ou utilização inadequada do equipamento;</li>
+                  <li>Quedas, impactos ou danos físicos causados pelo cliente ou terceiros;</li>
+                  <li>Alterações, desmontagem ou tentativa de reparo por pessoas não autorizadas;</li>
+                  <li>Modificações na instalação sem autorização da WS Segurança Residencial;</li>
+                  <li>Danos provocados intencionalmente;</li>
+                  <li>Problemas decorrentes de equipamentos ou instalações que não fazem parte do serviço contratado.</li>
+                </ul>
+              </div>
+
+              {/* 3. Avaliação Técnica */}
+              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
+                  3. AVALIAÇÃO TÉCNICA:
+                </h3>
+                <p className="text-[11px] leading-relaxed">
+                  Em caso de falha, a WS Segurança Residencial realizará uma avaliação técnica para identificar a causa do problema e verificar se o atendimento está dentro das condições de garantia. Caso seja constatado que o problema está coberto, o reparo ou substituição será realizado <strong>sem custos adicionais ao cliente</strong>.
+                </p>
+              </div>
+
+              {/* 4. Validade */}
+              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
+                  4. VALIDADE:
+                </h3>
+                <p className="text-[11px] leading-relaxed">
+                  A garantia é válida pelo período de <strong>{garantia.validade}</strong> a contar da data de conclusão do serviço de manutenção/cadastro ({formatarData(cliente.criadoEm)}), estando vinculada exclusivamente aos equipamentos e serviços especificados.
+                </p>
+              </div>
+
+              {/* 5. Considerações Finais */}
+              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
+                  5. CONSIDERAÇÕES FINAIS:
+                </h3>
+                <p className="text-[11px] leading-relaxed">
+                  A garantia cobre exclusivamente os itens e serviços descritos neste termo, não se estendendo a situações decorrentes de uso inadequado, intervenções não autorizadas ou causas externas não previstas.
+                </p>
+              </div>
+            </section>
+
+            {/* ── Assinaturas ── */}
+            <div className="pt-6 grid grid-cols-2 gap-8 text-center text-xs">
+              <div className="border-t border-slate-400 pt-2">
+                <p className="font-bold text-slate-900 dark:text-slate-100">{cliente.nome}</p>
+                <p className="text-[11px] text-muted-foreground">Assinatura do Cliente / Contratante</p>
+                <p className="text-[10px] text-muted-foreground font-mono mt-0.5">CPF: {cliente.cpf}</p>
+              </div>
+
+              <div className="border-t border-slate-400 pt-2">
+                <p className="font-bold text-slate-900 dark:text-slate-100">WS SEGURANÇA RESIDENCIAL</p>
+                <p className="text-[11px] text-muted-foreground">Responsável Técnico / Emissor</p>
+                <p className="text-[10px] text-muted-foreground font-mono mt-0.5">Sistema de Alarme e Segurança</p>
+              </div>
+            </div>
+
+            {/* ── Rodapé ── */}
+            <footer className="border-t border-slate-200 dark:border-slate-800 pt-4 text-center text-[11px] text-muted-foreground">
+              <p>Documento oficial emitido por WS Segurança Residencial.</p>
+              <p className="mt-0.5">Data de emissão: {formatarData(new Date().toISOString())}</p>
             </footer>
           </article>
         )}
