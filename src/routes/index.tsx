@@ -93,9 +93,9 @@ function Index() {
       setForm(vazio);
       toast.success("Cliente cadastrado com sucesso!");
     },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Não foi possível salvar. Verifique a conexão com o Supabase.");
+    onError: (err: Error) => {
+      console.error("Erro ao salvar:", err);
+      toast.error(`Erro: ${err.message}`);
     },
   });
 

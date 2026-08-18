@@ -59,53 +59,47 @@ export async function buscarClientesSupabase(): Promise<Cliente[] | null> {
   }
 }
 
-export async function salvarClienteSupabase(dados: NovoCliente): Promise<Cliente | null> {
-  try {
-    // Envia somente as colunas que existem na tabela
-    const payload = {
-      nome: dados.nome,
-      endereco: dados.endereco,
-      cpf: dados.cpf,
-      telefone: dados.telefone,
-      mac_central: dados.macCentral,
-      modelo_central: dados.modeloCentral,
-      observacoes: dados.observacoes || "",
-      status: "ativo",
-    };
+export async function salvarClienteSupabase(dados: NovoCliente): Promise<Cliente> {
+  const payload = {
+    nome: dados.nome,
+    endereco: dados.endereco,
+    cpf: dados.cpf,
+    telefone: dados.telefone,
+    mac_central: dados.macCentral,
+    modelo_central: dados.modeloCentral,
+    observacoes: dados.observacoes || "",
+    status: "ativo",
+  };
 
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
-      method: "POST",
-      headers: { ...baseHeaders, Prefer: "return=representation" },
-      body: JSON.stringify(payload),
-    });
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
+    method: "POST",
+    headers: { ...baseHeaders, Prefer: "return=representation" },
+    body: JSON.stringify(payload),
+  });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      console.warn("Supabase POST falhou:", res.status, errText);
-      return null;
-    }
-
-    const created = await res.json();
-    const item = Array.isArray(created) ? created[0] : created;
-    if (!item) return null;
-
-    return {
-      id: item.id,
-      nome: item.nome,
-      endereco: item.endereco,
-      cpf: item.cpf,
-      telefone: item.telefone,
-      macCentral: item.mac_central || "",
-      modeloCentral: item.modelo_central || "",
-      observacoes: item.observacoes || "",
-      status: item.status || "ativo",
-      criadoEm: item.criado_em || new Date().toISOString(),
-      manutencoes: [],
-    };
-  } catch (err) {
-    console.warn("Erro ao salvar cliente:", err);
-    return null;
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Falha ao salvar (${res.status}): ${errText}`);
   }
+
+  const created = await res.json();
+  const item = Array.isArray(created) ? created[0] : created;
+
+  if (!item) throw new Error("Supabase não retornou o registro criado.");
+
+  return {
+    id: item.id,
+    nome: item.nome,
+    endereco: item.endereco,
+    cpf: item.cpf,
+    telefone: item.telefone,
+    macCentral: item.mac_central || "",
+    modeloCentral: item.modelo_central || "",
+    observacoes: item.observacoes || "",
+    status: item.status || "ativo",
+    criadoEm: item.criado_em || new Date().toISOString(),
+    manutencoes: [],
+  };
 }
 
 export async function atualizarManutencoesSupabase(clienteId: string, manutencoes: any[]): Promise<boolean> {
