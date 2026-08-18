@@ -14,6 +14,9 @@ import {
   History,
   CheckCircle2,
   ShieldCheck,
+  DollarSign,
+  CreditCard,
+  Calculator,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -30,10 +33,14 @@ import {
 
 import {
   MODELOS_CENTRAL,
+  FORMAS_PAGAMENTO,
   OPCOES_GARANTIA_PADRAO,
   PERIODOS_VALIDADE_GARANTIA,
+  calcularPrecoItemGarantia,
+  obterMesesEstendidos,
   extrairGarantia,
   embutirGarantia,
+  formatarMoeda,
   apenasDigitos,
   cpfValido,
   formatarCpf,
@@ -43,6 +50,7 @@ import {
   gerarId,
   type Cliente,
   type Manutencao,
+  type TipoCobrancaGarantia,
 } from "@/lib/clientes.types";
 import {
   buscarClientesSupabase,
@@ -80,8 +88,11 @@ function Index() {
   const [descricaoManutencao, setDescricaoManutencao] = useState("");
   const [historicoExpandido, setHistoricoExpandido] = useState<string | null>(null);
 
-  // Estados do Termo de Garantia no Cadastro
-  const [validadeGarantia, setValidadeGarantia] = useState("90 dias (Padrão - Lei do Consumidor CDC)");
+  // Estados Financeiros & Termo de Garantia
+  const [valorServico, setValorServico] = useState("");
+  const [formaPagamento, setFormaPagamento] = useState("PIX");
+  const [validadeGarantia, setValidadeGarantia] = useState("90 dias (CDC) + 3 meses estendida (Total: 6 meses)");
+  const [tipoCobrancaGarantia, setTipoCobrancaGarantia] = useState<TipoCobrancaGarantia>("mensal");
   const [coberturasGarantia, setCoberturasGarantia] = useState<string[]>([
     OPCOES_GARANTIA_PADRAO[0],
     OPCOES_GARANTIA_PADRAO[1],
@@ -94,6 +105,13 @@ function Index() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Cálculos da Garantia Estendida
+  const precoItem = calcularPrecoItemGarantia(validadeGarantia);
+  const mesesEstendidos = obterMesesEstendidos(validadeGarantia);
+  const qtdItens = coberturasGarantia.length;
+  const valorMensalGarantia = qtdItens * precoItem;
+  const valorTotalGarantia = valorMensalGarantia * mesesEstendidos;
 
   // ── Busca clientes direto do Supabase ──
   const { data: clientes = [], isLoading } = useQuery({
@@ -117,13 +135,16 @@ function Index() {
     onSuccess: (novoCliente) => {
       qc.setQueryData(["clientes"], (antigos: Cliente[] = []) => [novoCliente, ...antigos]);
       setForm(vazio);
+      setValorServico("");
+      setFormaPagamento("PIX");
       setCoberturasGarantia([
         OPCOES_GARANTIA_PADRAO[0],
         OPCOES_GARANTIA_PADRAO[1],
         OPCOES_GARANTIA_PADRAO[2],
       ]);
-      setValidadeGarantia("90 dias (3 meses)");
-      toast.success("Cliente e Termo de Garantia cadastrados com sucesso!");
+      setValidadeGarantia("90 dias (CDC) + 3 meses estendida (Total: 6 meses)");
+      setTipoCobrancaGarantia("mensal");
+      toast.success("Cliente cadastrado com valores e termo de garantia!");
     },
     onError: (err: Error) => {
       console.error("Erro ao salvar:", err);
@@ -234,10 +255,16 @@ function Index() {
       return;
     }
 
-    // Embutir opções de garantia no formulário
+    // Embutir dados financeiros e de garantia no formato seguro
     const obsFinal = embutirGarantia(form.observacoes, {
       validade: validadeGarantia,
       coberturas: coberturasGarantia,
+      valorServico: valorServico.trim(),
+      formaPagamento: formaPagamento,
+      tipoCobrancaGarantia: tipoCobrancaGarantia,
+      valorItemGarantia: precoItem,
+      valorMensalGarantia: valorMensalGarantia,
+      valorTotalGarantia: valorTotalGarantia,
     });
 
     criar.mutate({ ...form, observacoes: obsFinal });
@@ -269,7 +296,7 @@ function Index() {
               WS SEGURANÇA RESIDENCIAL
             </h1>
             <p className="text-xs text-blue-200/80 font-medium">
-              Central de Cadastros, Manutenção & Termos de Garantia
+              Central de Cadastros, Valores, Manutenção & Termos de Garantia
             </p>
           </div>
           <div className="ml-auto flex items-center gap-2">
@@ -303,14 +330,14 @@ function Index() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-6xl gap-6 px-5 py-8 lg:grid-cols-[minmax(0,430px)_1fr]">
+      <main className="mx-auto grid max-w-6xl gap-6 px-5 py-8 lg:grid-cols-[minmax(0,450px)_1fr]">
         {/* ── Formulário de Cadastro ── */}
         <section className="card-elevated h-fit p-6">
           <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
             Novo cadastro de cliente
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Preencha os dados do cliente, central e condições de garantia.
+            Preencha os dados cadastrais, valores, forma de pagamento e garantia.
           </p>
 
           <form onSubmit={onSubmit} className="mt-6 space-y-4">
@@ -402,32 +429,71 @@ function Index() {
               </div>
             </div>
 
-            {/* ── Seção de Seleção do Termo de Garantia ── */}
+            {/* ── Seção de Valores e Pagamento ── */}
+            <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4 space-y-3 dark:border-slate-800 dark:bg-slate-900/50">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-slate-100">
+                <DollarSign className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <span>Valores do Serviço & Forma de Pagamento</span>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <Label className="field-label text-xs" htmlFor="valorServico">
+                    Valor do Serviço / Instalação
+                  </Label>
+                  <div className="relative">
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-semibold">
+                      R$
+                    </span>
+                    <Input
+                      id="valorServico"
+                      value={valorServico}
+                      onChange={(e) => setValorServico(e.target.value)}
+                      placeholder="150,00"
+                      className="pl-8 text-sm font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="field-label text-xs" htmlFor="formaPagamento">
+                    Forma de Pagamento
+                  </Label>
+                  <select
+                    id="formaPagamento"
+                    value={formaPagamento}
+                    onChange={(e) => setFormaPagamento(e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-input bg-background px-2.5 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer text-slate-900 dark:text-slate-100 font-medium"
+                  >
+                    {FORMAS_PAGAMENTO.map((fp) => (
+                      <option key={fp} value={fp}>
+                        {fp}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Seção de Seleção do Termo de Garantia e Precificação ── */}
             <div className="rounded-xl border border-blue-200/80 bg-blue-50/50 p-4 space-y-3.5 dark:border-blue-900/50 dark:bg-blue-950/20">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-blue-950 dark:text-blue-200">
                   <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                   <span>Termo de Garantia da Manutenção</span>
                 </div>
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                  coberturasGarantia.length === 0
-                    ? "text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/60"
-                    : "text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60"
-                }`}>
+                <span
+                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                    coberturasGarantia.length === 0
+                      ? "text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/60"
+                      : "text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60"
+                  }`}
+                >
                   {coberturasGarantia.length === 0 ? "Padrão CDC 90 dias" : "Personalizada"}
                 </span>
               </div>
 
-              {coberturasGarantia.length === 0 ? (
-                <div className="rounded-md bg-amber-50/90 dark:bg-amber-950/40 p-2.5 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-950 dark:text-amber-200 leading-tight">
-                  ⚖️ <strong>Garantia Legal de 90 dias (CDC)</strong>: Ativa automaticamente. Cobrindo todos os serviços executados conforme a lei do consumidor.
-                </div>
-              ) : (
-                <div className="rounded-md bg-emerald-50/90 dark:bg-emerald-950/40 p-2.5 border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-950 dark:text-emerald-200 leading-tight">
-                  🛡️ <strong>90 Dias Legais (CDC) + Garantia Estendida</strong>: O prazo adicional selecionado abaixo se <u>soma aos 90 dias obrigatórios da lei</u> com {coberturasGarantia.length} cobertura(s) incluída(s).
-                </div>
-              )}
-
+              {/* Botões de Seleção Rápida */}
               <div className="flex gap-2">
                 <Button
                   type="button"
@@ -438,7 +504,9 @@ function Index() {
                     setValidadeGarantia("90 dias (Apenas Garantia Legal CDC)");
                   }}
                   className={`text-[11px] h-7 flex-1 font-medium ${
-                    coberturasGarantia.length === 0 ? "border-amber-500 bg-amber-50 text-amber-900 font-bold" : ""
+                    coberturasGarantia.length === 0
+                      ? "border-amber-500 bg-amber-50 text-amber-900 font-bold"
+                      : ""
                   }`}
                 >
                   ⚖️ Apenas 90 Dias (CDC)
@@ -452,15 +520,18 @@ function Index() {
                     setValidadeGarantia("90 dias (CDC) + 3 meses estendida (Total: 6 meses)");
                   }}
                   className={`text-[11px] h-7 flex-1 font-medium ${
-                    coberturasGarantia.length === OPCOES_GARANTIA_PADRAO.length ? "border-blue-500 bg-blue-50 text-blue-900 font-bold" : ""
+                    coberturasGarantia.length === OPCOES_GARANTIA_PADRAO.length
+                      ? "border-blue-500 bg-blue-50 text-blue-900 font-bold"
+                      : ""
                   }`}
                 >
                   ➕ Marcar Todas
                 </Button>
               </div>
 
+              {/* Seletor de Período */}
               <div className="space-y-1">
-                <Label className="field-label text-xs">Período Total da Garantia</Label>
+                <Label className="field-label text-xs">Período da Garantia Estendida</Label>
                 <select
                   value={validadeGarantia}
                   onChange={(e) => setValidadeGarantia(e.target.value)}
@@ -474,9 +545,25 @@ function Index() {
                 </select>
               </div>
 
+              {/* Tabela de Preço por Item */}
+              <div className="rounded-md bg-blue-100/60 dark:bg-blue-900/40 p-2.5 border border-blue-200 dark:border-blue-800 text-xs space-y-1">
+                <div className="flex justify-between items-center font-semibold text-blue-950 dark:text-blue-100">
+                  <span>Valor por item adicional:</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+                    R$ {precoItem.toFixed(2).replace(".", ",")} / item / mês
+                  </span>
+                </div>
+                <p className="text-[11px] text-blue-800 dark:text-blue-300">
+                  {precoItem === 12.49
+                    ? "📌 Plano de 3 meses estendida: R$ 12,49/mês por item."
+                    : "🎉 Plano acima de 6 meses (desconto): R$ 9,99/mês por item!"}
+                </p>
+              </div>
+
+              {/* Checkboxes de Coberturas */}
               <div className="space-y-2">
                 <p className="field-label text-xs font-semibold">
-                  Selecione o que o cliente aceitou/contratou:
+                  Selecione os itens cobertos na garantia:
                 </p>
                 <div className="space-y-1.5">
                   {OPCOES_GARANTIA_PADRAO.map((op) => {
@@ -508,6 +595,57 @@ function Index() {
                   })}
                 </div>
               </div>
+
+              {/* Seletor de Pagamento da Garantia (Mensal vs Total) */}
+              {coberturasGarantia.length > 0 && (
+                <div className="space-y-2 pt-1 border-t border-blue-200/60 dark:border-blue-900/50">
+                  <Label className="field-label text-xs font-semibold">
+                    Como o cliente vai pagar a garantia estendida?
+                  </Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setTipoCobrancaGarantia("mensal")}
+                      className={`p-2 rounded-lg border text-left text-xs transition-all cursor-pointer ${
+                        tipoCobrancaGarantia === "mensal"
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-950 font-bold shadow-xs dark:bg-emerald-950/40 dark:text-emerald-200"
+                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300"
+                      }`}
+                    >
+                      <p className="flex items-center gap-1">
+                        <CreditCard className="h-3.5 w-3.5 text-emerald-600" />
+                        <span>Por Mês</span>
+                      </p>
+                      <p className="mt-1 text-sm font-extrabold text-emerald-700 dark:text-emerald-300">
+                        R$ {valorMensalGarantia.toFixed(2).replace(".", ",")}
+                        <span className="text-[10px] font-normal text-muted-foreground">/mês</span>
+                      </p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setTipoCobrancaGarantia("total")}
+                      className={`p-2 rounded-lg border text-left text-xs transition-all cursor-pointer ${
+                        tipoCobrancaGarantia === "total"
+                          ? "border-blue-500 bg-blue-50 text-blue-950 font-bold shadow-xs dark:bg-blue-950/40 dark:text-blue-200"
+                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300"
+                      }`}
+                    >
+                      <p className="flex items-center gap-1">
+                        <Calculator className="h-3.5 w-3.5 text-blue-600" />
+                        <span>Valor Total Já</span>
+                      </p>
+                      <p className="mt-1 text-sm font-extrabold text-blue-700 dark:text-blue-300">
+                        R$ {valorTotalGarantia.toFixed(2).replace(".", ",")}
+                        <span className="text-[10px] font-normal text-muted-foreground">
+                          {" "}
+                          ({mesesEstendidos}x)
+                        </span>
+                      </p>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -623,25 +761,44 @@ function Index() {
                     </div>
                   </div>
 
-                  {/* Badge de Garantia e Observações */}
-                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {/* Informações Financeiras e Badge de Garantia */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+                    {garantia.valorServico && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-md">
+                        <DollarSign className="h-3 w-3 text-emerald-600" />
+                        <span>Serviço: R$ {garantia.valorServico}</span>
+                        {garantia.formaPagamento && (
+                          <span className="text-emerald-600 font-normal">
+                            ({garantia.formaPagamento})
+                          </span>
+                        )}
+                      </span>
+                    )}
+
                     {garantia.coberturas.length === 0 ? (
                       <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 px-2 py-0.5 rounded-md">
                         <ShieldCheck className="h-3 w-3 text-amber-600" />
                         <span>Garantia Legal: 90 dias (Padrão CDC)</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-md">
-                        <ShieldCheck className="h-3 w-3 text-emerald-600" />
-                        <span>Garantia Contratada: {garantia.validade}</span>
-                        <span className="text-emerald-600 dark:text-emerald-400 font-normal">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded-md">
+                        <ShieldCheck className="h-3 w-3 text-blue-600" />
+                        <span>
+                          Garantia Estendida:{" "}
+                          {garantia.tipoCobrancaGarantia === "total" && garantia.valorTotalGarantia
+                            ? `R$ ${garantia.valorTotalGarantia.toFixed(2).replace(".", ",")} Total`
+                            : garantia.valorMensalGarantia
+                              ? `R$ ${garantia.valorMensalGarantia.toFixed(2).replace(".", ",")}/mês`
+                              : ""}
+                        </span>
+                        <span className="text-blue-600 font-normal">
                           ({garantia.coberturas.length} coberturas)
                         </span>
                       </span>
                     )}
 
                     {obsLimpa && (
-                      <span className="text-[11px] text-muted-foreground truncate max-w-xs">
+                      <span className="text-[11px] text-muted-foreground truncate max-w-xs ml-auto">
                         Obs: {obsLimpa}
                       </span>
                     )}

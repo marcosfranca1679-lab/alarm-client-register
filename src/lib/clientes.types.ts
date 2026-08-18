@@ -6,9 +6,18 @@ export type Manutencao = {
   descricao: string;
 };
 
+export type TipoCobrancaGarantia = "mensal" | "total";
+
 export type TermoGarantia = {
   validade: string;
   coberturas: string[];
+  valorServico?: string;
+  formaPagamento?: string;
+  tipoCobrancaGarantia?: TipoCobrancaGarantia;
+  valorItemGarantia?: number;
+  valorMensalGarantia?: number;
+  valorTotalGarantia?: number;
+  valorTotalGeral?: string;
 };
 
 export type Cliente = {
@@ -41,6 +50,16 @@ export const MODELOS_CENTRAL = [
   "Outro modelo",
 ];
 
+export const FORMAS_PAGAMENTO = [
+  "PIX",
+  "Dinheiro",
+  "Cartão de Crédito",
+  "Cartão de Débito",
+  "Boleto Bancário",
+  "Transferência Bancária",
+  "A Combinar",
+];
+
 export const OPCOES_GARANTIA_PADRAO = [
   "Falhas relacionadas ao serviço de manutenção realizado",
   "Troca de pilhas e baterias, quando incluída na contratação",
@@ -57,10 +76,33 @@ export const PERIODOS_VALIDADE_GARANTIA = [
   "Conforme contrato de manutenção",
 ];
 
+export function calcularPrecoItemGarantia(validade: string): number {
+  if (
+    validade.includes("6 meses") ||
+    validade.includes("9 meses") ||
+    validade.includes("1 ano")
+  ) {
+    return 9.99;
+  }
+  return 12.49;
+}
+
+export function obterMesesEstendidos(validade: string): number {
+  if (validade.includes("3 meses")) return 3;
+  if (validade.includes("6 meses")) return 6;
+  if (validade.includes("9 meses")) return 9;
+  if (validade.includes("1 ano e 3 meses")) return 15;
+  if (validade.includes("1 ano")) return 12;
+  return 3;
+}
+
 export function extrairGarantia(observacoes: string): { obsLimpa: string; garantia: TermoGarantia } {
   const padrao: TermoGarantia = {
     validade: "90 dias (Apenas Garantia Legal CDC)",
     coberturas: [],
+    valorServico: "",
+    formaPagamento: "PIX",
+    tipoCobrancaGarantia: "mensal",
   };
 
   if (!observacoes) {
@@ -81,6 +123,13 @@ export function extrairGarantia(observacoes: string): { obsLimpa: string; garant
         garantia: {
           validade: parsed.validade || padrao.validade,
           coberturas: Array.isArray(parsed.coberturas) ? parsed.coberturas : [],
+          valorServico: parsed.valorServico || "",
+          formaPagamento: parsed.formaPagamento || "PIX",
+          tipoCobrancaGarantia: parsed.tipoCobrancaGarantia || "mensal",
+          valorItemGarantia: parsed.valorItemGarantia,
+          valorMensalGarantia: parsed.valorMensalGarantia,
+          valorTotalGarantia: parsed.valorTotalGarantia,
+          valorTotalGeral: parsed.valorTotalGeral,
         },
       };
     } catch {}
@@ -102,6 +151,13 @@ export function extrairGarantia(observacoes: string): { obsLimpa: string; garant
           garantia: {
             validade: parsed.validade || padrao.validade,
             coberturas: Array.isArray(parsed.coberturas) ? parsed.coberturas : [],
+            valorServico: parsed.valorServico || "",
+            formaPagamento: parsed.formaPagamento || "PIX",
+            tipoCobrancaGarantia: parsed.tipoCobrancaGarantia || "mensal",
+            valorItemGarantia: parsed.valorItemGarantia,
+            valorMensalGarantia: parsed.valorMensalGarantia,
+            valorTotalGarantia: parsed.valorTotalGarantia,
+            valorTotalGeral: parsed.valorTotalGeral,
           },
         };
       } catch {}
@@ -158,6 +214,15 @@ export function formatarMac(valor: string) {
     .replace(/[^0-9A-F]/g, "")
     .slice(0, 12);
   return limpo.replace(/(.{2})(?=.)/g, "$1:");
+}
+
+export function formatarMoeda(valor: number | string): string {
+  if (typeof valor === "string") {
+    const num = parseFloat(valor.replace(/\./g, "").replace(",", "."));
+    if (isNaN(num)) return "R$ 0,00";
+    return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  }
+  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 export function cpfValido(valor: string) {

@@ -1,6 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ShieldCheck, CheckCircle, XCircle, FileCheck, ArrowLeft, Printer } from "lucide-react";
+import {
+  ShieldCheck,
+  CheckCircle,
+  XCircle,
+  FileCheck,
+  ArrowLeft,
+  Printer,
+  DollarSign,
+  CreditCard,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   formatarData,
@@ -15,7 +24,7 @@ export const Route = createFileRoute("/cliente/$id")({
       { title: "Documento de Cadastro & Termo de Garantia — WS Segurança Residencial" },
       {
         name: "description",
-        content: "Ficha de cadastro e termo de garantia de manutenção de alarme.",
+        content: "Ficha de cadastro, valores e termo de garantia de manutenção de alarme.",
       },
     ],
   }),
@@ -26,7 +35,11 @@ function Linha({ rotulo, valor, mono }: { rotulo: string; valor: string; mono?: 
   return (
     <div className="border-b border-slate-200 dark:border-slate-800 py-2.5">
       <p className="field-label text-xs text-muted-foreground">{rotulo}</p>
-      <p className={`mt-0.5 text-sm font-medium text-slate-900 dark:text-slate-100 ${mono ? "font-mono" : ""}`}>
+      <p
+        className={`mt-0.5 text-sm font-medium text-slate-900 dark:text-slate-100 ${
+          mono ? "font-mono" : ""
+        }`}
+      >
         {valor || "—"}
       </p>
     </div>
@@ -50,7 +63,16 @@ function Documento() {
   const cliente = clientes.find((c) => c.id === id);
   const { obsLimpa, garantia } = cliente
     ? extrairGarantia(cliente.observacoes)
-    : { obsLimpa: "", garantia: { validade: "90 dias (3 meses)", coberturas: [] } };
+    : {
+        obsLimpa: "",
+        garantia: {
+          validade: "90 dias (CDC)",
+          coberturas: [],
+          valorServico: "",
+          formaPagamento: "PIX",
+          tipoCobrancaGarantia: "mensal" as const,
+        },
+      };
 
   return (
     <div className="min-h-screen py-8 bg-slate-100/60 dark:bg-slate-950">
@@ -98,7 +120,7 @@ function Documento() {
                   WS SEGURANÇA RESIDENCIAL
                 </h1>
                 <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">
-                  Ficha de Cadastro & Termo de Garantia da Manutenção
+                  Ficha de Cadastro, Valores & Termo de Garantia da Manutenção
                 </p>
                 <p className="text-[11px] text-muted-foreground">
                   Sistema Eletrônico de Alarme e Monitoramento
@@ -141,17 +163,71 @@ function Documento() {
                 <Linha rotulo="Modelo da central" valor={cliente.modeloCentral} />
                 <Linha rotulo="MAC Address da central" valor={cliente.macCentral} mono />
               </div>
-              {obsLimpa && (
-                <Linha rotulo="Observações técnicas" valor={obsLimpa} />
-              )}
+              {obsLimpa && <Linha rotulo="Observações técnicas" valor={obsLimpa} />}
             </section>
 
-            {/* ── Seção 3: Histórico de Manutenções (se houver) ── */}
+            {/* ── Seção 3: Valores Comerciais & Condições de Pagamento ── */}
+            <section className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-3 dark:border-slate-800 dark:bg-slate-900/40">
+              <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+                <DollarSign className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                  3. Condições Comerciais & Pagamento
+                </h2>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 text-xs">
+                <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border">
+                  <p className="field-label text-[11px] text-muted-foreground">
+                    Valor do Serviço / Instalação
+                  </p>
+                  <p className="text-base font-extrabold text-emerald-700 dark:text-emerald-300 mt-0.5">
+                    {garantia.valorServico ? `R$ ${garantia.valorServico}` : "Sob consulta"}
+                  </p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1 flex items-center gap-1">
+                    <CreditCard className="h-3 w-3" /> Forma de Pagamento:{" "}
+                    <strong>{garantia.formaPagamento || "PIX"}</strong>
+                  </p>
+                </div>
+
+                <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border">
+                  <p className="field-label text-[11px] text-muted-foreground">
+                    Cobrança da Garantia Estendida
+                  </p>
+                  {garantia.coberturas.length > 0 ? (
+                    <div>
+                      <p className="text-base font-extrabold text-blue-700 dark:text-blue-300 mt-0.5">
+                        {garantia.tipoCobrancaGarantia === "total" && garantia.valorTotalGarantia
+                          ? `R$ ${garantia.valorTotalGarantia.toFixed(2).replace(".", ",")} Total à Vista`
+                          : garantia.valorMensalGarantia
+                            ? `R$ ${garantia.valorMensalGarantia.toFixed(2).replace(".", ",")}/mês`
+                            : "Incluso"}
+                      </p>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">
+                        {garantia.coberturas.length} item(ns) a R${" "}
+                        {garantia.valorItemGarantia?.toFixed(2).replace(".", ",") || "12,49"}/item/mês
+                        ({garantia.tipoCobrancaGarantia === "total" ? "Valor Total Já" : "Cobrança Mensal"})
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-sm font-bold text-amber-700 dark:text-amber-300 mt-0.5">
+                        Garantia Legal CDC (Inclusa)
+                      </p>
+                      <p className="text-[11px] text-muted-foreground mt-1">
+                        Sem cobrança adicional de garantia estendida.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            {/* ── Seção 4: Histórico de Manutenções (se houver) ── */}
             {cliente.manutencoes && cliente.manutencoes.length > 0 && (
               <section>
                 <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
                   <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                    3. Histórico de Manutenções Registradas
+                    4. Histórico de Manutenções Registradas
                   </h2>
                 </div>
                 <div className="mt-2 divide-y divide-slate-100 dark:divide-slate-800 text-xs">
@@ -195,7 +271,9 @@ function Documento() {
                 <div className="rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 p-4 space-y-1.5">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950 dark:text-amber-200">
                     <ShieldCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                    <span>MODALIDADE: GARANTIA LEGAL PADRÃO DE 90 DIAS (LEI DO CONSUMIDOR — ART. 26 DO CDC)</span>
+                    <span>
+                      MODALIDADE: GARANTIA LEGAL PADRÃO DE 90 DIAS (LEI DO CONSUMIDOR — ART. 26 DO CDC)
+                    </span>
                   </div>
                   <p className="text-[11px] text-amber-900 dark:text-amber-300 leading-relaxed">
                     O cliente <strong>não contratou coberturas adicionais ou estendidas</strong>. Portanto, vigora exclusivamente a <strong>Garantia Legal Obrigatória de 90 (noventa) dias</strong> prevista no Artigo 26, Inciso II da Lei nº 8.078/1990 (Código de Defesa do Consumidor), cobrindo a execução dos serviços realizados contra vícios ou defeitos técnicos aparentes ou ocultos.
@@ -208,7 +286,7 @@ function Documento() {
                     <span>MODALIDADE: GARANTIA PERSONALIZADA / ESTENDIDA CONTRATADA</span>
                   </div>
                   <p className="text-[11px] text-emerald-900 dark:text-emerald-300 leading-relaxed">
-                    O cliente contratou coberturas técnicas específicas para os serviços de manutenção, com prazo de <strong>{garantia.validade}</strong>, além da garantia legal obrigatória conforme o Código de Defesa do Consumidor.
+                    O cliente contratou coberturas técnicas específicas para os serviços de manutenção com prazo total de <strong>{garantia.validade}</strong> (90 dias legais do CDC + período adicional estendido).
                   </p>
                 </div>
               )}
