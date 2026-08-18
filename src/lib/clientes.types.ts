@@ -1,5 +1,11 @@
 export type StatusCliente = "ativo" | "inativo";
 
+export type Manutencao = {
+  id: string;
+  dataHora: string;
+  descricao: string;
+};
+
 export type Cliente = {
   id: string;
   nome: string;
@@ -11,9 +17,10 @@ export type Cliente = {
   observacoes: string;
   status: StatusCliente;
   criadoEm: string;
+  manutencoes?: Manutencao[];
 };
 
-export type NovoCliente = Omit<Cliente, "id" | "criadoEm" | "status">;
+export type NovoCliente = Omit<Cliente, "id" | "criadoEm" | "status" | "manutencoes">;
 
 
 export const MODELOS_CENTRAL = [

@@ -30,6 +30,7 @@ export async function buscarClientesSupabase(): Promise<Cliente[] | null> {
       observacoes: item.observacoes || "",
       status: item.status || "ativo",
       criadoEm: item.criado_em || item.criadoEm || new Date().toISOString(),
+      manutencoes: Array.isArray(item.manutencoes) ? item.manutencoes : [],
     }));
   } catch (err) {
     console.warn("Erro ao buscar no Supabase:", err);
@@ -48,6 +49,7 @@ export async function salvarClienteSupabase(dados: NovoCliente): Promise<Cliente
       modelo_central: dados.modeloCentral,
       observacoes: dados.observacoes || "",
       status: "ativo",
+      manutencoes: [],
     };
 
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}`, {
@@ -80,10 +82,25 @@ export async function salvarClienteSupabase(dados: NovoCliente): Promise<Cliente
       observacoes: item.observacoes || "",
       status: item.status || "ativo",
       criadoEm: item.criado_em || item.criadoEm || new Date().toISOString(),
+      manutencoes: Array.isArray(item.manutencoes) ? item.manutencoes : [],
     };
   } catch (err) {
     console.warn("Erro ao salvar no Supabase:", err);
     return null;
+  }
+}
+
+export async function atualizarManutencoesSupabase(clienteId: string, manutencoes: any[]): Promise<boolean> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?id=eq.${clienteId}`, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify({ manutencoes }),
+    });
+    return res.ok;
+  } catch (err) {
+    console.warn("Erro ao atualizar manutenções no Supabase:", err);
+    return false;
   }
 }
 

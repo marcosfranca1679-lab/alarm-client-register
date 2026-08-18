@@ -137,6 +137,29 @@ function Documento() {
               <Linha rotulo="Observações" valor={cliente.observacoes} />
             </section>
 
+            {cliente.manutencoes && cliente.manutencoes.length > 0 && (
+              <section className="mt-6">
+                <h2 className="text-sm font-bold uppercase tracking-wide">
+                  Histórico de Manutenções Registradas
+                </h2>
+                <div className="mt-2 space-y-2 border-t pt-2">
+                  {cliente.manutencoes.map((m) => (
+                    <div key={m.id} className="border-b py-2 flex items-start justify-between text-xs">
+                      <div>
+                        <span className="font-semibold text-slate-900 font-mono">
+                          📅 {formatarData(m.dataHora)}
+                        </span>
+                        <p className="text-slate-700 mt-0.5">{m.descricao}</p>
+                      </div>
+                      <span className="text-[10px] uppercase bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded font-semibold">
+                        Manutenção Realizada
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <section className="mt-14 grid gap-10 sm:grid-cols-2">
               <div className="border-t pt-2 text-center">
                 <p className="text-xs text-muted-foreground">Assinatura do cliente</p>

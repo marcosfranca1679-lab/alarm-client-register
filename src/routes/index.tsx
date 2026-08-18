@@ -3,7 +3,19 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
-import { ShieldCheck, Search, Trash2, FileText, Plus, Download, Upload } from "lucide-react";
+import {
+  ShieldCheck,
+  Search,
+  Trash2,
+  FileText,
+  Plus,
+  Download,
+  Upload,
+  Wrench,
+  Clock,
+  History,
+  CheckCircle2,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +28,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+
 import { listarClientes, salvarCliente, removerCliente } from "@/lib/clientes.functions";
 import {
   MODELOS_CENTRAL,
@@ -26,6 +46,7 @@ import {
   formatarMac,
   formatarTelefone,
   type Cliente,
+  type Manutencao,
 } from "@/lib/clientes.types";
 import {
   lerClientesLocais,
@@ -36,6 +57,7 @@ import {
   buscarClientesSupabase,
   salvarClienteSupabase,
   removerClienteSupabase,
+  atualizarManutencoesSupabase,
 } from "@/lib/clientes.supabase";
 
 export const Route = createFileRoute("/")({
@@ -70,6 +92,10 @@ const vazio = {
 function Index() {
   const [form, setForm] = useState(vazio);
   const [busca, setBusca] = useState("");
+  const [clienteManutencao, setClienteManutencao] = useState<Cliente | null>(null);
+  const [descricaoManutencao, setDescricaoManutencao] = useState("");
+  const [historicoExpandido, setHistoricoExpandido] = useState<string | null>(null);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const qc = useQueryClient();
 
@@ -104,7 +130,6 @@ function Index() {
 
   const criar = useMutation({
     mutationFn: async (dados: typeof vazio) => {
-      // 1. Tenta salvar no Supabase
       const doSupabase = await salvarClienteSupabase(dados);
 
       const novo: Cliente = doSupabase || {
@@ -112,6 +137,7 @@ function Index() {
         id: crypto.randomUUID(),
         status: "ativo",
         criadoEm: new Date().toISOString(),
+        manutencoes: [],
       };
 
       const atuais = lerClientesLocais();
@@ -131,6 +157,38 @@ function Index() {
       toast.success("Cliente cadastrado com sucesso.");
     },
     onError: () => toast.error("Não foi possível salvar o cadastro."),
+  });
+
+  const salvarManutencaoMut = useMutation({
+    mutationFn: async ({ cliente, desc }: { cliente: Cliente; desc: string }) => {
+      const agora = new Date().toISOString();
+      const nova: Manutencao = {
+        id: crypto.randomUUID(),
+        dataHora: agora,
+        descricao: desc.trim() || "Manutenção periódica de rotina realizada",
+      };
+
+      const manutsAtualizadas = [nova, ...(cliente.manutencoes || [])];
+      
+      // 1. Atualizar localStorage
+      const atuais = lerClientesLocais();
+      const atualizados = atuais.map((c) =>
+        c.id === cliente.id ? { ...c, manutencoes: manutsAtualizadas } : c
+      );
+      salvarClientesLocais(atualizados);
+
+      // 2. Atualizar no Supabase
+      await atualizarManutencoesSupabase(cliente.id, manutsAtualizadas);
+
+      return { clienteId: cliente.id, dataHora: agora };
+    },
+    onSuccess: (res) => {
+      qc.invalidateQueries({ queryKey: ["clientes"] });
+      setClienteManutencao(null);
+      setDescricaoManutencao("");
+      toast.success(`Manutenção salva com sucesso! Data/Hora: ${formatarData(res.dataHora)}`);
+    },
+    onError: () => toast.error("Falha ao salvar a manutenção."),
   });
 
   const excluir = useMutation({
@@ -212,7 +270,6 @@ function Index() {
       return;
     }
     criar.mutate(form);
-
   }
 
   const filtrados = clientes.filter((c) => {
@@ -401,7 +458,7 @@ function Index() {
             </div>
           </div>
 
-          <div className="mt-5 space-y-3">
+          <div className="mt-5 space-y-4">
             {isLoading && <p className="text-sm text-muted-foreground">Carregando...</p>}
             {!isLoading && filtrados.length === 0 && (
               <div className="rounded-lg border border-dashed p-10 text-center">
@@ -411,48 +468,212 @@ function Index() {
               </div>
             )}
 
-            {filtrados.map((c) => (
-              <article
-                key={c.id}
-                className="flex flex-wrap items-center gap-4 rounded-lg border bg-card p-4"
-              >
-                <div className="min-w-[180px] flex-1">
-                  <h3 className="text-sm font-semibold">{c.nome}</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {c.cpf} · {c.telefone}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">{c.endereco}</p>
-                </div>
-                <div className="min-w-[150px]">
-                  <p className="field-label">Central</p>
-                  <p className="text-sm">{c.modeloCentral}</p>
-                  <p className="font-mono text-xs text-muted-foreground">{c.macCentral}</p>
-                </div>
-                <div className="min-w-[110px]">
-                  <p className="field-label">Cadastro</p>
-                  <p className="text-xs text-muted-foreground">{formatarData(c.criadoEm)}</p>
-                </div>
-                <div className="ml-auto flex items-center gap-2">
-                  <Button asChild variant="secondary" size="sm">
-                    <Link to="/cliente/$id" params={{ id: c.id }}>
-                      <FileText className="h-4 w-4" />
-                      Documento
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={`Excluir cadastro de ${c.nome}`}
-                    onClick={() => excluir.mutate(c.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </article>
-            ))}
+            {filtrados.map((c) => {
+              const manuts = c.manutencoes || [];
+              const ultima = manuts.length > 0 ? manuts[0] : null;
+
+              return (
+                <article
+                  key={c.id}
+                  className="rounded-lg border bg-card p-4 transition-all hover:border-slate-300"
+                >
+                  <div className="flex flex-wrap items-start gap-4">
+                    <div className="min-w-[180px] flex-1">
+                      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                        {c.nome}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        {c.cpf} · {c.telefone}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">{c.endereco}</p>
+                    </div>
+
+                    <div className="min-w-[140px]">
+                      <p className="field-label">Central</p>
+                      <p className="text-sm font-medium">{c.modeloCentral}</p>
+                      <p className="font-mono text-xs text-muted-foreground">{c.macCentral}</p>
+                    </div>
+
+                    <div className="min-w-[110px]">
+                      <p className="field-label">Cadastro</p>
+                      <p className="text-xs text-muted-foreground">{formatarData(c.criadoEm)}</p>
+                    </div>
+
+                    <div className="ml-auto flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setClienteManutencao(c);
+                          setDescricaoManutencao("");
+                        }}
+                        className="text-xs border-amber-600/30 text-amber-700 bg-amber-50/50 hover:bg-amber-100 font-semibold dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-700/50"
+                      >
+                        <Wrench className="h-3.5 w-3.5 mr-1 text-amber-600 dark:text-amber-400" />
+                        Salvar Manutenção
+                      </Button>
+
+                      <Button asChild variant="secondary" size="sm">
+                        <Link to="/cliente/$id" params={{ id: c.id }}>
+                          <FileText className="h-4 w-4" />
+                          Documento
+                        </Link>
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Excluir cadastro de ${c.nome}`}
+                        onClick={() => excluir.mutate(c.id)}
+                      >
+                        <Trash2 className="h-4 w-4 text-rose-500 hover:text-rose-700" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Exibição de Última Manutenção e Histórico */}
+                  {manuts.length > 0 ? (
+                    <div className="mt-3 border-t pt-2.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs text-amber-800 dark:text-amber-300 font-medium">
+                          <Clock className="h-3.5 w-3.5 text-amber-600" />
+                          <span>
+                            Última manutenção: <strong>{formatarData(ultima?.dataHora || "")}</strong>
+                          </span>
+                          {ultima?.descricao && (
+                            <span className="text-muted-foreground font-normal ml-1">
+                              ({ultima.descricao})
+                            </span>
+                          )}
+                        </div>
+
+                        {manuts.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setHistoricoExpandido(
+                                historicoExpandido === c.id ? null : c.id
+                              )
+                            }
+                            className="text-xs text-slate-600 hover:text-slate-900 dark:text-slate-400 underline font-medium cursor-pointer"
+                          >
+                            {historicoExpandido === c.id
+                              ? "Ocultar histórico"
+                              : `Ver histórico (${manuts.length})`}
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Lista de histórico expandido */}
+                      {historicoExpandido === c.id && (
+                        <div className="mt-2 space-y-1.5 rounded-md bg-slate-50 dark:bg-slate-900/50 p-2.5 border text-xs">
+                          <p className="font-semibold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1">
+                            <History className="h-3.5 w-3.5" /> Histórico completo de manutenções:
+                          </p>
+                          {manuts.map((m) => (
+                            <div key={m.id} className="flex justify-between border-b pb-1 last:border-0 last:pb-0">
+                              <span className="font-mono text-slate-800 dark:text-slate-200 font-medium">
+                                📅 {formatarData(m.dataHora)}
+                              </span>
+                              <span className="text-muted-foreground">{m.descricao}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="mt-2 border-t pt-1.5 text-[11px] text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-3 w-3 opacity-60" /> Nenhum registro de manutenção ainda.
+                    </div>
+                  )}
+                </article>
+              );
+            })}
           </div>
         </section>
       </main>
+
+      {/* Modal de Registro de Manutenção */}
+      <Dialog
+        open={!!clienteManutencao}
+        onOpenChange={(open) => {
+          if (!open) setClienteManutencao(null);
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+              <Wrench className="h-5 w-5 text-amber-600" />
+              Salvar Nova Manutenção
+            </DialogTitle>
+          </DialogHeader>
+
+          {clienteManutencao && (
+            <div className="space-y-4 py-2">
+              <div className="rounded-lg bg-amber-50/70 border border-amber-200/60 p-3 text-xs dark:bg-amber-950/20 dark:border-amber-800/40">
+                <p className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
+                  {clienteManutencao.nome}
+                </p>
+                <p className="text-muted-foreground mt-0.5">
+                  Central: {clienteManutencao.modeloCentral} ({clienteManutencao.macCentral})
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <Label className="field-label flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5 text-slate-500" />
+                  Data e Hora do Registro:
+                </Label>
+                <div className="rounded-md border bg-slate-100 dark:bg-slate-800 px-3 py-2 text-sm font-mono font-medium text-slate-800 dark:text-slate-200">
+                  {formatarData(new Date().toISOString())}
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  A data e hora atuais são capturadas e registradas automaticamente.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="descManut" className="field-label">
+                  Descrição dos serviços executados:
+                </Label>
+                <Textarea
+                  id="descManut"
+                  rows={3}
+                  value={descricaoManutencao}
+                  onChange={(e) => setDescricaoManutencao(e.target.value)}
+                  placeholder="Ex.: Troca de bateria da central, testes de sirene e ajuste dos sensores das zonas 1 e 3."
+                />
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setClienteManutencao(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              className="bg-amber-600 hover:bg-amber-700 text-white font-medium"
+              disabled={salvarManutencaoMut.isPending}
+              onClick={() => {
+                if (clienteManutencao) {
+                  salvarManutencaoMut.mutate({
+                    cliente: clienteManutencao,
+                    desc: descricaoManutencao,
+                  });
+                }
+              }}
+            >
+              <CheckCircle2 className="h-4 w-4 mr-1.5" />
+              {salvarManutencaoMut.isPending ? "Salvis..." : "Confirmar e Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
