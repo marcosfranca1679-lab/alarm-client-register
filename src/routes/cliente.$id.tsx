@@ -32,7 +32,9 @@ function Documento() {
       const lista = await buscarClientesSupabase();
       return lista ?? [];
     },
-    retry: 2,
+    enabled: typeof window !== "undefined",  // ← NUNCA roda no servidor SSR
+    staleTime: 30_000,
+    retry: 1,
   });
 
   const cliente = clientes.find((c) => c.id === id);

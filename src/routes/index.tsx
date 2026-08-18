@@ -76,19 +76,20 @@ function Index() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const qc = useQueryClient();
 
-  // ── Busca clientes direto do Supabase ──────────────────────────────────
+  // ── Busca clientes direto do Supabase (APENAS no browser, nunca no servidor) ──
   const { data: clientes = [], isLoading } = useQuery({
     queryKey: ["clientes"],
     queryFn: async () => {
       const lista = await buscarClientesSupabase();
       if (!lista) return [];
-      // Injeta manutenções do localStorage (client-side only)
       return lista.map((c) => ({
         ...c,
         manutencoes: lerManutencoesLocais(c.id),
       }));
     },
-    retry: 2,
+    enabled: typeof window !== "undefined",  // ← NUNCA roda no servidor SSR
+    staleTime: 30_000,
+    retry: 1,
   });
 
   // ── Cadastrar cliente ──────────────────────────────────────────────────
