@@ -1,3 +1,5 @@
+export type StatusCliente = "ativo" | "inativo";
+
 export type Cliente = {
   id: string;
   nome: string;
@@ -7,10 +9,12 @@ export type Cliente = {
   macCentral: string;
   modeloCentral: string;
   observacoes: string;
+  status: StatusCliente;
   criadoEm: string;
 };
 
-export type NovoCliente = Omit<Cliente, "id" | "criadoEm">;
+export type NovoCliente = Omit<Cliente, "id" | "criadoEm" | "status">;
+
 
 export const MODELOS_CENTRAL = [
   "Intelbras AMT 8000",
