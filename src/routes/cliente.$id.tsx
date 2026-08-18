@@ -11,6 +11,7 @@ import {
   salvarClientesLocais,
   mesclarClientes,
 } from "@/lib/clientes.storage";
+import { buscarClientesSupabase } from "@/lib/clientes.supabase";
 
 export const Route = createFileRoute("/cliente/$id")({
   head: () => ({
@@ -46,14 +47,24 @@ function Documento() {
     queryKey: ["clientes"],
     queryFn: async () => {
       const local = lerClientesLocais();
+      const supa = await buscarClientesSupabase();
+
+      let listaCombinada = local;
+      if (supa && Array.isArray(supa)) {
+        listaCombinada = mesclarClientes(supa, local);
+      }
+
       try {
         const srv = await listar();
-        const mesclado = mesclarClientes(srv || [], local);
-        salvarClientesLocais(mesclado);
-        return mesclado;
+        if (srv && Array.isArray(srv)) {
+          listaCombinada = mesclarClientes(srv, listaCombinada);
+        }
       } catch {
-        return local;
+        // Fallback
       }
+
+      salvarClientesLocais(listaCombinada);
+      return listaCombinada;
     },
   });
 

@@ -32,6 +32,11 @@ import {
   salvarClientesLocais,
   mesclarClientes,
 } from "@/lib/clientes.storage";
+import {
+  buscarClientesSupabase,
+  salvarClienteSupabase,
+  removerClienteSupabase,
+} from "@/lib/clientes.supabase";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -76,33 +81,47 @@ function Index() {
     queryKey: ["clientes"],
     queryFn: async () => {
       const local = lerClientesLocais();
+      const supa = await buscarClientesSupabase();
+
+      let listaCombinada = local;
+      if (supa && Array.isArray(supa)) {
+        listaCombinada = mesclarClientes(supa, local);
+      }
+
       try {
         const srv = await listar();
-        const mesclado = mesclarClientes(srv || [], local);
-        salvarClientesLocais(mesclado);
-        return mesclado;
+        if (srv && Array.isArray(srv)) {
+          listaCombinada = mesclarClientes(srv, listaCombinada);
+        }
       } catch {
-        return local;
+        // Ignora falha do servidor local se Supabase/localStorage respondeu
       }
+
+      salvarClientesLocais(listaCombinada);
+      return listaCombinada;
     },
   });
 
   const criar = useMutation({
     mutationFn: async (dados: typeof vazio) => {
-      const novo: Cliente = {
+      // 1. Tenta salvar no Supabase
+      const doSupabase = await salvarClienteSupabase(dados);
+
+      const novo: Cliente = doSupabase || {
         ...dados,
         id: crypto.randomUUID(),
         status: "ativo",
         criadoEm: new Date().toISOString(),
       };
+
       const atuais = lerClientesLocais();
-      const atualizados = [novo, ...atuais];
+      const atualizados = [novo, ...atuais.filter((c) => c.id !== novo.id)];
       salvarClientesLocais(atualizados);
 
       try {
         await salvar({ data: dados });
       } catch (e) {
-        console.warn("Salvamento do servidor ignorado (gravado localmente):", e);
+        console.warn("Salvamento no servidor ignorado:", e);
       }
       return novo;
     },
@@ -116,6 +135,8 @@ function Index() {
 
   const excluir = useMutation({
     mutationFn: async (id: string) => {
+      await removerClienteSupabase(id);
+
       const atuais = lerClientesLocais();
       const atualizados = atuais.filter((c) => c.id !== id);
       salvarClientesLocais(atualizados);
@@ -123,7 +144,7 @@ function Index() {
       try {
         await remover({ data: { id } });
       } catch (e) {
-        console.warn("Remoção do servidor ignorada (removido localmente):", e);
+        console.warn("Remoção no servidor ignorada:", e);
       }
       return { id };
     },
