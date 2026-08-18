@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
-import { ShieldCheck, Search, Trash2, FileText, Plus } from "lucide-react";
+import { ShieldCheck, Search, Trash2, FileText, Plus, Download, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +25,13 @@ import {
   formatarData,
   formatarMac,
   formatarTelefone,
+  type Cliente,
 } from "@/lib/clientes.types";
+import {
+  lerClientesLocais,
+  salvarClientesLocais,
+  mesclarClientes,
+} from "@/lib/clientes.storage";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -59,6 +65,7 @@ const vazio = {
 function Index() {
   const [form, setForm] = useState(vazio);
   const [busca, setBusca] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const qc = useQueryClient();
 
   const listar = useServerFn(listarClientes);
@@ -67,11 +74,38 @@ function Index() {
 
   const { data: clientes = [], isLoading } = useQuery({
     queryKey: ["clientes"],
-    queryFn: () => listar(),
+    queryFn: async () => {
+      const local = lerClientesLocais();
+      try {
+        const srv = await listar();
+        const mesclado = mesclarClientes(srv || [], local);
+        salvarClientesLocais(mesclado);
+        return mesclado;
+      } catch {
+        return local;
+      }
+    },
   });
 
   const criar = useMutation({
-    mutationFn: (dados: typeof vazio) => salvar({ data: dados }),
+    mutationFn: async (dados: typeof vazio) => {
+      const novo: Cliente = {
+        ...dados,
+        id: crypto.randomUUID(),
+        status: "ativo",
+        criadoEm: new Date().toISOString(),
+      };
+      const atuais = lerClientesLocais();
+      const atualizados = [novo, ...atuais];
+      salvarClientesLocais(atualizados);
+
+      try {
+        await salvar({ data: dados });
+      } catch (e) {
+        console.warn("Salvamento do servidor ignorado (gravado localmente):", e);
+      }
+      return novo;
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["clientes"] });
       setForm(vazio);
@@ -81,12 +115,60 @@ function Index() {
   });
 
   const excluir = useMutation({
-    mutationFn: (id: string) => remover({ data: { id } }),
+    mutationFn: async (id: string) => {
+      const atuais = lerClientesLocais();
+      const atualizados = atuais.filter((c) => c.id !== id);
+      salvarClientesLocais(atualizados);
+
+      try {
+        await remover({ data: { id } });
+      } catch (e) {
+        console.warn("Remoção do servidor ignorada (removido localmente):", e);
+      }
+      return { id };
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["clientes"] });
       toast.success("Cadastro removido.");
     },
   });
+
+  function exportarJson() {
+    const dados = lerClientesLocais();
+    const str = JSON.stringify(dados, null, 2);
+    const blob = new Blob([str], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `clientes_alarme_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Backup baixado com sucesso!");
+  }
+
+  function importarJson(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const conteudo = evt.target?.result as string;
+        const parsed = JSON.parse(conteudo);
+        if (Array.isArray(parsed)) {
+          const atuais = lerClientesLocais();
+          const mesclados = mesclarClientes(parsed, atuais);
+          salvarClientesLocais(mesclados);
+          qc.invalidateQueries({ queryKey: ["clientes"] });
+          toast.success(`${parsed.length} cadastro(s) importado(s) com sucesso!`);
+        } else {
+          toast.error("Arquivo JSON inválido.");
+        }
+      } catch {
+        toast.error("Falha ao ler o arquivo JSON.");
+      }
+    };
+    reader.readAsText(file);
+  }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -134,9 +216,38 @@ function Index() {
             <h1 className="text-lg font-bold leading-tight">Central de Cadastros</h1>
             <p className="text-xs opacity-70">Sistemas de alarme e monitoramento</p>
           </div>
-          <span className="ml-auto hidden text-xs opacity-70 sm:block">
-            {clientes.length} cadastro{clientes.length === 1 ? "" : "s"}
-          </span>
+          <div className="ml-auto flex items-center gap-2">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={importarJson}
+              accept=".json"
+              className="hidden"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              title="Importar cadastros de um arquivo JSON"
+              className="text-xs"
+            >
+              <Upload className="h-3.5 w-3.5 mr-1" />
+              Importar JSON
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportarJson}
+              title="Exportar backup dos cadastros em JSON"
+              className="text-xs"
+            >
+              <Download className="h-3.5 w-3.5 mr-1" />
+              Exportar JSON
+            </Button>
+            <span className="hidden text-xs opacity-70 sm:inline ml-2 border-l pl-3">
+              {clientes.length} cadastro{clientes.length === 1 ? "" : "s"}
+            </span>
+          </div>
         </div>
       </header>
 

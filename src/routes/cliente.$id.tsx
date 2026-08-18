@@ -6,6 +6,11 @@ import { ArrowLeft, Printer, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listarClientes } from "@/lib/clientes.functions";
 import { formatarData } from "@/lib/clientes.types";
+import {
+  lerClientesLocais,
+  salvarClientesLocais,
+  mesclarClientes,
+} from "@/lib/clientes.storage";
 
 export const Route = createFileRoute("/cliente/$id")({
   head: () => ({
@@ -37,9 +42,19 @@ function Linha({ rotulo, valor, mono }: { rotulo: string; valor: string; mono?: 
 function Documento() {
   const { id } = Route.useParams();
   const listar = useServerFn(listarClientes);
-  const { data: clientes, isLoading } = useQuery({
+  const { data: clientes = [], isLoading } = useQuery({
     queryKey: ["clientes"],
-    queryFn: () => listar(),
+    queryFn: async () => {
+      const local = lerClientesLocais();
+      try {
+        const srv = await listar();
+        const mesclado = mesclarClientes(srv || [], local);
+        salvarClientesLocais(mesclado);
+        return mesclado;
+      } catch {
+        return local;
+      }
+    },
   });
 
   const cliente = clientes?.find((c) => c.id === id);
