@@ -6,11 +6,6 @@ import { ArrowLeft, Printer, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listarClientes } from "@/lib/clientes.functions";
 import { formatarData } from "@/lib/clientes.types";
-import {
-  lerClientesLocais,
-  salvarClientesLocais,
-  mesclarClientes,
-} from "@/lib/clientes.storage";
 import { buscarClientesSupabase } from "@/lib/clientes.supabase";
 
 export const Route = createFileRoute("/cliente/$id")({
@@ -47,28 +42,20 @@ function Documento() {
     queryKey: ["clientes"],
     queryFn: async () => {
       try {
-        const local = lerClientesLocais();
         const supa = await buscarClientesSupabase();
-
-        let lista = local;
-        if (supa && Array.isArray(supa) && supa.length > 0) {
-          lista = mesclarClientes(supa, local);
-        } else {
-          try {
-            const srv = await listar();
-            if (srv && Array.isArray(srv) && srv.length > 0) {
-              lista = mesclarClientes(srv, lista);
-            }
-          } catch (e) {
-            console.warn("Erro ao ler do servidor:", e);
-          }
+        if (supa && Array.isArray(supa)) {
+          return supa;
         }
-        salvarClientesLocais(lista);
-        return lista;
       } catch (e) {
-        console.error("Erro na busca do documento:", e);
-        return lerClientesLocais();
+        console.warn("Erro ao buscar Supabase:", e);
       }
+      try {
+        const srv = await listar();
+        if (srv && Array.isArray(srv)) return srv;
+      } catch (e) {
+        console.warn("Erro ao listar do servidor:", e);
+      }
+      return [];
     },
   });
 
