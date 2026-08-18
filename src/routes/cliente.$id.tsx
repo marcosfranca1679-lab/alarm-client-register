@@ -88,19 +88,23 @@ function Documento() {
 
         {cliente && (
           <article className="card-elevated print-sheet p-8">
-            <header className="flex items-start gap-3 border-b pb-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-surface text-surface-foreground">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
+            <header className="flex items-center gap-4 border-b pb-6">
+              <img
+                src="/logo.jpg"
+                alt="WS Segurança Residencial"
+                className="h-14 w-14 rounded-2xl object-cover border border-slate-200 shadow-sm"
+              />
               <div>
-                <h1 className="text-xl font-bold">Documento de Cadastro</h1>
-                <p className="text-xs text-muted-foreground">
-                  Sistema de alarme e monitoramento eletrônico
+                <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">
+                  WS SEGURANÇA RESIDENCIAL
+                </h1>
+                <p className="text-xs text-slate-600 font-medium">
+                  Ficha de Cadastro de Alarme & Manutenção Eletrônica
                 </p>
               </div>
               <div className="ml-auto text-right">
                 <p className="field-label">Protocolo</p>
-                <p className="font-mono text-xs">{cliente.id.slice(0, 8).toUpperCase()}</p>
+                <p className="font-mono text-xs font-bold text-slate-900">{cliente.id.slice(0, 8).toUpperCase()}</p>
               </div>
             </header>
 

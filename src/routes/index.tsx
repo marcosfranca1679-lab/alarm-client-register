@@ -267,14 +267,20 @@ function Index() {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-surface text-surface-foreground">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-5 py-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent text-accent-foreground">
-            <ShieldCheck className="h-5 w-5" />
-          </div>
+      <header className="bg-surface text-surface-foreground border-b border-slate-800">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-5">
+          <img
+            src="/logo.jpg"
+            alt="WS Segurança Residencial"
+            className="h-12 w-12 rounded-2xl object-cover border border-blue-400/30 shadow-md ring-2 ring-blue-500/20"
+          />
           <div>
-            <h1 className="text-lg font-bold leading-tight">Central de Cadastros</h1>
-            <p className="text-xs opacity-70">Sistemas de alarme e monitoramento</p>
+            <h1 className="text-xl font-extrabold leading-tight tracking-tight text-white">
+              WS SEGURANÇA RESIDENCIAL
+            </h1>
+            <p className="text-xs text-blue-200/80 font-medium">
+              Central de Cadastros & Manutenção de Alarmes
+            </p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <input
