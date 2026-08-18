@@ -392,22 +392,20 @@ function Index() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="field-label">Modelo da central</Label>
-                <Select
+                <Label className="field-label" htmlFor="modeloCentral">Modelo da central</Label>
+                <select
+                  id="modeloCentral"
                   value={form.modeloCentral}
-                  onValueChange={(v) => setForm({ ...form, modeloCentral: v })}
+                  onChange={(e) => setForm({ ...form, modeloCentral: e.target.value })}
+                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer text-slate-900 dark:text-slate-100"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MODELOS_CENTRAL.map((m) => (
-                      <SelectItem key={m} value={m}>
-                        {m}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <option value="" disabled>Selecione o modelo</option>
+                  {MODELOS_CENTRAL.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
