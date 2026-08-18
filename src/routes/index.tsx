@@ -246,26 +246,26 @@ function Index() {
               className="hidden"
             />
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
               title="Importar cadastros de um arquivo JSON"
-              className="text-xs"
+              className="text-xs bg-white text-slate-900 hover:bg-slate-100 font-semibold border border-slate-200 shadow-sm"
             >
-              <Upload className="h-3.5 w-3.5 mr-1" />
+              <Upload className="h-3.5 w-3.5 mr-1.5 text-slate-800" />
               Importar JSON
             </Button>
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               onClick={exportarJson}
               title="Exportar backup dos cadastros em JSON"
-              className="text-xs"
+              className="text-xs bg-white text-slate-900 hover:bg-slate-100 font-semibold border border-slate-200 shadow-sm"
             >
-              <Download className="h-3.5 w-3.5 mr-1" />
+              <Download className="h-3.5 w-3.5 mr-1.5 text-slate-800" />
               Exportar JSON
             </Button>
-            <span className="hidden text-xs opacity-70 sm:inline ml-2 border-l pl-3">
+            <span className="hidden text-xs font-medium text-white/90 sm:inline ml-2 border-l border-white/20 pl-3">
               {clientes.length} cadastro{clientes.length === 1 ? "" : "s"}
             </span>
           </div>
