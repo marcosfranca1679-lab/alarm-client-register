@@ -3,21 +3,39 @@ import type { Cliente, NovoCliente } from "./clientes.types";
 export const SUPABASE_URL = "https://adyauaubmitdkfbutgix.supabase.co";
 export const SUPABASE_ANON_KEY = "sb_publishable_Ugmm5Baa21OQAqPF4wB_9A_EdqzF0gx";
 
-const TABLE_NAME = "clientes";
+const TABLE = "clientes";
 
-const headers = {
+const baseHeaders = {
   apikey: SUPABASE_ANON_KEY,
   Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
   "Content-Type": "application/json",
 };
 
+// Lê as manutencoes do localStorage por cliente (fallback enquanto coluna não existe no Supabase)
+function lerManutencoes(clienteId: string) {
+  try {
+    const raw = localStorage.getItem(`manut_${clienteId}`);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+function salvarManutencoes(clienteId: string, manuts: any[]) {
+  try {
+    localStorage.setItem(`manut_${clienteId}`, JSON.stringify(manuts));
+  } catch {}
+}
+
 export async function buscarClientesSupabase(): Promise<Cliente[] | null> {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?select=*&order=criado_em.desc`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=criado_em.desc`, {
       method: "GET",
-      headers,
+      headers: baseHeaders,
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn("Supabase GET falhou:", res.status, await res.text());
+      return null;
+    }
     const data = await res.json();
     if (!Array.isArray(data)) return null;
 
@@ -27,21 +45,23 @@ export async function buscarClientesSupabase(): Promise<Cliente[] | null> {
       endereco: item.endereco || "",
       cpf: item.cpf || "",
       telefone: item.telefone || "",
-      macCentral: item.mac_central || item.macCentral || "",
-      modeloCentral: item.modelo_central || item.modeloCentral || "",
+      macCentral: item.mac_central || "",
+      modeloCentral: item.modelo_central || "",
       observacoes: item.observacoes || "",
       status: item.status || "ativo",
-      criadoEm: item.criado_em || item.criadoEm || new Date().toISOString(),
-      manutencoes: Array.isArray(item.manutencoes) ? item.manutencoes : [],
+      criadoEm: item.criado_em || new Date().toISOString(),
+      // Manutencoes ficam no localStorage por enquanto (coluna ainda não existe na tabela)
+      manutencoes: lerManutencoes(item.id),
     }));
   } catch (err) {
-    console.warn("Erro ao buscar no Supabase:", err);
+    console.warn("Erro ao buscar clientes:", err);
     return null;
   }
 }
 
 export async function salvarClienteSupabase(dados: NovoCliente): Promise<Cliente | null> {
   try {
+    // Envia somente as colunas que existem na tabela
     const payload = {
       nome: dados.nome,
       endereco: dados.endereco,
@@ -51,26 +71,22 @@ export async function salvarClienteSupabase(dados: NovoCliente): Promise<Cliente
       modelo_central: dados.modeloCentral,
       observacoes: dados.observacoes || "",
       status: "ativo",
-      manutencoes: [],
     };
 
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
       method: "POST",
-      headers: {
-        ...headers,
-        Prefer: "return=representation",
-      },
+      headers: { ...baseHeaders, Prefer: "return=representation" },
       body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
-      console.warn("Falha no POST Supabase status:", res.status);
+      const errText = await res.text();
+      console.warn("Supabase POST falhou:", res.status, errText);
       return null;
     }
 
     const created = await res.json();
     const item = Array.isArray(created) ? created[0] : created;
-
     if (!item) return null;
 
     return {
@@ -79,42 +95,37 @@ export async function salvarClienteSupabase(dados: NovoCliente): Promise<Cliente
       endereco: item.endereco,
       cpf: item.cpf,
       telefone: item.telefone,
-      macCentral: item.mac_central || item.macCentral,
-      modeloCentral: item.modelo_central || item.modeloCentral,
+      macCentral: item.mac_central || "",
+      modeloCentral: item.modelo_central || "",
       observacoes: item.observacoes || "",
       status: item.status || "ativo",
-      criadoEm: item.criado_em || item.criadoEm || new Date().toISOString(),
-      manutencoes: Array.isArray(item.manutencoes) ? item.manutencoes : [],
+      criadoEm: item.criado_em || new Date().toISOString(),
+      manutencoes: [],
     };
   } catch (err) {
-    console.warn("Erro ao salvar no Supabase:", err);
+    console.warn("Erro ao salvar cliente:", err);
     return null;
   }
 }
 
 export async function atualizarManutencoesSupabase(clienteId: string, manutencoes: any[]): Promise<boolean> {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?id=eq.${clienteId}`, {
-      method: "PATCH",
-      headers,
-      body: JSON.stringify({ manutencoes }),
-    });
-    return res.ok;
-  } catch (err) {
-    console.warn("Erro ao atualizar manutenções no Supabase:", err);
-    return false;
-  }
+  // Salva no localStorage (coluna manutencoes ainda não existe na tabela do Supabase)
+  salvarManutencoes(clienteId, manutencoes);
+  return true;
 }
 
 export async function removerClienteSupabase(id: string): Promise<boolean> {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?id=eq.${id}`, {
+    // Remove manutencoes locais também
+    localStorage.removeItem(`manut_${id}`);
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`, {
       method: "DELETE",
-      headers,
+      headers: baseHeaders,
     });
     return res.ok;
   } catch (err) {
-    console.warn("Erro ao remover no Supabase:", err);
+    console.warn("Erro ao remover cliente:", err);
     return false;
   }
 }
