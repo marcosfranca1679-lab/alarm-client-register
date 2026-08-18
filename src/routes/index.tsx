@@ -90,16 +90,26 @@ function Index() {
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (form.nome.trim().length < 3) return toast.error("Informe o nome completo.");
-    if (!cpfValido(form.cpf)) return toast.error("CPF inválido.");
-    if (form.endereco.trim().length < 5) return toast.error("Informe o endereço completo.");
-    if (apenasDigitos(form.telefone).length < 10) return toast.error("Telefone incompleto.");
-    if (apenasDigitos(form.macCentral.replace(/:/g, "")).length + 0 === 0)
-      return toast.error("Informe o MAC da central.");
-    if (form.macCentral.replace(/[^0-9A-F]/gi, "").length !== 12)
-      return toast.error("MAC deve ter 12 caracteres hexadecimais.");
-    if (!form.modeloCentral) return toast.error("Selecione o modelo da central.");
+    const erro =
+      form.nome.trim().length < 3
+        ? "Informe o nome completo."
+        : !cpfValido(form.cpf)
+          ? "CPF inválido."
+          : form.endereco.trim().length < 5
+            ? "Informe o endereço completo."
+            : apenasDigitos(form.telefone).length < 10
+              ? "Telefone incompleto."
+              : form.macCentral.replace(/[^0-9A-F]/gi, "").length !== 12
+                ? "MAC deve ter 12 caracteres hexadecimais."
+                : !form.modeloCentral
+                  ? "Selecione o modelo da central."
+                  : null;
+    if (erro) {
+      toast.error(erro);
+      return;
+    }
     criar.mutate(form);
+
   }
 
   const filtrados = clientes.filter((c) => {
