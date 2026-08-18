@@ -81,7 +81,7 @@ function Index() {
   const [historicoExpandido, setHistoricoExpandido] = useState<string | null>(null);
 
   // Estados do Termo de Garantia no Cadastro
-  const [validadeGarantia, setValidadeGarantia] = useState("90 dias (3 meses)");
+  const [validadeGarantia, setValidadeGarantia] = useState("90 dias (Padrão - Lei do Consumidor CDC)");
   const [coberturasGarantia, setCoberturasGarantia] = useState<string[]>([
     OPCOES_GARANTIA_PADRAO[0],
     OPCOES_GARANTIA_PADRAO[1],
@@ -409,13 +409,17 @@ function Index() {
                   <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                   <span>Termo de Garantia da Manutenção</span>
                 </div>
-                <span className="text-[10px] font-semibold text-blue-800 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/60 px-2 py-0.5 rounded-full">
-                  Configuração
+                <span className="text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded-full">
+                  Lei do Consumidor (CDC)
                 </span>
               </div>
 
+              <div className="rounded-md bg-emerald-50/80 dark:bg-emerald-950/40 p-2 border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-900 dark:text-emerald-300 leading-tight">
+                🛡️ <strong>Garantia Legal de 90 dias</strong> inclusa obrigatoriamente para todos os serviços e peças conforme o Art. 26 do Código de Defesa do Consumidor.
+              </div>
+
               <div className="space-y-1">
-                <Label className="field-label text-xs">Período de Validade da Garantia</Label>
+                <Label className="field-label text-xs">Período Total da Garantia</Label>
                 <select
                   value={validadeGarantia}
                   onChange={(e) => setValidadeGarantia(e.target.value)}

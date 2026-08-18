@@ -190,13 +190,24 @@ function Documento() {
                 A <strong>WS Segurança Residencial</strong> oferece garantia sobre os serviços de manutenção realizados, conforme as condições descritas abaixo.
               </p>
 
+              {/* Destaque Garantia Legal CDC 90 dias */}
+              <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 p-3.5 space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-900 dark:text-emerald-200">
+                  <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <span>GARANTIA LEGAL DE 90 DIAS (LEI DO CONSUMIDOR — ART. 26, II DO CDC)</span>
+                </div>
+                <p className="text-[11px] text-emerald-800 dark:text-emerald-300 leading-relaxed">
+                  Em estrito cumprimento ao <strong>Artigo 26, Inciso II da Lei nº 8.078/1990 (Código de Defesa do Consumidor — CDC)</strong>, todos os serviços de instalação, reparo e componentes fornecidos possuem <strong>garantia legal obrigatória de 90 (noventa) dias</strong>, abrangendo a totalidade dos serviços executados contra quaisquer vícios, falhas de funcionamento ou defeitos de execução.
+                </p>
+              </div>
+
               {/* 1. O que a garantia cobre */}
               <div className="space-y-1.5">
                 <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase">
-                  1. O QUE A GARANTIA COBRE:
+                  1. ITENS ESPECÍFICOS E COBERTURAS CONTRATADAS:
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
-                  A garantia abrange exclusivamente os itens contratados e marcados abaixo:
+                  Além da garantia legal obrigatória de 90 dias, a garantia técnica abrange os itens selecionados abaixo:
                 </p>
                 <div className="grid gap-1.5 pt-1">
                   {OPCOES_GARANTIA_PADRAO.map((item) => {
@@ -256,10 +267,10 @@ function Documento() {
               {/* 4. Validade */}
               <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
                 <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
-                  4. VALIDADE:
+                  4. PRAZO DE VALIDADE:
                 </h3>
                 <p className="text-[11px] leading-relaxed">
-                  A garantia é válida pelo período de <strong>{garantia.validade}</strong> a contar da data de conclusão do serviço de manutenção/cadastro ({formatarData(cliente.criadoEm)}), estando vinculada exclusivamente aos equipamentos e serviços especificados.
+                  A garantia padrão é de <strong>90 (noventa) dias</strong> (conforme Art. 26 do CDC), com validade estipulada em <strong>{garantia.validade}</strong> a contar da data de conclusão do serviço/cadastro ({formatarData(cliente.criadoEm)}).
                 </p>
               </div>
 
@@ -269,7 +280,7 @@ function Documento() {
                   5. CONSIDERAÇÕES FINAIS:
                 </h3>
                 <p className="text-[11px] leading-relaxed">
-                  A garantia cobre exclusivamente os itens e serviços descritos neste termo, não se estendendo a situações decorrentes de uso inadequado, intervenções não autorizadas ou causas externas não previstas.
+                  A garantia cobre integralmente os serviços e itens descritos neste termo em conformidade com as normas vigentes de proteção ao consumidor, não se estendendo a danos por mau uso, intervenções de terceiros não autorizados ou causas externas não cobertas.
                 </p>
               </div>
             </section>

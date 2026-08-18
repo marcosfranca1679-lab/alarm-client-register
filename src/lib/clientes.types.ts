@@ -49,10 +49,10 @@ export const OPCOES_GARANTIA_PADRAO = [
 ];
 
 export const PERIODOS_VALIDADE_GARANTIA = [
-  "30 dias",
-  "90 dias (3 meses)",
+  "90 dias (Padrão - Lei do Consumidor CDC)",
   "180 dias (6 meses)",
   "365 dias (1 ano)",
+  "30 dias (Serviços pontuais)",
   "Conforme contrato de manutenção",
 ];
 
@@ -61,7 +61,7 @@ export function extrairGarantia(observacoes: string): { obsLimpa: string; garant
     return {
       obsLimpa: "",
       garantia: {
-        validade: "90 dias (3 meses)",
+        validade: "90 dias (Padrão - Lei do Consumidor CDC)",
         coberturas: [
           OPCOES_GARANTIA_PADRAO[0],
           OPCOES_GARANTIA_PADRAO[1],
@@ -79,7 +79,7 @@ export function extrairGarantia(observacoes: string): { obsLimpa: string; garant
       return {
         obsLimpa,
         garantia: {
-          validade: parsed.validade || "90 dias (3 meses)",
+          validade: parsed.validade || "90 dias (Padrão - Lei do Consumidor CDC)",
           coberturas: Array.isArray(parsed.coberturas)
             ? parsed.coberturas
             : [OPCOES_GARANTIA_PADRAO[0], OPCOES_GARANTIA_PADRAO[1]],
@@ -91,7 +91,7 @@ export function extrairGarantia(observacoes: string): { obsLimpa: string; garant
   return {
     obsLimpa: observacoes,
     garantia: {
-      validade: "90 dias (3 meses)",
+      validade: "90 dias (Padrão - Lei do Consumidor CDC)",
       coberturas: [
         OPCOES_GARANTIA_PADRAO[0],
         OPCOES_GARANTIA_PADRAO[1],
