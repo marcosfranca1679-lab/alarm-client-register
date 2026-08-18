@@ -88,11 +88,16 @@ export function calcularPrecoItemGarantia(validade: string): number {
 }
 
 export function obterMesesEstendidos(validade: string): number {
-  if (validade.includes("3 meses")) return 3;
-  if (validade.includes("6 meses")) return 6;
+  if (validade.includes("+ 1 ano estendida") || validade.includes("+ 12 meses")) return 12;
+  if (validade.includes("+ 9 meses estendida")) return 9;
+  if (validade.includes("+ 6 meses estendida")) return 6;
+  if (validade.includes("+ 3 meses estendida")) return 3;
+
+  if (validade.includes("1 ano e 3 meses")) return 12;
+  if (validade.includes("1 ano") || validade.includes("12 meses")) return 12;
   if (validade.includes("9 meses")) return 9;
-  if (validade.includes("1 ano e 3 meses")) return 15;
-  if (validade.includes("1 ano")) return 12;
+  if (validade.includes("6 meses")) return 6;
+  if (validade.includes("3 meses")) return 3;
   return 3;
 }
 
