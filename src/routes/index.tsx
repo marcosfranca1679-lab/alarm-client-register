@@ -98,43 +98,57 @@ function Index() {
   const salvar = useServerFn(salvarCliente);
   const remover = useServerFn(removerCliente);
 
-  // Limpa o localStorage se existir
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("alarm_clientes_data_v1");
-    }
-  }, []);
-
   const { data: clientes = [], isLoading } = useQuery({
     queryKey: ["clientes"],
     queryFn: async () => {
-      // Busca diretamente do Supabase / servidor
-      const supa = await buscarClientesSupabase();
-      if (supa && Array.isArray(supa)) {
-        return supa;
-      }
       try {
-        const srv = await listar();
-        if (srv && Array.isArray(srv)) return srv;
-      } catch {
-        // Fallback
+        const local = lerClientesLocais();
+        const supa = await buscarClientesSupabase();
+
+        let lista = local;
+        if (supa && Array.isArray(supa) && supa.length > 0) {
+          lista = mesclarClientes(supa, local);
+        } else {
+          try {
+            const srv = await listar();
+            if (srv && Array.isArray(srv) && srv.length > 0) {
+              lista = mesclarClientes(srv, lista);
+            }
+          } catch (e) {
+            console.warn("Erro ao ler do servidor:", e);
+          }
+        }
+        salvarClientesLocais(lista);
+        return lista;
+      } catch (e) {
+        console.error("Erro na busca de clientes:", e);
+        return lerClientesLocais();
       }
-      return [];
     },
   });
 
   const criar = useMutation({
     mutationFn: async (dados: typeof vazio) => {
-      // Salva diretamente no Supabase e/ou servidor
       const doSupabase = await salvarClienteSupabase(dados);
-      if (!doSupabase) {
-        try {
-          await salvar({ data: dados });
-        } catch (e) {
-          console.warn("Erro ao salvar no servidor:", e);
-        }
+
+      const novo: Cliente = doSupabase || {
+        ...dados,
+        id: crypto.randomUUID(),
+        status: "ativo",
+        criadoEm: new Date().toISOString(),
+        manutencoes: [],
+      };
+
+      const atuais = lerClientesLocais();
+      const atualizados = [novo, ...atuais.filter((c) => c.id !== novo.id)];
+      salvarClientesLocais(atualizados);
+
+      try {
+        await salvar({ data: dados });
+      } catch (e) {
+        console.warn("Erro ao salvar no servidor:", e);
       }
-      return doSupabase;
+      return novo;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["clientes"] });
@@ -155,7 +169,13 @@ function Index() {
 
       const manutsAtualizadas = [nova, ...(cliente.manutencoes || [])];
       
-      // Atualiza apenas no Supabase / Banco
+      // Salva no localStorage e no Supabase
+      const atuais = lerClientesLocais();
+      const atualizados = atuais.map((c) =>
+        c.id === cliente.id ? { ...c, manutencoes: manutsAtualizadas } : c
+      );
+      salvarClientesLocais(atualizados);
+
       await atualizarManutencoesSupabase(cliente.id, manutsAtualizadas);
 
       return { clienteId: cliente.id, dataHora: agora };
@@ -164,7 +184,7 @@ function Index() {
       qc.invalidateQueries({ queryKey: ["clientes"] });
       setClienteManutencao(null);
       setDescricaoManutencao("");
-      toast.success(`Manutenção salva no banco! Data/Hora: ${formatarData(res.dataHora)}`);
+      toast.success(`Manutenção salva com sucesso! Data/Hora: ${formatarData(res.dataHora)}`);
     },
     onError: () => toast.error("Falha ao salvar a manutenção."),
   });
@@ -172,6 +192,11 @@ function Index() {
   const excluir = useMutation({
     mutationFn: async (id: string) => {
       await removerClienteSupabase(id);
+
+      const atuais = lerClientesLocais();
+      const atualizados = atuais.filter((c) => c.id !== id);
+      salvarClientesLocais(atualizados);
+
       try {
         await remover({ data: { id } });
       } catch (e) {

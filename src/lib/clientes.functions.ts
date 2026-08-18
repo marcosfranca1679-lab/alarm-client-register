@@ -17,7 +17,7 @@ export const listarClientes = createServerFn({ method: "GET" }).handler(async ()
   const lista = await lerClientes();
   return [...lista]
     .map((c) => ({ ...c, status: c.status ?? "ativo" }))
-    .sort((a, b) => b.criadoEm.localeCompare(a.criadoEm));
+    .sort((a, b) => (b.criadoEm || "").localeCompare(a.criadoEm || ""));
 });
 
 export const salvarCliente = createServerFn({ method: "POST" })
