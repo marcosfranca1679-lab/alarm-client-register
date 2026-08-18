@@ -81,3 +81,14 @@ export function formatarData(iso: string) {
   const d = new Date(iso);
   return d.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
 }
+
+export function gerarId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    try {
+      return crypto.randomUUID();
+    } catch {
+      // Fallback
+    }
+  }
+  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+}

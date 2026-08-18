@@ -45,9 +45,15 @@ import {
   formatarData,
   formatarMac,
   formatarTelefone,
+  gerarId,
   type Cliente,
   type Manutencao,
 } from "@/lib/clientes.types";
+import {
+  lerClientesLocais,
+  salvarClientesLocais,
+  mesclarClientes,
+} from "@/lib/clientes.storage";
 import {
   buscarClientesSupabase,
   salvarClienteSupabase,
@@ -133,7 +139,7 @@ function Index() {
 
       const novo: Cliente = doSupabase || {
         ...dados,
-        id: crypto.randomUUID(),
+        id: gerarId(),
         status: "ativo",
         criadoEm: new Date().toISOString(),
         manutencoes: [],
@@ -155,14 +161,17 @@ function Index() {
       setForm(vazio);
       toast.success("Cliente cadastrado com sucesso.");
     },
-    onError: () => toast.error("Não foi possível salvar o cadastro."),
+    onError: (err) => {
+      console.error("Erro ao salvar cadastro:", err);
+      toast.error("Não foi possível salvar o cadastro.");
+    },
   });
 
   const salvarManutencaoMut = useMutation({
     mutationFn: async ({ cliente, desc }: { cliente: Cliente; desc: string }) => {
       const agora = new Date().toISOString();
       const nova: Manutencao = {
-        id: crypto.randomUUID(),
+        id: gerarId(),
         dataHora: agora,
         descricao: desc.trim() || "Manutenção periódica de rotina realizada",
       };

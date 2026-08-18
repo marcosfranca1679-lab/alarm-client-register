@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import type { Cliente } from "./clientes.types";
+import { type Cliente, gerarId } from "./clientes.types";
 
 const dadosClienteSchema = z.object({
   nome: z.string().trim().min(3).max(120),
@@ -27,7 +27,7 @@ export const salvarCliente = createServerFn({ method: "POST" })
     const lista = await lerClientes();
     const cliente: Cliente = {
       ...data,
-      id: crypto.randomUUID(),
+      id: gerarId(),
       status: "ativo",
       criadoEm: new Date().toISOString(),
     };
