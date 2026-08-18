@@ -554,8 +554,8 @@ function Index() {
                   </span>
                 </div>
                 <p className="text-[11px] text-blue-800 dark:text-blue-300">
-                  {precoItem === 12.49
-                    ? "📌 Plano de 3 meses estendida: R$ 12,49/mês por item."
+                  {precoItem === 12.60
+                    ? "📌 Plano de 3 meses estendida: R$ 12,60/mês por item."
                     : "🎉 Plano acima de 6 meses (desconto): R$ 9,99/mês por item!"}
                 </p>
               </div>

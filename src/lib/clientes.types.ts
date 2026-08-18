@@ -84,7 +84,7 @@ export function calcularPrecoItemGarantia(validade: string): number {
   ) {
     return 9.99;
   }
-  return 12.49;
+  return 12.60;
 }
 
 export function obterMesesEstendidos(validade: string): number {

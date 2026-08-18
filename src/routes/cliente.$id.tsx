@@ -204,7 +204,7 @@ function Documento() {
                       </p>
                       <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">
                         {garantia.coberturas.length} item(ns) a R${" "}
-                        {garantia.valorItemGarantia?.toFixed(2).replace(".", ",") || "12,49"}/item/mês
+                        {garantia.valorItemGarantia?.toFixed(2).replace(".", ",") || "12,60"}/item/mês
                         ({garantia.tipoCobrancaGarantia === "total" ? "Valor Total Já" : "Cobrança Mensal"})
                       </p>
                     </div>
