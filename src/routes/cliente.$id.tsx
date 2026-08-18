@@ -1,10 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { formatarData } from "@/lib/clientes.types";
 import { buscarClientesSupabase } from "@/lib/clientes.supabase";
-import { listarClientes } from "@/lib/clientes.functions";
 
 export const Route = createFileRoute("/cliente/$id")({
   head: () => ({
@@ -31,8 +29,8 @@ function Documento() {
   const { data: clientes = [], isLoading } = useQuery({
     queryKey: ["clientes"],
     queryFn: async () => {
-      const supa = await buscarClientesSupabase();
-      return supa ?? [];
+      const lista = await buscarClientesSupabase();
+      return lista ?? [];
     },
     retry: 2,
   });
@@ -46,10 +44,14 @@ function Documento() {
           <Button asChild variant="ghost" size="sm">
             <Link to="/">← Voltar</Link>
           </Button>
-          <Button size="sm" onClick={() => window.print()}>Imprimir / Salvar PDF</Button>
+          <Button size="sm" onClick={() => window.print()}>
+            Imprimir / Salvar PDF
+          </Button>
         </div>
 
-        {isLoading && <p className="text-sm text-muted-foreground">Carregando...</p>}
+        {isLoading && (
+          <p className="text-sm text-muted-foreground">Carregando...</p>
+        )}
 
         {!isLoading && !cliente && (
           <div className="card-elevated p-8 text-center">
@@ -60,8 +62,11 @@ function Documento() {
         {cliente && (
           <article className="card-elevated print-sheet p-8">
             <header className="flex items-center gap-4 border-b pb-6">
-              <img src="/logo.jpg" alt="WS Segurança Residencial"
-                className="h-14 w-14 rounded-2xl object-cover border border-slate-200 shadow-sm" />
+              <img
+                src="/logo.jpg"
+                alt="WS Segurança Residencial"
+                className="h-14 w-14 rounded-2xl object-cover border border-slate-200 shadow-sm"
+              />
               <div>
                 <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">
                   WS SEGURANÇA RESIDENCIAL
@@ -72,7 +77,9 @@ function Documento() {
               </div>
               <div className="ml-auto text-right">
                 <p className="field-label">Protocolo</p>
-                <p className="font-mono text-xs font-bold text-slate-900">{cliente.id.slice(0, 8).toUpperCase()}</p>
+                <p className="font-mono text-xs font-bold text-slate-900">
+                  {cliente.id.slice(0, 8).toUpperCase()}
+                </p>
               </div>
             </header>
 
@@ -99,7 +106,7 @@ function Documento() {
             {cliente.manutencoes && cliente.manutencoes.length > 0 && (
               <section className="mt-6">
                 <h2 className="text-sm font-bold uppercase tracking-wide">
-                  Histórico de Manutenções Registradas
+                  Histórico de Manutenções
                 </h2>
                 <div className="mt-2 space-y-2">
                   {cliente.manutencoes.map((m) => (
@@ -113,7 +120,7 @@ function Documento() {
             )}
 
             <footer className="mt-10 border-t pt-6 text-xs text-muted-foreground">
-              <p>Documento gerado automaticamente pelo sistema WS Segurança Residencial.</p>
+              <p>Documento gerado automaticamente — WS Segurança Residencial.</p>
               <p className="mt-1">Data de impressão: {formatarData(new Date().toISOString())}</p>
             </footer>
           </article>
