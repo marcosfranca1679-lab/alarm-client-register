@@ -94,14 +94,15 @@ function Index() {
   // ── Cadastrar cliente ──────────────────────────────────────────────────
   const criar = useMutation({
     mutationFn: (dados: typeof vazio) => salvarClienteSupabase(dados),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["clientes"] });
+    onSuccess: (novoCliente) => {
+      // Atualiza a lista local SEM refetch (evita crash SSR)
+      qc.setQueryData(["clientes"], (antigos: Cliente[] = []) => [novoCliente, ...antigos]);
       setForm(vazio);
       toast.success("Cliente cadastrado com sucesso!");
     },
     onError: (err: Error) => {
       console.error("Erro ao salvar:", err);
-      toast.error(`Erro: ${err.message}`);
+      toast.error(`Erro ao salvar: ${err.message}`);
     },
   });
 
@@ -115,10 +116,13 @@ function Index() {
       };
       const atualizadas = [nova, ...(cliente.manutencoes || [])];
       await atualizarManutencoesSupabase(cliente.id, atualizadas);
-      return nova.dataHora;
+      return { clienteId: cliente.id, atualizadas, dataHora: nova.dataHora };
     },
-    onSuccess: (dataHora) => {
-      qc.invalidateQueries({ queryKey: ["clientes"] });
+    onSuccess: ({ clienteId, atualizadas, dataHora }) => {
+      // Atualiza lista local SEM refetch
+      qc.setQueryData(["clientes"], (antigos: Cliente[] = []) =>
+        antigos.map((c) => c.id === clienteId ? { ...c, manutencoes: atualizadas } : c)
+      );
       setClienteManutencao(null);
       setDescricaoManutencao("");
       toast.success(`Manutenção salva! ${formatarData(dataHora)}`);
@@ -129,8 +133,11 @@ function Index() {
   // ── Excluir cliente ────────────────────────────────────────────────────
   const excluir = useMutation({
     mutationFn: (id: string) => removerClienteSupabase(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["clientes"] });
+    onSuccess: (_, id) => {
+      // Remove da lista local SEM refetch
+      qc.setQueryData(["clientes"], (antigos: Cliente[] = []) =>
+        antigos.filter((c) => c.id !== id)
+      );
       toast.success("Cadastro removido.");
     },
     onError: () => toast.error("Erro ao remover cadastro."),
