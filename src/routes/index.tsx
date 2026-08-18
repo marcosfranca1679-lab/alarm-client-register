@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import {
   ShieldCheck,
@@ -48,11 +48,6 @@ import {
   type Cliente,
   type Manutencao,
 } from "@/lib/clientes.types";
-import {
-  lerClientesLocais,
-  salvarClientesLocais,
-  mesclarClientes,
-} from "@/lib/clientes.storage";
 import {
   buscarClientesSupabase,
   salvarClienteSupabase,
@@ -103,53 +98,43 @@ function Index() {
   const salvar = useServerFn(salvarCliente);
   const remover = useServerFn(removerCliente);
 
+  // Limpa o localStorage se existir
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("alarm_clientes_data_v1");
+    }
+  }, []);
+
   const { data: clientes = [], isLoading } = useQuery({
     queryKey: ["clientes"],
     queryFn: async () => {
-      const local = lerClientesLocais();
+      // Busca diretamente do Supabase / servidor
       const supa = await buscarClientesSupabase();
-
-      let listaCombinada = local;
       if (supa && Array.isArray(supa)) {
-        listaCombinada = mesclarClientes(supa, local);
+        return supa;
       }
-
       try {
         const srv = await listar();
-        if (srv && Array.isArray(srv)) {
-          listaCombinada = mesclarClientes(srv, listaCombinada);
-        }
+        if (srv && Array.isArray(srv)) return srv;
       } catch {
-        // Ignora falha do servidor local se Supabase/localStorage respondeu
+        // Fallback
       }
-
-      salvarClientesLocais(listaCombinada);
-      return listaCombinada;
+      return [];
     },
   });
 
   const criar = useMutation({
     mutationFn: async (dados: typeof vazio) => {
+      // Salva diretamente no Supabase e/ou servidor
       const doSupabase = await salvarClienteSupabase(dados);
-
-      const novo: Cliente = doSupabase || {
-        ...dados,
-        id: crypto.randomUUID(),
-        status: "ativo",
-        criadoEm: new Date().toISOString(),
-        manutencoes: [],
-      };
-
-      const atuais = lerClientesLocais();
-      const atualizados = [novo, ...atuais.filter((c) => c.id !== novo.id)];
-      salvarClientesLocais(atualizados);
-
-      try {
-        await salvar({ data: dados });
-      } catch (e) {
-        console.warn("Salvamento no servidor ignorado:", e);
+      if (!doSupabase) {
+        try {
+          await salvar({ data: dados });
+        } catch (e) {
+          console.warn("Erro ao salvar no servidor:", e);
+        }
       }
-      return novo;
+      return doSupabase;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["clientes"] });
@@ -170,14 +155,7 @@ function Index() {
 
       const manutsAtualizadas = [nova, ...(cliente.manutencoes || [])];
       
-      // 1. Atualizar localStorage
-      const atuais = lerClientesLocais();
-      const atualizados = atuais.map((c) =>
-        c.id === cliente.id ? { ...c, manutencoes: manutsAtualizadas } : c
-      );
-      salvarClientesLocais(atualizados);
-
-      // 2. Atualizar no Supabase
+      // Atualiza apenas no Supabase / Banco
       await atualizarManutencoesSupabase(cliente.id, manutsAtualizadas);
 
       return { clienteId: cliente.id, dataHora: agora };
@@ -186,7 +164,7 @@ function Index() {
       qc.invalidateQueries({ queryKey: ["clientes"] });
       setClienteManutencao(null);
       setDescricaoManutencao("");
-      toast.success(`Manutenção salva com sucesso! Data/Hora: ${formatarData(res.dataHora)}`);
+      toast.success(`Manutenção salva no banco! Data/Hora: ${formatarData(res.dataHora)}`);
     },
     onError: () => toast.error("Falha ao salvar a manutenção."),
   });
@@ -194,11 +172,6 @@ function Index() {
   const excluir = useMutation({
     mutationFn: async (id: string) => {
       await removerClienteSupabase(id);
-
-      const atuais = lerClientesLocais();
-      const atualizados = atuais.filter((c) => c.id !== id);
-      salvarClientesLocais(atualizados);
-
       try {
         await remover({ data: { id } });
       } catch (e) {
@@ -213,8 +186,7 @@ function Index() {
   });
 
   function exportarJson() {
-    const dados = lerClientesLocais();
-    const str = JSON.stringify(dados, null, 2);
+    const str = JSON.stringify(clientes, null, 2);
     const blob = new Blob([str], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -229,16 +201,26 @@ function Index() {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = async (evt) => {
       try {
         const conteudo = evt.target?.result as string;
         const parsed = JSON.parse(conteudo);
         if (Array.isArray(parsed)) {
-          const atuais = lerClientesLocais();
-          const mesclados = mesclarClientes(parsed, atuais);
-          salvarClientesLocais(mesclados);
+          for (const item of parsed) {
+            if (item.nome && item.cpf) {
+              await salvarClienteSupabase({
+                nome: item.nome,
+                endereco: item.endereco || "",
+                cpf: item.cpf,
+                telefone: item.telefone || "",
+                macCentral: item.macCentral || item.mac_central || "",
+                modeloCentral: item.modeloCentral || item.modelo_central || "",
+                observacoes: item.observacoes || "",
+              });
+            }
+          }
           qc.invalidateQueries({ queryKey: ["clientes"] });
-          toast.success(`${parsed.length} cadastro(s) importado(s) com sucesso!`);
+          toast.success(`${parsed.length} cadastro(s) importado(s) para o banco!`);
         } else {
           toast.error("Arquivo JSON inválido.");
         }
@@ -669,7 +651,7 @@ function Index() {
               }}
             >
               <CheckCircle2 className="h-4 w-4 mr-1.5" />
-              {salvarManutencaoMut.isPending ? "Salvis..." : "Confirmar e Salvar"}
+              {salvarManutencaoMut.isPending ? "Salvando..." : "Confirmar e Salvar"}
             </Button>
           </DialogFooter>
         </DialogContent>
