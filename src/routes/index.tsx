@@ -231,7 +231,7 @@ function Index() {
               <Download className="h-3.5 w-3.5 mr-1.5 text-slate-800" /> Exportar JSON
             </Button>
             <span className="hidden text-xs font-medium text-white/90 sm:inline ml-2 border-l border-white/20 pl-3">
-              {clientes.length} cadastro{clientes.length === 1 ? "" : "s"}
+              <span>{clientes.length}</span> {clientes.length === 1 ? "cadastro" : "cadastros"}
             </span>
           </div>
         </div>
