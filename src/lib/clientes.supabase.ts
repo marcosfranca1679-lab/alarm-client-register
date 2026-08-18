@@ -11,29 +11,14 @@ const baseHeaders = {
   "Content-Type": "application/json",
 };
 
-// Lê as manutencoes do localStorage por cliente (fallback enquanto coluna não existe no Supabase)
-function lerManutencoes(clienteId: string) {
-  try {
-    const raw = localStorage.getItem(`manut_${clienteId}`);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-function salvarManutencoes(clienteId: string, manuts: any[]) {
-  try {
-    localStorage.setItem(`manut_${clienteId}`, JSON.stringify(manuts));
-  } catch {}
-}
-
 export async function buscarClientesSupabase(): Promise<Cliente[] | null> {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=criado_em.desc`, {
-      method: "GET",
-      headers: baseHeaders,
-    });
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/${TABLE}?select=*&order=criado_em.desc`,
+      { method: "GET", headers: baseHeaders }
+    );
     if (!res.ok) {
-      console.warn("Supabase GET falhou:", res.status, await res.text());
+      console.warn("Supabase GET falhou:", res.status);
       return null;
     }
     const data = await res.json();
@@ -41,17 +26,16 @@ export async function buscarClientesSupabase(): Promise<Cliente[] | null> {
 
     return data.map((item: any) => ({
       id: item.id,
-      nome: item.nome || "",
-      endereco: item.endereco || "",
-      cpf: item.cpf || "",
-      telefone: item.telefone || "",
-      macCentral: item.mac_central || "",
-      modeloCentral: item.modelo_central || "",
-      observacoes: item.observacoes || "",
-      status: item.status || "ativo",
-      criadoEm: item.criado_em || new Date().toISOString(),
-      // Manutencoes ficam no localStorage por enquanto (coluna ainda não existe na tabela)
-      manutencoes: lerManutencoes(item.id),
+      nome: item.nome ?? "",
+      endereco: item.endereco ?? "",
+      cpf: item.cpf ?? "",
+      telefone: item.telefone ?? "",
+      macCentral: item.mac_central ?? "",
+      modeloCentral: item.modelo_central ?? "",
+      observacoes: item.observacoes ?? "",
+      status: item.status ?? "ativo",
+      criadoEm: item.criado_em ?? new Date().toISOString(),
+      manutencoes: [],  // coluna ainda não existe na tabela
     }));
   } catch (err) {
     console.warn("Erro ao buscar clientes:", err);
@@ -67,7 +51,7 @@ export async function salvarClienteSupabase(dados: NovoCliente): Promise<Cliente
     telefone: dados.telefone,
     mac_central: dados.macCentral,
     modelo_central: dados.modeloCentral,
-    observacoes: dados.observacoes || "",
+    observacoes: dados.observacoes ?? "",
     status: "ativo",
   };
 
@@ -84,35 +68,53 @@ export async function salvarClienteSupabase(dados: NovoCliente): Promise<Cliente
 
   const created = await res.json();
   const item = Array.isArray(created) ? created[0] : created;
-
-  if (!item) throw new Error("Supabase não retornou o registro criado.");
+  if (!item) throw new Error("Supabase não retornou o registro.");
 
   return {
     id: item.id,
-    nome: item.nome,
-    endereco: item.endereco,
-    cpf: item.cpf,
-    telefone: item.telefone,
-    macCentral: item.mac_central || "",
-    modeloCentral: item.modelo_central || "",
-    observacoes: item.observacoes || "",
-    status: item.status || "ativo",
-    criadoEm: item.criado_em || new Date().toISOString(),
+    nome: item.nome ?? "",
+    endereco: item.endereco ?? "",
+    cpf: item.cpf ?? "",
+    telefone: item.telefone ?? "",
+    macCentral: item.mac_central ?? "",
+    modeloCentral: item.modelo_central ?? "",
+    observacoes: item.observacoes ?? "",
+    status: item.status ?? "ativo",
+    criadoEm: item.criado_em ?? new Date().toISOString(),
     manutencoes: [],
   };
 }
 
-export async function atualizarManutencoesSupabase(clienteId: string, manutencoes: any[]): Promise<boolean> {
-  // Salva no localStorage (coluna manutencoes ainda não existe na tabela do Supabase)
-  salvarManutencoes(clienteId, manutencoes);
-  return true;
+export async function atualizarManutencoesSupabase(
+  clienteId: string,
+  manutencoes: any[]
+): Promise<boolean> {
+  try {
+    // Salva no localStorage (por device) enquanto coluna não existe no banco
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`manut_${clienteId}`, JSON.stringify(manutencoes));
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function lerManutencoesLocais(clienteId: string): any[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(`manut_${clienteId}`);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
 }
 
 export async function removerClienteSupabase(id: string): Promise<boolean> {
   try {
-    // Remove manutencoes locais também
-    localStorage.removeItem(`manut_${id}`);
-
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(`manut_${id}`);
+    }
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`, {
       method: "DELETE",
       headers: baseHeaders,

@@ -44,6 +44,7 @@ import {
   salvarClienteSupabase,
   removerClienteSupabase,
   atualizarManutencoesSupabase,
+  lerManutencoesLocais,
 } from "@/lib/clientes.supabase";
 
 export const Route = createFileRoute("/")({
@@ -80,7 +81,12 @@ function Index() {
     queryKey: ["clientes"],
     queryFn: async () => {
       const lista = await buscarClientesSupabase();
-      return lista ?? [];
+      if (!lista) return [];
+      // Injeta manutenções do localStorage (client-side only)
+      return lista.map((c) => ({
+        ...c,
+        manutencoes: lerManutencoesLocais(c.id),
+      }));
     },
     retry: 2,
   });
