@@ -27,17 +27,12 @@ jobs:
       - name: Configurar Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Dar Permissão de Execução ao Gradle
+      - name: Compilar APK com Gradle
         run: |
           cd android
-          chmod +x gradlew || true
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug --stacktrace --no-daemon
 
-      - name: Compilar APK com Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.2'
-          build-root-directory: android
-          arguments: assembleDebug
 
       - name: Encontrar e Renomear APK
         run: |
