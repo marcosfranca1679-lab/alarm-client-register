@@ -89,7 +89,9 @@ import {
   lerManutencoesLocais,
   buscarProdutosSupabase,
   salvarProdutosSupabase,
+  criarDownloadTemporarioSupabase,
 } from "@/lib/clientes.supabase";
+
 
 const WHATSAPP_NUMERO = "5548999118524";
 const WHATSAPP_FORMATADO = "(48) 99911-8524";
@@ -977,6 +979,23 @@ function PainelAdministrativo({
     onError: () => toast.error("Falha ao salvar manutenção."),
   });
 
+  const [downloadTemp, setDownloadTemp] = useState<{ id: string; nomeArquivo: string; segundos: number } | null>(null);
+
+  // Contador regressivo de 60 segundos para auto-exclusão do arquivo temporário
+  useEffect(() => {
+    if (!downloadTemp) return;
+    if (downloadTemp.segundos <= 0) {
+      setDownloadTemp(null);
+      return;
+    }
+    const timer = setInterval(() => {
+      setDownloadTemp((prev) =>
+        prev ? { ...prev, segundos: prev.segundos - 1 } : null
+      );
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [downloadTemp]);
+
   // ── Excluir cliente ──
   const excluir = useMutation({
     mutationFn: (id: string) => removerClienteSupabase(id),
@@ -989,17 +1008,31 @@ function PainelAdministrativo({
     onError: () => toast.error("Erro ao remover cadastro."),
   });
 
-  // ── Exportar JSON ──
-  function exportarJson() {
-    const blob = new Blob([JSON.stringify(clientes, null, 2)], { type: "application/json" });
+  // ── Exportar JSON com link temporário no Supabase (Auto-apaga em 1 minuto) ──
+  async function exportarJson() {
+    const nomeArquivo = `backup_clientes_${new Date().toISOString().slice(0, 10)}.json`;
+    const jsonStr = JSON.stringify(clientes, null, 2);
+
+    toast.info("Enviando arquivo para o Supabase...");
+    const tempId = await criarDownloadTemporarioSupabase(nomeArquivo, jsonStr);
+
+    // Dispara o download nativo para WebView / Navegador
+    const blob = new Blob([jsonStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `clientes_alarme_${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = nomeArquivo;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Backup exportado!");
+
+    if (tempId) {
+      setDownloadTemp({ id: tempId, nomeArquivo, segundos: 60 });
+      toast.success("Download iniciado! Arquivo salvo no Supabase (auto-apaga em 60s).");
+    } else {
+      toast.success("Download iniciado com sucesso!");
+    }
   }
+
 
   // ── Importar JSON ──
   function importarJson(e: React.ChangeEvent<HTMLInputElement>) {
@@ -2161,6 +2194,25 @@ function PainelAdministrativo({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Notificação Flutuante de Download Temporário no Supabase */}
+      {downloadTemp && (
+        <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-2xl border border-emerald-500/50 bg-slate-900/95 p-4 shadow-2xl backdrop-blur-md text-slate-100 space-y-2 animate-in fade-in slide-in-from-bottom-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Download className="h-4 w-4 text-emerald-400 animate-bounce" />
+              <p className="text-xs font-bold text-white truncate">{downloadTemp.nomeArquivo}</p>
+            </div>
+            <span className="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full shrink-0">
+              {downloadTemp.segundos}s
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-400 leading-snug">
+            Arquivo enviado ao Supabase para download no WebView. Será <strong>auto-excluído da nuvem em {downloadTemp.segundos}s</strong> por segurança.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
+

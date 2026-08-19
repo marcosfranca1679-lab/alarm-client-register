@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import {
   ShieldCheck,
   CheckCircle,
@@ -9,6 +11,7 @@ import {
   Printer,
   DollarSign,
   CreditCard,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +19,8 @@ import {
   extrairGarantia,
   OPCOES_GARANTIA_PADRAO,
 } from "@/lib/clientes.types";
-import { buscarClientesSupabase } from "@/lib/clientes.supabase";
+import { buscarClientesSupabase, criarDownloadTemporarioSupabase } from "@/lib/clientes.supabase";
+
 
 export const Route = createFileRoute("/cliente/$id")({
   head: () => ({
@@ -74,25 +78,78 @@ function Documento() {
         },
       };
 
+  const [downloadTemp, setDownloadTemp] = useState<{ id: string; nomeArquivo: string; segundos: number } | null>(null);
+
+  useEffect(() => {
+    if (!downloadTemp) return;
+    if (downloadTemp.segundos <= 0) {
+      setDownloadTemp(null);
+      return;
+    }
+    const timer = setInterval(() => {
+      setDownloadTemp((prev) =>
+        prev ? { ...prev, segundos: prev.segundos - 1 } : null
+      );
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [downloadTemp]);
+
+  async function baixarTermoDocumento() {
+    if (!cliente) return;
+    const nomeArquivo = `termo_${cliente.nome.replace(/\s+/g, "_").toLowerCase()}_${new Date().toISOString().slice(0, 10)}.json`;
+    const docData = JSON.stringify({ cliente, garantia, emitidoEm: new Date().toISOString() }, null, 2);
+
+    toast.info("Enviando documento para o Supabase...");
+    const tempId = await criarDownloadTemporarioSupabase(nomeArquivo, docData);
+
+    const blob = new Blob([docData], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = nomeArquivo;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    if (tempId) {
+      setDownloadTemp({ id: tempId, nomeArquivo, segundos: 60 });
+      toast.success("Download iniciado! Arquivo salvo no Supabase (auto-apaga em 60s).");
+    } else {
+      toast.success("Download do termo iniciado!");
+    }
+  }
+
   return (
     <div className="min-h-screen py-8 bg-slate-100/60 dark:bg-slate-950">
       <div className="mx-auto max-w-3xl px-5">
-        <div className="no-print mb-6 flex items-center gap-3">
+        <div className="no-print mb-6 flex flex-wrap items-center gap-2">
           <Button asChild variant="ghost" size="sm" className="cursor-pointer">
             <Link to="/">
               <ArrowLeft className="h-4 w-4 mr-1.5" />
               Voltar ao Início
             </Link>
           </Button>
-          <Button
-            size="sm"
-            onClick={() => window.print()}
-            className="ml-auto bg-slate-900 text-white hover:bg-slate-800 cursor-pointer shadow-sm"
-          >
-            <Printer className="h-4 w-4 mr-1.5" />
-            Imprimir / Salvar PDF
-          </Button>
+
+          <div className="ml-auto flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={baixarTermoDocumento}
+              className="border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer shadow-sm text-xs"
+            >
+              <Download className="h-4 w-4 mr-1.5 text-blue-500" />
+              Baixar Termo (.json)
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => window.print()}
+              className="bg-slate-900 text-white hover:bg-slate-800 cursor-pointer shadow-sm text-xs"
+            >
+              <Printer className="h-4 w-4 mr-1.5" />
+              Imprimir / Salvar PDF
+            </Button>
+          </div>
         </div>
+
 
         {isLoading && (
           <div className="card-elevated p-8 text-center bg-white dark:bg-slate-900">
@@ -415,6 +472,25 @@ function Documento() {
           </article>
         )}
       </div>
+
+      {/* Notificação Flutuante de Download Temporário no Supabase */}
+      {downloadTemp && (
+        <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-2xl border border-emerald-500/50 bg-slate-900/95 p-4 shadow-2xl backdrop-blur-md text-slate-100 space-y-2 animate-in fade-in slide-in-from-bottom-3 no-print">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Download className="h-4 w-4 text-emerald-400 animate-bounce" />
+              <p className="text-xs font-bold text-white truncate">{downloadTemp.nomeArquivo}</p>
+            </div>
+            <span className="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full shrink-0">
+              {downloadTemp.segundos}s
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-400 leading-snug">
+            Arquivo enviado ao Supabase para download no WebView. Será <strong>auto-excluído da nuvem em {downloadTemp.segundos}s</strong> por segurança.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
+

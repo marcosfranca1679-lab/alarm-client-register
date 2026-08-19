@@ -6,6 +6,8 @@ export const SUPABASE_ANON_KEY = "sb_publishable_Ugmm5Baa21OQAqPF4wB_9A_EdqzF0gx
 const TABLE = "clientes";
 const SYSTEM_PROD_CPF = "000.000.000-00";
 const SYSTEM_PROD_NOME = "__CATALOGO_PRODUTOS__";
+const SYSTEM_TEMP_CPF = "999.999.999-99";
+const SYSTEM_TEMP_NOME = "__TEMP_DOWNLOAD__";
 
 const baseHeaders = {
   apikey: SUPABASE_ANON_KEY,
@@ -26,11 +28,15 @@ export async function buscarClientesSupabase(): Promise<Cliente[] | null> {
     const data = await res.json();
     if (!Array.isArray(data)) return null;
 
-    // Filtra o registro especial de catálogo de produtos do sistema
+    // Filtra registros especiais do sistema (catálogo e downloads temporários)
     const clientesReais = data.filter(
       (item: any) =>
-        item.cpf !== SYSTEM_PROD_CPF && item.nome !== SYSTEM_PROD_NOME
+        item.cpf !== SYSTEM_PROD_CPF &&
+        item.nome !== SYSTEM_PROD_NOME &&
+        item.cpf !== SYSTEM_TEMP_CPF &&
+        item.nome !== SYSTEM_TEMP_NOME
     );
+
 
     return clientesReais.map((item: any) => ({
       id: item.id,
@@ -193,3 +199,79 @@ export async function removerClienteSupabase(id: string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Salva um arquivo temporário no Supabase para download seguro em WebView/navegador.
+ * O arquivo é configurado para ser excluído automaticamente do Supabase após 60 segundos (1 minuto).
+ */
+export async function criarDownloadTemporarioSupabase(
+  nomeArquivo: string,
+  conteudo: string
+): Promise<string | null> {
+  try {
+    const payload = {
+      nome: SYSTEM_TEMP_NOME,
+      endereco: "DOWNLOAD_TEMPORARIO",
+      cpf: SYSTEM_TEMP_CPF,
+      telefone: "00000000000",
+      mac_central: "000000000000",
+      modelo_central: nomeArquivo,
+      observacoes: conteudo,
+      status: "temp_download",
+    };
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
+      method: "POST",
+      headers: { ...baseHeaders, Prefer: "return=representation" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    const item = Array.isArray(data) ? data[0] : data;
+    const id = item?.id;
+
+    // Agenda auto-exclusão após 60 segundos (1 minuto)
+    if (id) {
+      setTimeout(async () => {
+        try {
+          await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`, {
+            method: "DELETE",
+            headers: baseHeaders,
+          });
+          console.log(`[Supabase] Arquivo temporário ${id} auto-excluído após 1 minuto.`);
+        } catch (e) {
+          console.warn("Falha ao auto-excluir download temporário:", e);
+        }
+      }, 60_000);
+    }
+
+    return id ?? null;
+  } catch (err) {
+    console.warn("Erro ao criar download temporário:", err);
+    return null;
+  }
+}
+
+export async function buscarDownloadTemporarioSupabase(
+  id: string
+): Promise<{ nomeArquivo: string; conteudo: string } | null> {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}&select=*`,
+      { method: "GET", headers: baseHeaders }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return null;
+    const item = data[0];
+    return {
+      nomeArquivo: item.modelo_central || "backup.json",
+      conteudo: item.observacoes || "",
+    };
+  } catch (err) {
+    console.warn("Erro ao buscar download temporário:", err);
+    return null;
+  }
+}
+
