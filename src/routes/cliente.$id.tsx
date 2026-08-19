@@ -132,7 +132,7 @@ function Documento() {
 
   async function gerarEBaixarPDF() {
     if (!cliente) return;
-    toast.info("Gerando documento oficial em PDF...");
+    toast.info("Gerando documento oficial completo em PDF...");
     try {
       const JsPDF = await carregarJsPDF();
       if (!JsPDF) throw new Error("jsPDF não carregou");
@@ -142,31 +142,33 @@ function Documento() {
 
       const marg = 12;
       const wTotal = 210 - marg * 2; // 186mm
+
+      // ==========================================
+      // 📄 PÁGINA 1: CADASTRO, VALORES & COBERTURAS
+      // ==========================================
       let y = 12;
 
       // ── CABEÇALHO OFICIAL ──
       if (logoBase64) {
         try {
           doc.addImage(logoBase64, "JPEG", marg, y, 16, 16);
-        } catch {
-          // fallback se falhar imagem
-        }
+        } catch {}
       }
 
       const textX = logoBase64 ? marg + 19 : marg;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
-      doc.setTextColor(15, 23, 42); // #0f172a
+      doc.setTextColor(15, 23, 42);
       doc.text("WS SEGURANÇA RESIDENCIAL", textX, y + 4.5);
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(7.5);
-      doc.setTextColor(71, 85, 105); // #475569
+      doc.setTextColor(71, 85, 105);
       doc.text("Ficha de Cadastro, Valores & Termo de Garantia da Manutenção", textX, y + 9);
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(7);
-      doc.setTextColor(100, 116, 139); // #64748b
+      doc.setTextColor(100, 116, 139);
       doc.text("Sistema Eletrônico de Alarme e Monitoramento", textX, y + 13);
 
       // Box Protocolo (canto superior direito)
@@ -190,17 +192,17 @@ function Documento() {
       y += 18;
       doc.setDrawColor(226, 232, 240);
       doc.line(marg, y, 210 - marg, y);
-      y += 5;
+      y += 4;
 
       // Helper para títulos de seção
       const tituloSecao = (txt: string, cor: [number, number, number] = [30, 41, 59]) => {
         doc.setFillColor(241, 245, 249);
-        doc.rect(marg, y, wTotal, 5.5, "F");
+        doc.rect(marg, y, wTotal, 5.2, "F");
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(8);
+        doc.setFontSize(7.5);
         doc.setTextColor(...cor);
-        doc.text(txt.toUpperCase(), marg + 2, y + 4);
-        y += 7.5;
+        doc.text(txt.toUpperCase(), marg + 2.5, y + 3.8);
+        y += 7;
       };
 
       // Helper para campos em 2 colunas
@@ -217,7 +219,7 @@ function Documento() {
         doc.setTextColor(100, 116, 139);
         doc.text(r1.toUpperCase(), marg, y);
         doc.text(r2.toUpperCase(), col2X, y);
-        y += 3.5;
+        y += 3.2;
 
         doc.setFontSize(8);
         doc.setFont(mono1 ? "courier" : "helvetica", mono1 ? "bold" : "normal");
@@ -226,7 +228,7 @@ function Documento() {
 
         doc.setFont(mono2 ? "courier" : "helvetica", mono2 ? "bold" : "normal");
         doc.text(v2 || "—", col2X, y);
-        y += 5;
+        y += 4.5;
       };
 
       const campoLinha = (r: string, v: string) => {
@@ -234,14 +236,14 @@ function Documento() {
         doc.setFont("helvetica", "bold");
         doc.setTextColor(100, 116, 139);
         doc.text(r.toUpperCase(), marg, y);
-        y += 3.5;
+        y += 3.2;
 
         doc.setFontSize(8);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(15, 23, 42);
         const linhas = doc.splitTextToSize(v || "—", wTotal);
         doc.text(linhas, marg, y);
-        y += linhas.length * 4 + 1;
+        y += linhas.length * 3.8 + 1;
       };
 
       // ── SEÇÃO 1: DADOS DO CLIENTE ──
@@ -249,7 +251,7 @@ function Documento() {
       gridDuasColunas("Nome Completo", cliente.nome, "CPF", cliente.cpf, false, true);
       gridDuasColunas("Telefone / WhatsApp", cliente.telefone, "Data do Cadastro", formatarData(cliente.criadoEm));
       campoLinha("Endereço Completo da Instalação", cliente.endereco);
-      y += 2;
+      y += 1.5;
 
       // ── SEÇÃO 2: DADOS DO EQUIPAMENTO ──
       tituloSecao("2. Dados do Equipamento / Central");
@@ -257,13 +259,13 @@ function Documento() {
       if (obsLimpa) {
         campoLinha("Observações Técnicas", obsLimpa);
       }
-      y += 2;
+      y += 1.5;
 
       // ── SEÇÃO 3: CONDIÇÕES COMERCIAIS & PAGAMENTO ──
       tituloSecao("3. Condições Comerciais & Pagamento", [5, 150, 105]);
 
       const boxW = (wTotal - 4) / 2;
-      const boxH = 17;
+      const boxH = 16;
 
       // Card Esquerda: Valor do Serviço
       doc.setFillColor(240, 253, 244);
@@ -273,17 +275,17 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(71, 85, 105);
-      doc.text("VALOR DO SERVIÇO / INSTALAÇÃO", marg + 3, y + 4.5);
+      doc.text("VALOR DO SERVIÇO / INSTALAÇÃO", marg + 3, y + 4);
 
-      doc.setFontSize(10);
+      doc.setFontSize(9.5);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(4, 120, 87);
-      doc.text(garantia.valorServico ? `R$ ${garantia.valorServico}` : "Sob consulta", marg + 3, y + 10);
+      doc.text(garantia.valorServico ? `R$ ${garantia.valorServico}` : "Sob consulta", marg + 3, y + 9.5);
 
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(71, 85, 105);
-      doc.text(`Forma de Pagamento: ${garantia.formaPagamento || "PIX"}`, marg + 3, y + 14.5);
+      doc.text(`Forma de Pagamento: ${garantia.formaPagamento || "PIX"}`, marg + 3, y + 13.8);
 
       // Card Direita: Garantia Estendida
       const card2X = marg + boxW + 4;
@@ -294,7 +296,7 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(71, 85, 105);
-      doc.text("COBRANÇA DA GARANTIA ESTENDIDA", card2X + 3, y + 4.5);
+      doc.text("COBRANÇA DA GARANTIA ESTENDIDA", card2X + 3, y + 4);
 
       if (garantia.coberturas.length > 0) {
         doc.setFontSize(9);
@@ -305,32 +307,32 @@ function Documento() {
           : garantia.valorMensalGarantia
             ? `R$ ${garantia.valorMensalGarantia.toFixed(2).replace(".", ",")}/mês`
             : "Incluso";
-        doc.text(txtValor, card2X + 3, y + 10);
+        doc.text(txtValor, card2X + 3, y + 9.5);
 
         doc.setFontSize(6);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(71, 85, 105);
-        doc.text(`${garantia.coberturas.length} item(ns) contratado(s)`, card2X + 3, y + 14.5);
+        doc.text(`${garantia.coberturas.length} item(ns) contratado(s)`, card2X + 3, y + 13.8);
       } else {
         doc.setFontSize(8.5);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(180, 83, 9);
-        doc.text("Garantia Legal CDC (Inclusa)", card2X + 3, y + 10);
+        doc.text("Garantia Legal CDC (Inclusa)", card2X + 3, y + 9.5);
 
         doc.setFontSize(6);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(100, 116, 139);
-        doc.text("Sem cobrança adicional", card2X + 3, y + 14.5);
+        doc.text("Sem cobrança adicional", card2X + 3, y + 13.8);
       }
 
       y += boxH + 4;
 
-      // ── SEÇÃO 4: TERMO DE GARANTIA OFICIAL ──
-      // Box principal do termo
-      const termoH = 68;
+      // ── SEÇÃO 4: TERMO DE GARANTIA OFICIAL (PARTE 1) ──
+      // Box principal do termo na página 1
+      const termoH1 = 82;
       doc.setFillColor(248, 250, 252);
       doc.setDrawColor(191, 219, 254);
-      doc.roundedRect(marg, y, wTotal, termoH, 2, 2, "FD");
+      doc.roundedRect(marg, y, wTotal, termoH1, 2, 2, "FD");
 
       // Cabeçalho do Termo
       doc.setFontSize(8.5);
@@ -338,17 +340,27 @@ function Documento() {
       doc.setTextColor(30, 58, 138);
       doc.text("TERMO DE GARANTIA DA MANUTENÇÃO", marg + 4, y + 6);
 
-      // Badge Validade
-      const badgeW = 34;
-      const badgeX = 210 - marg - badgeW - 4;
-      doc.setFillColor(37, 99, 235);
-      doc.roundedRect(badgeX, y + 2, badgeW, 6, 1.5, 1.5, "F");
+      // Badge Validade com largura dinâmica para nunca vazar
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(255, 255, 255);
-      doc.text(`Validade: ${garantia.validade}`, badgeX + badgeW / 2, y + 6.2, { align: "center" });
+      const txtValidade = `Validade: ${garantia.validade}`;
+      const txtValidadeW = doc.getTextWidth(txtValidade);
+      const badgeW = txtValidadeW + 6;
+      const badgeX = 210 - marg - badgeW - 3;
 
-      let termoY = y + 11;
+      doc.setFillColor(37, 99, 235);
+      doc.roundedRect(badgeX, y + 2, badgeW, 6, 1.5, 1.5, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.text(txtValidade, badgeX + badgeW / 2, y + 6.2, { align: "center" });
+
+      let termoY = y + 10.5;
+
+      // Intro
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(71, 85, 105);
+      doc.text("A WS Segurança Residencial oferece garantia sobre os serviços de manutenção realizados, conforme as condições abaixo:", marg + 4, termoY);
+      termoY += 4.5;
 
       // Box Modalidade CDC / Estendida
       if (garantia.coberturas.length === 0) {
@@ -359,12 +371,12 @@ function Documento() {
         doc.setFontSize(6.5);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(146, 64, 14);
-        doc.text("MODALIDADE: GARANTIA LEGAL PADRÃO DE 90 DIAS (ART. 26 DO CDC)", marg + 5, termoY + 4);
+        doc.text("MODALIDADE: GARANTIA LEGAL PADRÃO DE 90 DIAS (LEI DO CONSUMIDOR — ART. 26 DO CDC)", marg + 5, termoY + 4);
 
         doc.setFontSize(5.8);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(120, 53, 15);
-        doc.text("Vigência exclusiva da garantia legal obrigatória de 90 dias (Lei 8.078/1990 CDC) para os serviços executados.", marg + 5, termoY + 8.5);
+        doc.text("O cliente não contratou coberturas adicionais. Vigora exclusivamente a Garantia Legal Obrigatória de 90 dias do CDC.", marg + 5, termoY + 8.5);
       } else {
         doc.setFillColor(236, 253, 245);
         doc.setDrawColor(167, 243, 208);
@@ -378,52 +390,213 @@ function Documento() {
         doc.setFontSize(5.8);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(4, 120, 87);
-        doc.text(`Coberturas técnicas contratadas com prazo total de ${garantia.validade} (90 dias legais CDC + período adicional).`, marg + 5, termoY + 8.5);
+        doc.text(`O cliente contratou coberturas técnicas específicas com prazo total de ${garantia.validade} (90 dias legais CDC + período adicional).`, marg + 5, termoY + 8.5);
       }
 
       termoY += 14;
 
-      // Lista de Coberturas (Todas as 7 opções padrão com check [✓] ou [✕])
-      doc.setFontSize(6.5);
+      // Desenho do Checkbox Vetorial Nítido
+      const desenharCheck = (cx: number, cy: number, marcado: boolean) => {
+        if (marcado) {
+          doc.setFillColor(22, 163, 74);
+          doc.roundedRect(cx, cy - 2.8, 3.6, 3.6, 0.8, 0.8, "F");
+          doc.setDrawColor(255, 255, 255);
+          doc.setLineWidth(0.45);
+          doc.line(cx + 0.9, cy - 1.0, cx + 1.6, cy - 0.3);
+          doc.line(cx + 1.6, cy - 0.3, cx + 2.8, cy - 2.0);
+        } else {
+          doc.setFillColor(241, 245, 249);
+          doc.setDrawColor(203, 213, 225);
+          doc.roundedRect(cx, cy - 2.8, 3.6, 3.6, 0.8, 0.8, "FD");
+          doc.setDrawColor(156, 163, 175);
+          doc.setLineWidth(0.35);
+          doc.line(cx + 1.0, cy - 1.9, cx + 2.6, cy - 0.7);
+          doc.line(cx + 2.6, cy - 1.9, cx + 1.0, cy - 0.7);
+        }
+      };
+
+      // 1. COBERTURAS DO TERMO (Todos os 7 itens com badges à direita)
+      doc.setFontSize(7);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(30, 41, 59);
       doc.text("1. COBERTURAS DO TERMO:", marg + 4, termoY);
-      termoY += 3.5;
+      termoY += 4.2;
 
       OPCOES_GARANTIA_PADRAO.forEach((item) => {
         const incluso = garantia.coberturas.includes(item);
+        desenharCheck(marg + 4, termoY, incluso);
+
         if (incluso) {
           doc.setFont("helvetica", "bold");
-          doc.setTextColor(4, 120, 87);
-          doc.text("[✓]", marg + 5, termoY);
+          doc.setFontSize(6.8);
           doc.setTextColor(15, 23, 42);
-          doc.text(item, marg + 11, termoY);
+          doc.text(item, marg + 9.5, termoY);
+
+          // Badge INCLUSO
+          doc.setFillColor(236, 253, 245);
+          doc.setDrawColor(167, 243, 208);
+          doc.roundedRect(210 - marg - 20, termoY - 3, 16, 4, 0.8, 0.8, "FD");
+          doc.setFontSize(5.5);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(4, 120, 87);
+          doc.text("INCLUSO", 210 - marg - 12, termoY - 0.4, { align: "center" });
         } else {
           doc.setFont("helvetica", "normal");
-          doc.setTextColor(156, 163, 175);
-          doc.text("[✕]", marg + 5, termoY);
+          doc.setFontSize(6.5);
           doc.setTextColor(148, 163, 184);
-          doc.text(item, marg + 11, termoY);
+          doc.text(item, marg + 9.5, termoY);
+
+          // Badge NÃO CONTRATADO
+          doc.setFillColor(241, 245, 249);
+          doc.setDrawColor(226, 232, 240);
+          doc.roundedRect(210 - marg - 28, termoY - 3, 24, 4, 0.8, 0.8, "FD");
+          doc.setFontSize(5.2);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(100, 116, 139);
+          doc.text("NÃO CONTRATADO", 210 - marg - 16, termoY - 0.4, { align: "center" });
         }
-        termoY += 4.3;
+        termoY += 6.5;
       });
 
-      y += termoH + 4;
-
-      // ── SEÇÃO 5: CONSIDERAÇÕES FINAIS ──
+      // Rodapé da Página 1
+      const rodapeY1 = 290;
+      doc.setDrawColor(226, 232, 240);
+      doc.line(marg, rodapeY1 - 3, 210 - marg, rodapeY1 - 3);
       doc.setFontSize(6.5);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(30, 41, 59);
-      doc.text("5. CONSIDERAÇÕES FINAIS:", marg, y);
-      y += 3.5;
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 116, 139);
+      doc.text("WS Segurança Residencial • (48) 99911-8524 • Documento Oficial", marg, rodapeY1);
+      doc.text("Página 1 de 2 (Continua...)", 210 - marg, rodapeY1, { align: "right" });
 
-      doc.setFontSize(6);
+      // ==========================================
+      // 📄 PÁGINA 2: CLÁUSULAS COMPLETAS & ASSINATURAS
+      // ==========================================
+      doc.addPage();
+      let y2 = 12;
+
+      // Mini-Cabeçalho da Página 2
+      if (logoBase64) {
+        try { doc.addImage(logoBase64, "JPEG", marg, y2, 10, 10); } catch {}
+      }
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(15, 23, 42);
+      doc.text("WS SEGURANÇA RESIDENCIAL", marg + 13, y2 + 4);
+
+      doc.setFontSize(6.8);
+      doc.setTextColor(71, 85, 105);
+      doc.text(`Termo de Garantia da Manutenção (Continuação) — Protocolo: ${cliente.id.slice(0, 8).toUpperCase()}`, marg + 13, y2 + 8.5);
+
+      y2 += 13;
+      doc.setDrawColor(226, 232, 240);
+      doc.line(marg, y2, 210 - marg, y2);
+      y2 += 6;
+
+      // ── 2. SITUAÇÕES NÃO COBERTAS ──
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(15, 23, 42);
+      doc.text("2. SITUAÇÕES NÃO COBERTAS:", marg, y2);
+      y2 += 4;
+
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(71, 85, 105);
+      doc.text("A garantia não cobre danos provocados por:", marg, y2);
+      y2 += 4;
+
+      const naoCobertas = [
+        "Mau uso ou utilização inadequada do equipamento;",
+        "Quedas, impactos ou danos físicos causados pelo cliente ou terceiros;",
+        "Alterações, desmontagem ou tentativa de reparo por pessoas não autorizadas;",
+        "Modificações na instalação sem autorização da WS Segurança Residencial;",
+        "Danos provocados intencionalmente;",
+        "Problemas decorrentes de equipamentos ou instalações que não fazem parte do serviço contratado.",
+      ];
+
+      naoCobertas.forEach((item) => {
+        doc.setFillColor(220, 38, 38);
+        doc.circle(marg + 2, y2 - 0.9, 0.8, "F");
+        doc.setFontSize(6.5);
+        doc.setTextColor(51, 65, 85);
+        doc.text(item, marg + 5, y2);
+        y2 += 4.5;
+      });
+
+      y2 += 2;
+
+      // ── 3. AVALIAÇÃO TÉCNICA ──
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(15, 23, 42);
+      doc.text("3. AVALIAÇÃO TÉCNICA:", marg, y2);
+      y2 += 4;
+
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(51, 65, 85);
+      const txtAvaliacao = "Em caso de falha, a WS Segurança Residencial realizará uma avaliação técnica para identificar a causa do problema e verificar se o atendimento está dentro das condições de garantia. Caso seja constatado que o problema está coberto, o reparo ou substituição será realizado sem custos adicionais ao cliente.";
+      const linhasAval = doc.splitTextToSize(txtAvaliacao, wTotal);
+      doc.text(linhasAval, marg, y2);
+      y2 += linhasAval.length * 3.8 + 4;
+
+      // ── 4. COMPOSIÇÃO DO PRAZO (90 DIAS LEGAIS + PRAZO ESTENDIDO) ──
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(15, 23, 42);
+      doc.text("4. COMPOSIÇÃO DO PRAZO (90 DIAS LEGAIS + PRAZO ESTENDIDO):", marg, y2);
+      y2 += 4;
+
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(51, 65, 85);
+      doc.text("A garantia total fornecida pela WS Segurança Residencial é estruturada cumulativamente:", marg, y2);
+      y2 += 4;
+
+      // Bullets legais
+      doc.setFillColor(37, 99, 235);
+      doc.circle(marg + 2, y2 - 0.9, 0.8, "F");
+      doc.setFont("helvetica", "bold");
+      doc.text("Garantia Legal Obrigatória (90 dias):", marg + 5, y2);
+      doc.setFont("helvetica", "normal");
+      const txtLegal = "Prevista no Art. 26, II do Código de Defesa do Consumidor (CDC), cobrindo integralmente todos os serviços executados contra falhas técnicas ou vícios de funcionamento.";
+      const linhasLegal = doc.splitTextToSize(txtLegal, wTotal - 48);
+      doc.text(linhasLegal, marg + 48, y2);
+      y2 += Math.max(linhasLegal.length * 3.8, 4.5) + 2.5;
+
+      doc.circle(marg + 2, y2 - 0.9, 0.8, "F");
+      doc.setFont("helvetica", "bold");
+      doc.text("Garantia Estendida / Adicional:", marg + 5, y2);
+      doc.setFont("helvetica", "normal");
+      const txtEstend = "Prazo adicional contratado pelo cliente que se soma aos 90 dias da lei, assegurando cobertura contínua e reposição dos componentes selecionados neste termo.";
+      const linhasEstend = doc.splitTextToSize(txtEstend, wTotal - 42);
+      doc.text(linhasEstend, marg + 42, y2);
+      y2 += Math.max(linhasEstend.length * 3.8, 4.5) + 3;
+
+      // Box Destaque de Validade Total Acordada
+      doc.setFillColor(239, 246, 255);
+      doc.setDrawColor(191, 219, 254);
+      doc.roundedRect(marg, y2, wTotal, 9, 1.5, 1.5, "FD");
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(30, 58, 138);
+      doc.text(`Validade Total Acordada: ${garantia.validade} (a contar de ${formatarData(cliente.criadoEm)}).`, marg + 4, y2 + 5.8);
+      y2 += 13;
+
+      // ── 5. CONSIDERAÇÕES FINAIS ──
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(15, 23, 42);
+      doc.text("5. CONSIDERAÇÕES FINAIS:", marg, y2);
+      y2 += 4;
+
+      doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(71, 85, 105);
       const txtFinal = "A garantia cobre integralmente os serviços e itens descritos neste termo em conformidade com as normas vigentes de proteção ao consumidor (CDC), não se estendendo a danos por mau uso, intervenções de terceiros não autorizados ou causas externas não cobertas.";
       const linhasFinal = doc.splitTextToSize(txtFinal, wTotal);
-      doc.text(linhasFinal, marg, y);
-      y += linhasFinal.length * 3.2 + 6;
+      doc.text(linhasFinal, marg, y2);
+      y2 += linhasFinal.length * 3.8 + 14;
 
       // ── ASSINATURAS ──
       const signW = 75;
@@ -432,59 +605,61 @@ function Documento() {
 
       // Linhas de assinatura
       doc.setDrawColor(100, 116, 139);
-      doc.line(sign1X, y, sign1X + signW, y);
-      doc.line(sign2X, y, sign2X + signW, y);
-      y += 4;
+      doc.setLineWidth(0.4);
+      doc.line(sign1X, y2, sign1X + signW, y2);
+      doc.line(sign2X, y2, sign2X + signW, y2);
+      y2 += 4.5;
 
       // Assinatura Cliente
-      doc.setFontSize(7.5);
+      doc.setFontSize(8);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(15, 23, 42);
-      doc.text(cliente.nome, sign1X + signW / 2, y, { align: "center" });
-
-      doc.setFontSize(6);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(100, 116, 139);
-      doc.text("Assinatura do Cliente / Contratante", sign1X + signW / 2, y + 3.5, { align: "center" });
-      doc.setFont("courier", "normal");
-      doc.text(`CPF: ${cliente.cpf}`, sign1X + signW / 2, y + 6.5, { align: "center" });
-
-      // Assinatura Empresa
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(7.5);
-      doc.setTextColor(15, 23, 42);
-      doc.text("WS SEGURANÇA RESIDENCIAL", sign2X + signW / 2, y, { align: "center" });
-
-      doc.setFontSize(6);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(100, 116, 139);
-      doc.text("Responsável Técnico / Emissor", sign2X + signW / 2, y + 3.5, { align: "center" });
-      doc.text("Sistema de Alarme e Segurança", sign2X + signW / 2, y + 6.5, { align: "center" });
-
-      // ── RODAPÉ OFICIAL ──
-      const rodapeY = 290;
-      doc.setDrawColor(226, 232, 240);
-      doc.line(marg, rodapeY - 3, 210 - marg, rodapeY - 3);
+      doc.text(cliente.nome, sign1X + signW / 2, y2, { align: "center" });
 
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 116, 139);
-      doc.text(`Documento oficial emitido por WS Segurança Residencial • (48) 99911-8524 • Emissão: ${formatarData(new Date().toISOString())}`, 210 / 2, rodapeY, { align: "center" });
+      doc.text("Assinatura do Cliente / Contratante", sign1X + signW / 2, y2 + 4, { align: "center" });
+      doc.setFont("courier", "normal");
+      doc.text(`CPF: ${cliente.cpf}`, sign1X + signW / 2, y2 + 7.5, { align: "center" });
 
-      // Gera PDF em Base64
+      // Assinatura Empresa
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(15, 23, 42);
+      doc.text("WS SEGURANÇA RESIDENCIAL", sign2X + signW / 2, y2, { align: "center" });
+
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 116, 139);
+      doc.text("Responsável Técnico / Emissor", sign2X + signW / 2, y2 + 4, { align: "center" });
+      doc.text("Sistema de Alarme e Segurança", sign2X + signW / 2, y2 + 7.5, { align: "center" });
+
+      // ── RODAPÉ OFICIAL PÁGINA 2 ──
+      const rodapeY2 = 290;
+      doc.setDrawColor(226, 232, 240);
+      doc.line(marg, rodapeY2 - 3, 210 - marg, rodapeY2 - 3);
+
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 116, 139);
+      doc.text(`Documento oficial emitido por WS Segurança Residencial • (48) 99911-8524 • Emissão: ${formatarData(new Date().toISOString())}`, marg, rodapeY2);
+      doc.text("Página 2 de 2", 210 - marg, rodapeY2, { align: "right" });
+
+      // ── GERAÇÃO E DOWNLOAD ──
       const pdfBase64 = doc.output("datauristring").split(",")[1];
       const nomeArquivo = `termo_${cliente.nome.replace(/\s+/g, "_").toLowerCase()}_${new Date().toISOString().slice(0, 10)}.pdf`;
 
-      // Envia cópia temporária de segurança para o Supabase (auto-apaga em 60s)
-      toast.info("Enviando ao Supabase...");
+      // Salva temporário no Supabase (auto-apaga em 60s)
+      toast.info("Enviando cópia ao Supabase...");
       const tempId = await criarDownloadTemporarioSupabase(nomeArquivo, pdfBase64);
 
-      // Dispara o download nativo no Android WebView ou navegador
+      // Download nativo no Android WebView ou navegador
       dispararDownloadBase64(nomeArquivo, pdfBase64, "application/pdf");
 
       if (tempId) {
         setDownloadTemp({ nomeArquivo, segundos: 60 });
-        toast.success("PDF oficial gerado e salvo na pasta Downloads!");
+        toast.success("PDF completo com todos os termos baixado com sucesso!");
       } else {
         toast.success("PDF baixado com sucesso!");
       }
