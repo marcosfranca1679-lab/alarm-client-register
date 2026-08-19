@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import {
   ShieldCheck,
@@ -12,8 +12,19 @@ import {
   DollarSign,
   CreditCard,
   Download,
+  PenTool,
+  RotateCcw,
+  Check,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   formatarData,
   extrairGarantia,
@@ -76,6 +87,183 @@ export const Route = createFileRoute("/cliente/$id")({
   component: Documento,
 });
 
+function ModalAssinaturaDigital({
+  aberto,
+  onFechar,
+  onSalvar,
+  nomeCliente,
+}: {
+  aberto: boolean;
+  onFechar: () => void;
+  onSalvar: (dataUrl: string) => void;
+  nomeCliente: string;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [desenhando, setDesenhando] = useState(false);
+  const [temTraco, setTemTraco] = useState(false);
+
+  useEffect(() => {
+    if (aberto) {
+      setTimeout(() => {
+        limpar();
+      }, 60);
+    }
+  }, [aberto]);
+
+  function obterPosicao(e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    let clientX = 0;
+    let clientY = 0;
+
+    if ("touches" in e) {
+      if (e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      }
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY,
+    };
+  }
+
+  function iniciarDesenho(e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const pos = obterPosicao(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    setDesenhando(true);
+    setTemTraco(true);
+  }
+
+  function desenhar(e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) {
+    if (!desenhando) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    if ("touches" in e && e.cancelable) {
+      e.preventDefault();
+    }
+
+    const pos = obterPosicao(e);
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#0f172a";
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  }
+
+  function finalizarDesenho() {
+    setDesenhando(false);
+  }
+
+  function limpar() {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setTemTraco(false);
+  }
+
+  function confirmar() {
+    if (!temTraco) {
+      toast.error("Por favor, assine no quadro antes de confirmar.");
+      return;
+    }
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dataUrl = canvas.toDataURL("image/png");
+    onSalvar(dataUrl);
+    onFechar();
+    toast.success("Assinatura digital capturada!");
+  }
+
+  return (
+    <Dialog open={aberto} onOpenChange={(open) => !open && onFechar()}>
+      <DialogContent className="sm:max-w-md p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-slate-100">
+            <PenTool className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            Assinatura na Tela
+          </DialogTitle>
+          <p className="text-xs text-muted-foreground">
+            Desenhe a assinatura com o <strong>dedo (no celular)</strong> ou com o <strong>mouse</strong>:
+          </p>
+        </DialogHeader>
+
+        <div className="space-y-3 py-1">
+          <div className="rounded-xl border-2 border-dashed border-blue-400/80 bg-slate-50 dark:bg-slate-950 p-1 relative shadow-inner">
+            <canvas
+              ref={canvasRef}
+              width={460}
+              height={200}
+              onMouseDown={iniciarDesenho}
+              onMouseMove={desenhar}
+              onMouseUp={finalizarDesenho}
+              onMouseLeave={finalizarDesenho}
+              onTouchStart={iniciarDesenho}
+              onTouchMove={desenhar}
+              onTouchEnd={finalizarDesenho}
+              className="w-full h-44 bg-white dark:bg-slate-950 rounded-lg cursor-crosshair block"
+              style={{ touchAction: "none" }}
+            />
+            {!temTraco && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-400 text-xs italic select-none">
+                ✍️ Assine aqui no quadro
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
+            <span className="truncate max-w-[220px]">Cliente: <strong>{nomeCliente}</strong></span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={limpar}
+              className="text-xs text-slate-500 hover:text-rose-600 h-7 px-2 cursor-pointer"
+            >
+              <RotateCcw className="h-3 w-3 mr-1" />
+              Limpar
+            </Button>
+          </div>
+        </div>
+
+        <DialogFooter className="gap-2 sm:gap-0 mt-2">
+          <Button type="button" variant="outline" size="sm" onClick={onFechar} className="cursor-pointer">
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            onClick={confirmar}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold cursor-pointer shadow-xs"
+          >
+            <Check className="h-4 w-4 mr-1.5" />
+            Salvar Assinatura
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function Linha({ rotulo, valor, mono }: { rotulo: string; valor: string; mono?: boolean }) {
   return (
     <div className="border-b border-slate-200 dark:border-slate-800 py-2.5">
@@ -118,6 +306,23 @@ function Documento() {
           tipoCobrancaGarantia: "mensal" as const,
         },
       };
+
+  const [assinaturaCliente, setAssinaturaCliente] = useState<string | null>(null);
+  const [modalAssinaturaAberto, setModalAssinaturaAberto] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && id) {
+      const salva = localStorage.getItem(`assinatura_${id}`);
+      if (salva) setAssinaturaCliente(salva);
+    }
+  }, [id]);
+
+  function salvarAssinatura(dataUrl: string) {
+    setAssinaturaCliente(dataUrl);
+    if (typeof window !== "undefined" && id) {
+      localStorage.setItem(`assinatura_${id}`, dataUrl);
+    }
+  }
 
   const [downloadTemp, setDownloadTemp] = useState<{ nomeArquivo: string; segundos: number } | null>(null);
 
@@ -643,6 +848,15 @@ function Documento() {
       const sign1X = marg + 6;
       const sign2X = 210 - marg - signW - 6;
 
+      // Desenha a Assinatura Digital do Cliente no PDF se houver
+      if (assinaturaCliente) {
+        try {
+          doc.addImage(assinaturaCliente, "PNG", sign1X + 10, y2 - 13, 55, 12);
+        } catch (e) {
+          console.warn("Erro ao inserir imagem da assinatura digital no PDF:", e);
+        }
+      }
+
       // Linhas de assinatura
       doc.setDrawColor(100, 116, 139);
       doc.setLineWidth(0.4);
@@ -659,7 +873,7 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 116, 139);
-      doc.text("Assinatura do Cliente / Contratante", sign1X + signW / 2, y2 + 4, { align: "center" });
+      doc.text(assinaturaCliente ? "Assinado Digitalmente na Tela" : "Assinatura do Cliente / Contratante", sign1X + signW / 2, y2 + 4, { align: "center" });
       doc.setFont("courier", "normal");
       doc.text(`CPF: ${cliente.cpf}`, sign1X + signW / 2, y2 + 7.5, { align: "center" });
 
@@ -724,12 +938,21 @@ function Documento() {
             </Link>
           </Button>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setModalAssinaturaAberto(true)}
+              className="border-emerald-500 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-600 dark:text-emerald-300 dark:hover:bg-emerald-950 cursor-pointer shadow-sm text-xs font-semibold"
+            >
+              <PenTool className="h-4 w-4 mr-1.5 text-emerald-600 dark:text-emerald-400" />
+              {assinaturaCliente ? "Assinado ✓ (Alterar)" : "✍️ Assinar na Tela"}
+            </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={gerarEBaixarPDF}
-              className="border-blue-400 text-blue-600 dark:border-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950 cursor-pointer shadow-sm text-xs"
+              className="border-blue-400 text-blue-600 dark:border-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950 cursor-pointer shadow-sm text-xs font-semibold"
             >
               <Download className="h-4 w-4 mr-1.5 text-blue-500" />
               Baixar Termo PDF
@@ -1068,13 +1291,66 @@ function Documento() {
 
             {/* ── Assinaturas ── */}
             <div className="pt-6 grid grid-cols-2 gap-8 text-center text-xs">
-              <div className="border-t border-slate-400 pt-2">
+              {/* Bloco Assinatura do Cliente */}
+              <div className="border-t border-slate-400 pt-2 flex flex-col items-center justify-end min-h-[100px]">
+                {assinaturaCliente ? (
+                  <div className="relative mb-2 flex flex-col items-center">
+                    <img
+                      src={assinaturaCliente}
+                      alt="Assinatura Digital"
+                      className="h-14 w-auto max-w-[200px] object-contain"
+                    />
+                    <div className="no-print mt-1 flex items-center justify-center gap-1.5">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setModalAssinaturaAberto(true)}
+                        className="text-[10px] h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 cursor-pointer"
+                      >
+                        <PenTool className="h-2.5 w-2.5 mr-1" />
+                        Refazer
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setAssinaturaCliente(null);
+                          if (typeof window !== "undefined" && id) localStorage.removeItem(`assinatura_${id}`);
+                          toast.info("Assinatura removida.");
+                        }}
+                        className="text-[10px] h-6 px-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/50 cursor-pointer"
+                      >
+                        <Trash2 className="h-2.5 w-2.5 mr-1" />
+                        Remover
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="no-print mb-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setModalAssinaturaAberto(true)}
+                      className="border-dashed border-blue-400/90 bg-blue-50/70 hover:bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/60 text-xs font-semibold shadow-xs cursor-pointer"
+                    >
+                      <PenTool className="h-3.5 w-3.5 mr-1.5 text-blue-600 dark:text-blue-400" />
+                      ✍️ Assinar na Tela
+                    </Button>
+                  </div>
+                )}
+
                 <p className="font-bold text-slate-900 dark:text-slate-100">{cliente.nome}</p>
-                <p className="text-[11px] text-muted-foreground">Assinatura do Cliente / Contratante</p>
+                <p className="text-[11px] text-muted-foreground">
+                  {assinaturaCliente ? "Assinado Digitalmente na Tela" : "Assinatura do Cliente / Contratante"}
+                </p>
                 <p className="text-[10px] text-muted-foreground font-mono mt-0.5">CPF: {cliente.cpf}</p>
               </div>
 
-              <div className="border-t border-slate-400 pt-2">
+              {/* Bloco Empresa */}
+              <div className="border-t border-slate-400 pt-2 flex flex-col items-center justify-end min-h-[100px]">
                 <p className="font-bold text-slate-900 dark:text-slate-100">WS SEGURANÇA RESIDENCIAL</p>
                 <p className="text-[11px] text-muted-foreground">Responsável Técnico / Emissor</p>
                 <p className="text-[10px] text-muted-foreground font-mono mt-0.5">Sistema de Alarme e Segurança</p>
@@ -1089,6 +1365,14 @@ function Documento() {
           </article>
         )}
       </div>
+
+      {/* Modal de Assinatura Digital na Tela */}
+      <ModalAssinaturaDigital
+        aberto={modalAssinaturaAberto}
+        onFechar={() => setModalAssinaturaAberto(false)}
+        onSalvar={salvarAssinatura}
+        nomeCliente={cliente?.nome ?? ""}
+      />
 
       {/* Notificação Flutuante de Download Temporário no Supabase (PDF) */}
       {downloadTemp && (
