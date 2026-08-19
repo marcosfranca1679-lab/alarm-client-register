@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   ShieldCheck,
@@ -18,7 +19,26 @@ import {
   extrairGarantia,
   OPCOES_GARANTIA_PADRAO,
 } from "@/lib/clientes.types";
-import { buscarClientesSupabase } from "@/lib/clientes.supabase";
+import {
+  buscarClientesSupabase,
+  criarDownloadTemporarioSupabase,
+  dispararDownloadBase64,
+} from "@/lib/clientes.supabase";
+
+/** Carrega jsPDF via CDN dinamicamente se ainda não estiver carregado */
+async function carregarJsPDF(): Promise<any> {
+  if ((window as any).jspdf?.jsPDF) return (window as any).jspdf.jsPDF;
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+    script.onload = () => resolve((window as any).jspdf?.jsPDF);
+    script.onerror = () => reject(new Error("Falha ao carregar jsPDF"));
+    document.head.appendChild(script);
+  });
+}
+
+
+
 
 
 
@@ -81,13 +101,132 @@ function Documento() {
         },
       };
 
-  function baixarTermoPDF() {
+  const [downloadTemp, setDownloadTemp] = useState<{ nomeArquivo: string; segundos: number } | null>(null);
 
+  useEffect(() => {
+    if (!downloadTemp) return;
+    if (downloadTemp.segundos <= 0) { setDownloadTemp(null); return; }
+    const timer = setInterval(() => {
+      setDownloadTemp((prev) => prev ? { ...prev, segundos: prev.segundos - 1 } : null);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [downloadTemp]);
+
+  async function gerarEBaixarPDF() {
     if (!cliente) return;
-    toast.info("Abrindo menu de salvar como PDF...");
-    // window.print() no Android WebView abre o diálogo nativo de PDF
-    // No navegador web abre a janela de impressão com opção "Salvar como PDF"
-    setTimeout(() => window.print(), 300);
+    toast.info("Gerando PDF...");
+    try {
+      const JsPDF = await carregarJsPDF();
+      if (!JsPDF) throw new Error("jsPDF não carregou");
+
+      const doc = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const marg = 15;
+      const larg = 210 - marg * 2;
+      let y = 20;
+
+      const linha = (txt: string, tamanho = 10, negrito = false, cor: [number, number, number] = [30, 30, 30]) => {
+        doc.setFontSize(tamanho);
+        doc.setFont("helvetica", negrito ? "bold" : "normal");
+        doc.setTextColor(...cor);
+        doc.text(txt, marg, y);
+        y += tamanho * 0.45 + 2;
+      };
+      const divisor = () => {
+        doc.setDrawColor(180, 180, 180);
+        doc.line(marg, y, 210 - marg, y);
+        y += 4;
+      };
+      const campo = (rotulo: string, valor: string) => {
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(100, 100, 100);
+        doc.text(rotulo.toUpperCase(), marg, y);
+        y += 4;
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        const linhas = doc.splitTextToSize(valor || "—", larg);
+        doc.text(linhas, marg, y);
+        y += linhas.length * 5 + 2;
+      };
+
+      // Cabeçalho
+      doc.setFillColor(15, 23, 42);
+      doc.rect(0, 0, 210, 28, "F");
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(255, 255, 255);
+      doc.text("WS Segurança Residencial", marg, 12);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(180, 200, 255);
+      doc.text("Documento de Cadastro & Termo de Garantia", marg, 19);
+      doc.setTextColor(140, 160, 200);
+      doc.text(`Emitido em: ${new Date().toLocaleDateString("pt-BR", { dateStyle: "full" })}`, marg, 25);
+      y = 38;
+
+      // Seção: Dados do Cliente
+      linha("DADOS DO CLIENTE", 12, true, [15, 23, 42]);
+      divisor();
+      campo("Nome Completo", cliente.nome);
+      campo("CPF", cliente.cpf);
+      campo("Telefone / WhatsApp", cliente.telefone);
+      campo("Endereço", cliente.endereco);
+      divisor();
+
+      // Seção: Equipamento
+      linha("EQUIPAMENTO", 12, true, [15, 23, 42]);
+      divisor();
+      campo("Modelo da Central", cliente.modeloCentral);
+      campo("MAC da Central", cliente.macCentral);
+      divisor();
+
+      // Seção: Serviço
+      linha("SERVIÇO & PAGAMENTO", 12, true, [15, 23, 42]);
+      divisor();
+      campo("Valor do Serviço", garantia.valorServico || "—");
+      campo("Forma de Pagamento", garantia.formaPagamento || "—");
+      if (cliente.observacoes) campo("Observações", obsLimpa || "—");
+      divisor();
+
+      // Seção: Garantia
+      linha("TERMO DE GARANTIA", 12, true, [15, 23, 42]);
+      divisor();
+      campo("Validade da Garantia", garantia.validade);
+      if (garantia.coberturas?.length) {
+        campo("Coberturas Incluídas", garantia.coberturas.join(", "));
+      }
+
+      // Rodapé
+      const rodapeY = 287;
+      doc.setDrawColor(200, 200, 200);
+      doc.line(marg, rodapeY - 4, 210 - marg, rodapeY - 4);
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(120, 120, 120);
+      doc.text("WS Segurança Residencial  •  (48) 99911-8524  •  Documento gerado eletronicamente", marg, rodapeY);
+
+      // Gera PDF como base64
+      const pdfBase64 = doc.output("datauristring").split(",")[1];
+      const nomeArquivo = `termo_${cliente.nome.replace(/\s+/g, "_").toLowerCase()}_${new Date().toISOString().slice(0, 10)}.pdf`;
+
+      // Envia para Supabase (temporário 60s)
+      toast.info("Enviando para o Supabase...");
+      const tempId = await criarDownloadTemporarioSupabase(nomeArquivo, pdfBase64);
+
+      // Dispara o download via Android nativo ou web
+      dispararDownloadBase64(nomeArquivo, pdfBase64, "application/pdf");
+
+      if (tempId) {
+        setDownloadTemp({ nomeArquivo, segundos: 60 });
+        toast.success("PDF baixado! Cópia removida da nuvem em 60s.");
+      } else {
+        toast.success("PDF gerado e download iniciado!");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao gerar PDF. Tente usar o botão Imprimir.");
+    }
   }
 
 
@@ -106,11 +245,11 @@ function Documento() {
             <Button
               variant="outline"
               size="sm"
-              onClick={baixarTermoPDF}
+              onClick={gerarEBaixarPDF}
               className="border-blue-400 text-blue-600 dark:border-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950 cursor-pointer shadow-sm text-xs"
             >
               <Download className="h-4 w-4 mr-1.5 text-blue-500" />
-              Baixar PDF
+              Baixar Termo PDF
             </Button>
             <Button
               size="sm"
@@ -445,6 +584,24 @@ function Documento() {
           </article>
         )}
       </div>
+
+      {/* Notificação Flutuante de Download Temporário no Supabase (PDF) */}
+      {downloadTemp && (
+        <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-2xl border border-emerald-500/50 bg-slate-900/95 p-4 shadow-2xl backdrop-blur-md text-slate-100 space-y-2 animate-in fade-in slide-in-from-bottom-3 no-print">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Download className="h-4 w-4 text-emerald-400 animate-bounce" />
+              <p className="text-xs font-bold text-white truncate">{downloadTemp.nomeArquivo}</p>
+            </div>
+            <span className="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full shrink-0">
+              {downloadTemp.segundos}s
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-400 leading-snug">
+            PDF enviado ao Supabase para download no WebView. Será <strong>auto-excluído da nuvem em {downloadTemp.segundos}s</strong> por segurança.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

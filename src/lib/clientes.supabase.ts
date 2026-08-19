@@ -322,3 +322,43 @@ export function dispararDownloadArquivo(
 }
 
 
+/**
+ * Dispara o download de um arquivo já em formato base64 binário (ex: PDF gerado por jsPDF).
+ * - Android WebView: salva direto via AndroidApp.baixarArquivo (MediaStore)
+ * - Navegadores web: converte base64 em Blob e força download
+ */
+export function dispararDownloadBase64(
+  nomeArquivo: string,
+  base64: string,
+  mimeType = "application/pdf"
+): void {
+  if (typeof window !== "undefined" && (window as any).AndroidApp?.baixarArquivo) {
+    try {
+      (window as any).AndroidApp.baixarArquivo(nomeArquivo, base64, mimeType);
+      return;
+    } catch (err) {
+      console.warn("Falha no AndroidApp bridge, usando fallback web:", err);
+    }
+  }
+  // Web: converte base64 em Blob e força download
+  try {
+    const byteChars = atob(base64);
+    const byteArray = new Uint8Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) {
+      byteArray[i] = byteChars.charCodeAt(i);
+    }
+    const blob = new Blob([byteArray], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = nomeArquivo;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 2000);
+  } catch (err) {
+    console.warn("Erro ao disparar download base64:", err);
+  }
+}
