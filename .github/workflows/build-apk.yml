@@ -27,11 +27,16 @@ jobs:
       - name: Configurar Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.2.2'
+
       - name: Compilar APK com Gradle
         run: |
           cd android
-          chmod +x gradlew
-          ./gradlew :app:assembleDebug --stacktrace --no-daemon
+          gradle :app:assembleDebug --stacktrace --no-daemon
+
 
 
       - name: Encontrar e Renomear APK
