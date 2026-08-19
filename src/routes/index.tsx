@@ -1261,13 +1261,14 @@ function PainelAdministrativo({
 
       {/* ── CONTEÚDO 1: GERENCIADOR DE CLIENTES ── */}
       {abaAtiva === "clientes" && (
-        <main className="mx-auto grid max-w-6xl gap-6 px-5 py-8 lg:grid-cols-[minmax(0,450px)_1fr]">
+        <main className="mx-auto grid max-w-6xl gap-4 sm:gap-6 px-3 sm:px-5 py-4 sm:py-8 lg:grid-cols-[minmax(0,450px)_1fr] w-full max-w-full overflow-hidden">
           {/* Formulário de Cadastro */}
-          <section className="card-elevated h-fit p-6 bg-slate-900 border-slate-800 text-slate-100 rounded-xl border">
+          <section className="card-elevated h-fit p-4 sm:p-6 bg-slate-900 border-slate-800 text-slate-100 rounded-2xl border shadow-md w-full max-w-full overflow-hidden">
             <h2 className="text-base font-bold text-white">Novo cadastro de cliente</h2>
             <p className="mt-1 text-xs text-slate-400">
               Preencha os dados cadastrais, valores, forma de pagamento e termo de garantia.
             </p>
+
 
             <form onSubmit={onSubmitCliente} className="mt-6 space-y-4">
               <div className="space-y-1.5">
@@ -1618,10 +1619,10 @@ function PainelAdministrativo({
           </section>
 
           {/* Lista de Clientes */}
-          <section className="card-elevated p-6 bg-slate-900 border-slate-800 text-slate-100 rounded-xl border">
-            <div className="flex flex-wrap items-center gap-3">
+          <section className="card-elevated p-4 sm:p-6 bg-slate-900 border-slate-800 text-slate-100 rounded-2xl border shadow-md w-full max-w-full overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <h2 className="text-base font-bold text-white">Clientes cadastrados</h2>
-              <div className="relative ml-auto w-full sm:w-64">
+              <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                 <Input
                   value={busca}
@@ -1632,14 +1633,14 @@ function PainelAdministrativo({
               </div>
             </div>
 
-            <div className="mt-5 space-y-4">
+            <div className="mt-4 space-y-3">
               {isLoading && (
                 <p className="text-sm text-slate-400">Carregando dados do Supabase...</p>
               )}
               {!isLoading && filtrados.length === 0 && (
-                <div className="rounded-lg border border-dashed border-slate-800 p-10 text-center">
+                <div className="rounded-lg border border-dashed border-slate-800 p-8 text-center">
                   <p className="text-sm text-slate-400">
-                    Nenhum cadastro encontrado. Registre o primeiro cliente ao lado.
+                    Nenhum cadastro encontrado. Registre o primeiro cliente acima.
                   </p>
                 </div>
               )}
@@ -1652,63 +1653,66 @@ function PainelAdministrativo({
                 return (
                   <article
                     key={c.id}
-                    className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 transition-all hover:border-slate-700 space-y-2.5"
+                    className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 sm:p-4 transition-all hover:border-slate-700 space-y-3 w-full max-w-full overflow-hidden"
                   >
-                    <div className="flex flex-wrap items-start gap-4">
-                      <div className="min-w-[180px] flex-1">
-                        <h3 className="text-sm font-semibold text-white">{c.nome}</h3>
-                        <p className="text-xs text-slate-400">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5">
+                      <div className="space-y-0.5 min-w-0 flex-1">
+                        <h3 className="text-sm font-bold text-white leading-tight break-words">{c.nome}</h3>
+                        <p className="text-xs text-slate-400 break-words">
                           <span>{c.cpf}</span> · <span>{c.telefone}</span>
                         </p>
-                        <p className="mt-0.5 text-xs text-slate-500">{c.endereco}</p>
+                        <p className="text-xs text-slate-500 break-words">{c.endereco}</p>
                       </div>
 
-                      <div className="min-w-[140px]">
-                        <p className="field-label text-slate-500 text-[11px]">Central</p>
-                        <p className="text-sm font-medium text-slate-200">{c.modeloCentral}</p>
-                        <p className="font-mono text-xs text-slate-400">{c.macCentral}</p>
-                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs bg-slate-900/80 p-2 rounded-lg border border-slate-800/80 shrink-0">
+                        <div>
+                          <p className="text-slate-500 text-[10px] font-semibold uppercase">Central</p>
+                          <p className="font-medium text-slate-200 truncate max-w-[130px]">{c.modeloCentral}</p>
+                          <p className="font-mono text-[10px] text-slate-400">{c.macCentral}</p>
+                        </div>
 
-                      <div className="min-w-[110px]">
-                        <p className="field-label text-slate-500 text-[11px]">Cadastro</p>
-                        <p className="text-xs text-slate-400">{formatarData(c.criadoEm)}</p>
-                      </div>
-
-                      <div className="ml-auto flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setClienteManutencao(c);
-                            setDescricaoManutencao("");
-                          }}
-                          className="text-xs border-amber-700/50 text-amber-300 bg-amber-950/30 hover:bg-amber-900/50 font-semibold cursor-pointer"
-                        >
-                          <Wrench className="h-3.5 w-3.5 mr-1 text-amber-400" /> Manutenção
-                        </Button>
-
-                        <Button asChild variant="secondary" size="sm" className="cursor-pointer bg-slate-800 hover:bg-slate-700 text-white">
-                          <Link to="/cliente/$id" params={{ id: c.id }}>
-                            <FileText className="h-4 w-4 mr-1 text-slate-300" /> Documento & Garantia
-                          </Link>
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={`Excluir ${c.nome}`}
-                          onClick={() => excluir.mutate(c.id)}
-                          className="cursor-pointer hover:bg-rose-950/40"
-                        >
-                          <Trash2 className="h-4 w-4 text-rose-400 hover:text-rose-300" />
-                        </Button>
+                        <div>
+                          <p className="text-slate-500 text-[10px] font-semibold uppercase">Cadastro</p>
+                          <p className="text-slate-300 text-[11px]">{formatarData(c.criadoEm)}</p>
+                        </div>
                       </div>
                     </div>
 
+                    {/* Botões de Ação do Cliente */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setClienteManutencao(c);
+                          setDescricaoManutencao("");
+                        }}
+                        className="text-xs h-8 flex-1 sm:flex-initial border-amber-700/50 text-amber-300 bg-amber-950/30 hover:bg-amber-900/50 font-semibold cursor-pointer"
+                      >
+                        <Wrench className="h-3.5 w-3.5 mr-1 text-amber-400" /> Manutenção
+                      </Button>
+
+                      <Button asChild variant="secondary" size="sm" className="text-xs h-8 flex-1 sm:flex-initial cursor-pointer bg-slate-800 hover:bg-slate-700 text-white font-semibold shadow-sm">
+                        <Link to="/cliente/$id" params={{ id: c.id }}>
+                          <FileText className="h-3.5 w-3.5 mr-1 text-slate-300" /> Documento & Termo
+                        </Link>
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Excluir ${c.nome}`}
+                        onClick={() => excluir.mutate(c.id)}
+                        className="h-8 w-8 text-rose-400 hover:bg-rose-950/40 cursor-pointer shrink-0"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+
                     {/* Informações Financeiras e Badge de Garantia */}
-                    <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80">
+                    <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/80">
                       {garantia.valorServico && (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-950/60 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-md">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-emerald-950/60 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-md">
                           <DollarSign className="h-3 w-3 text-emerald-400" />
                           <span>Serviço: R$ {garantia.valorServico}</span>
                           {garantia.formaPagamento && (
@@ -1720,12 +1724,12 @@ function PainelAdministrativo({
                       )}
 
                       {garantia.coberturas.length === 0 ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-amber-950/50 text-amber-300 border border-amber-800 px-2 py-0.5 rounded-md">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-amber-950/50 text-amber-300 border border-amber-800 px-2 py-0.5 rounded-md">
                           <ShieldCheck className="h-3 w-3 text-amber-400" />
-                          <span>Garantia Legal: 90 dias (Padrão CDC)</span>
+                          <span>Garantia Legal: 90 dias</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-blue-950/50 text-blue-300 border border-blue-800 px-2 py-0.5 rounded-md">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-blue-950/50 text-blue-300 border border-blue-800 px-2 py-0.5 rounded-md">
                           <ShieldCheck className="h-3 w-3 text-blue-400" />
                           <span>
                             Garantia Estendida:{" "}
@@ -1742,11 +1746,12 @@ function PainelAdministrativo({
                       )}
 
                       {obsLimpa && (
-                        <span className="text-[11px] text-slate-400 truncate max-w-xs ml-auto">
+                        <span className="text-[10px] text-slate-400 truncate max-w-full">
                           Obs: {obsLimpa}
                         </span>
                       )}
                     </div>
+
 
                     {/* Histórico de Manutenções */}
                     {manuts.length > 0 ? (
