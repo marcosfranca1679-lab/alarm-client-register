@@ -50,12 +50,35 @@ function NotFoundComponent() {
   );
 }
 
+// Listener para erros de atualização de versão do Vite/Vercel (chunks com hash alterado)
+if (typeof window !== "undefined") {
+  window.addEventListener("vite:preloadError", (event) => {
+    console.warn("Nova versão detectada, recarregando página:", event);
+    window.location.reload();
+  });
+}
+
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error("Erro capturado no Root:", error);
   const router = useRouter();
 
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
+
+    // Se o erro for de nova versão implantada no Vercel (hash antigo não existe mais), recarrega automaticamente
+    const msg = error?.message || "";
+    if (
+      msg.includes("dynamically imported module") ||
+      msg.includes("Failed to fetch") ||
+      msg.includes("Loading chunk")
+    ) {
+      const storageKey = `retry_import_${window.location.pathname}`;
+      const lastRetry = sessionStorage.getItem(storageKey);
+      if (!lastRetry) {
+        sessionStorage.setItem(storageKey, "1");
+        window.location.reload();
+      }
+    }
   }, [error]);
 
   return (
@@ -65,11 +88,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           WS Segurança Residencial
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Ocorreu uma instabilidade no carregamento inicial.
+          Nova versão do sistema disponível. Clique abaixo para atualizar:
         </p>
 
         {error?.message && (
-          <div className="mt-3 rounded-md bg-rose-50 dark:bg-rose-950/30 p-2.5 text-xs text-rose-700 dark:text-rose-300 font-mono text-left overflow-auto max-h-32 border border-rose-200">
+          <div className="mt-3 rounded-md bg-slate-100 dark:bg-slate-800 p-2.5 text-xs text-slate-700 dark:text-slate-300 font-mono text-left overflow-auto max-h-32 border">
             {error.message}
           </div>
         )}
@@ -77,20 +100,20 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <div className="mt-5 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
-              try {
-                router.invalidate();
-              } catch {}
-              reset();
+              window.location.reload();
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
           >
-            Tentar novamente
+            Atualizar e Recarregar
           </button>
           <a
             href="/"
+            onClick={() => {
+              window.location.href = "/";
+            }}
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent cursor-pointer"
           >
-            Recarregar Início
+            Ir para o Início
           </a>
         </div>
       </div>
