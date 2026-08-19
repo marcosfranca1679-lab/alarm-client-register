@@ -576,27 +576,67 @@ function Documento() {
       // Box Destaque de Validade Total Acordada
       doc.setFillColor(239, 246, 255);
       doc.setDrawColor(191, 219, 254);
-      doc.roundedRect(marg, y2, wTotal, 9, 1.5, 1.5, "FD");
-      doc.setFontSize(7);
+      doc.roundedRect(marg, y2, wTotal, 8, 1.5, 1.5, "FD");
+      doc.setFontSize(6.8);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(30, 58, 138);
-      doc.text(`Validade Total Acordada: ${garantia.validade} (a contar de ${formatarData(cliente.criadoEm)}).`, marg + 4, y2 + 5.8);
-      y2 += 13;
+      doc.text(`Validade Total Acordada: ${garantia.validade} (a contar de ${formatarData(cliente.criadoEm)}).`, marg + 4, y2 + 5.2);
+      y2 += 11.5;
 
-      // ── 5. CONSIDERAÇÕES FINAIS ──
+      // ── 5. POLÍTICA DE INADIMPLÊNCIA DA GARANTIA ESTENDIDA ──
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(180, 83, 9);
+      doc.text("5. POLÍTICA DE INADIMPLÊNCIA DA GARANTIA ESTENDIDA:", marg, y2);
+      y2 += 3.8;
+
+      // Box de aviso de inadimplência
+      doc.setFillColor(255, 251, 235);
+      doc.setDrawColor(252, 211, 77);
+      doc.roundedRect(marg, y2, wTotal, 26, 1.5, 1.5, "FD");
+
+      let inadY = y2 + 4.2;
+      doc.setFontSize(6.2);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(120, 53, 15);
+
+      // Ponto 1: 7 dias
+      doc.setFillColor(217, 119, 6);
+      doc.circle(marg + 3, inadY - 0.9, 0.7, "F");
+      const txtInad1 = "Em caso de 7 dias de atraso no pagamento da garantia estendida, será cobrado o valor de R$ 199,00, acrescido do valor referente à vistoria técnica, para que a garantia possa ser reativada e o serviço volte a ser utilizado.";
+      const linhasInad1 = doc.splitTextToSize(txtInad1, wTotal - 8);
+      doc.text(linhasInad1, marg + 6, inadY);
+      inadY += linhasInad1.length * 3.4 + 2;
+
+      // Ponto 2: 15 dias
+      doc.setFillColor(220, 38, 38);
+      doc.circle(marg + 3, inadY - 0.9, 0.7, "F");
+      const txtInad2 = "Após 15 dias de atraso, a garantia estendida será cancelada, ocasionando a perda total do direito à garantia, sem possibilidade de reativação.";
+      const linhasInad2 = doc.splitTextToSize(txtInad2, wTotal - 8);
+      doc.text(linhasInad2, marg + 6, inadY);
+      inadY += linhasInad2.length * 3.4 + 2;
+
+      // Ponto 3: Declaração
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(146, 64, 14);
+      doc.text("O cliente declara estar ciente e de acordo com estas condições ao contratar a garantia estendida.", marg + 6, inadY);
+
+      y2 += 29;
+
+      // ── 6. CONSIDERAÇÕES FINAIS ──
       doc.setFontSize(7.5);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(15, 23, 42);
-      doc.text("5. CONSIDERAÇÕES FINAIS:", marg, y2);
-      y2 += 4;
+      doc.text("6. CONSIDERAÇÕES FINAIS:", marg, y2);
+      y2 += 3.8;
 
-      doc.setFontSize(6.5);
+      doc.setFontSize(6.2);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(71, 85, 105);
       const txtFinal = "A garantia cobre integralmente os serviços e itens descritos neste termo em conformidade com as normas vigentes de proteção ao consumidor (CDC), não se estendendo a danos por mau uso, intervenções de terceiros não autorizados ou causas externas não cobertas.";
       const linhasFinal = doc.splitTextToSize(txtFinal, wTotal);
       doc.text(linhasFinal, marg, y2);
-      y2 += linhasFinal.length * 3.8 + 14;
+      y2 += linhasFinal.length * 3.5 + 12;
 
       // ── ASSINATURAS ──
       const signW = 75;
@@ -996,10 +1036,29 @@ function Documento() {
                 </p>
               </div>
 
-              {/* 5. Considerações Finais */}
+              {/* 5. Política de Inadimplência da Garantia Estendida */}
+              <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                <h3 className="font-bold text-amber-900 dark:text-amber-300 uppercase flex items-center gap-1.5">
+                  <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />
+                  5. POLÍTICA DE INADIMPLÊNCIA DA GARANTIA ESTENDIDA:
+                </h3>
+                <div className="rounded-lg bg-amber-50/80 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 p-3 space-y-2 text-[11px] text-amber-950 dark:text-amber-200 leading-relaxed">
+                  <p>
+                    • Em caso de <strong>7 dias de atraso</strong> no pagamento da garantia estendida, será cobrado o valor de <strong>R$ 199,00</strong>, acrescido do valor referente à <strong>vistoria técnica</strong>, para que a garantia possa ser reativada e o serviço volte a ser utilizado.
+                  </p>
+                  <p>
+                    • Após <strong>15 dias de atraso</strong>, a garantia estendida será <strong>cancelada</strong>, ocasionando a <strong>perda total do direito à garantia</strong>, sem possibilidade de reativação.
+                  </p>
+                  <p className="font-semibold text-amber-900 dark:text-amber-300 border-t border-amber-200 dark:border-amber-800 pt-1.5">
+                    O cliente declara estar ciente e de acordo com estas condições ao contratar a garantia estendida.
+                  </p>
+                </div>
+              </div>
+
+              {/* 6. Considerações Finais */}
               <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
                 <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
-                  5. CONSIDERAÇÕES FINAIS:
+                  6. CONSIDERAÇÕES FINAIS:
                 </h3>
                 <p className="text-[11px] leading-relaxed">
                   A garantia cobre integralmente os serviços e itens descritos neste termo em conformidade com as normas vigentes de proteção ao consumidor, não se estendendo a danos por mau uso, intervenções de terceiros não autorizados ou causas externas não cobertas.
