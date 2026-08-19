@@ -25,28 +25,35 @@ import {
   dispararDownloadBase64,
 } from "@/lib/clientes.supabase";
 
-/** Carrega jsPDF e html2canvas via CDN dinamicamente */
-async function carregarBibliotecasPDF(): Promise<{ JsPDF: any; html2canvas: any }> {
-  const carregarScript = (src: string, globalName: string) => {
-    if ((window as any)[globalName]) return Promise.resolve((window as any)[globalName]);
-    return new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = src;
-      script.onload = () => resolve((window as any)[globalName]);
-      script.onerror = () => reject(new Error(`Falha ao carregar ${globalName}`));
-      document.head.appendChild(script);
-    });
-  };
-
-  const [jspdfObj, html2canvasObj] = await Promise.all([
-    carregarScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js", "jspdf"),
-    carregarScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js", "html2canvas"),
-  ]);
-
-  const JsPDF = (window as any).jspdf?.jsPDF || (jspdfObj as any)?.jsPDF;
-  const html2canvas = (window as any).html2canvas || html2canvasObj;
-  return { JsPDF, html2canvas };
+/** Carrega jsPDF via CDN dinamicamente */
+async function carregarJsPDF(): Promise<any> {
+  if ((window as any).jspdf?.jsPDF) return (window as any).jspdf.jsPDF;
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+    script.onload = () => resolve((window as any).jspdf?.jsPDF);
+    script.onerror = () => reject(new Error("Falha ao carregar jsPDF"));
+    document.head.appendChild(script);
+  });
 }
+
+/** Obtém o logo como base64 para incluir no PDF */
+async function obterLogoBase64(): Promise<string | null> {
+  try {
+    const res = await fetch("/logo.jpg");
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
+
 
 
 
@@ -125,48 +132,351 @@ function Documento() {
 
   async function gerarEBaixarPDF() {
     if (!cliente) return;
-    toast.info("Capturando documento e gerando PDF...");
+    toast.info("Gerando documento oficial em PDF...");
     try {
-      const { JsPDF, html2canvas } = await carregarBibliotecasPDF();
-      if (!JsPDF || !html2canvas) throw new Error("Bibliotecas de PDF não carregaram");
+      const JsPDF = await carregarJsPDF();
+      if (!JsPDF) throw new Error("jsPDF não carregou");
 
-      const elemento = document.getElementById("documento-termo-garantia");
-      if (!elemento) throw new Error("Documento não encontrado na tela");
+      const doc = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const logoBase64 = await obterLogoBase64();
 
-      // Captura o documento exatamente como aparece na tela com alta definição (scale: 2)
-      const canvas = await html2canvas(elemento, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
-      });
+      const marg = 12;
+      const wTotal = 210 - marg * 2; // 186mm
+      let y = 12;
 
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-
-      const pdfLargura = 210;
-      const pdfAltura = (canvas.height * pdfLargura) / canvas.width;
-      const pageHeight = 297;
-
-      let alturaRestante = pdfAltura;
-      let posicaoY = 0;
-
-      pdf.addImage(imgData, "PNG", 0, posicaoY, pdfLargura, pdfAltura, undefined, "FAST");
-      alturaRestante -= pageHeight;
-
-      while (alturaRestante > 0) {
-        posicaoY -= pageHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, posicaoY, pdfLargura, pdfAltura, undefined, "FAST");
-        alturaRestante -= pageHeight;
+      // ── CABEÇALHO OFICIAL ──
+      if (logoBase64) {
+        try {
+          doc.addImage(logoBase64, "JPEG", marg, y, 16, 16);
+        } catch {
+          // fallback se falhar imagem
+        }
       }
 
-      // Gera PDF como base64
-      const pdfBase64 = pdf.output("datauristring").split(",")[1];
+      const textX = logoBase64 ? marg + 19 : marg;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.setTextColor(15, 23, 42); // #0f172a
+      doc.text("WS SEGURANÇA RESIDENCIAL", textX, y + 4.5);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.setTextColor(71, 85, 105); // #475569
+      doc.text("Ficha de Cadastro, Valores & Termo de Garantia da Manutenção", textX, y + 9);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
+      doc.setTextColor(100, 116, 139); // #64748b
+      doc.text("Sistema Eletrônico de Alarme e Monitoramento", textX, y + 13);
+
+      // Box Protocolo (canto superior direito)
+      const protoW = 38;
+      const protoX = 210 - marg - protoW;
+      doc.setFillColor(241, 245, 249);
+      doc.setDrawColor(203, 213, 225);
+      doc.roundedRect(protoX, y, protoW, 14, 2, 2, "FD");
+
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(100, 116, 139);
+      doc.text("PROTOCOLO", protoX + protoW / 2, y + 4.5, { align: "center" });
+
+      doc.setFontSize(9);
+      doc.setFont("courier", "bold");
+      doc.setTextColor(15, 23, 42);
+      doc.text(cliente.id.slice(0, 8).toUpperCase(), protoX + protoW / 2, y + 10.5, { align: "center" });
+
+      // Linha divisória
+      y += 18;
+      doc.setDrawColor(226, 232, 240);
+      doc.line(marg, y, 210 - marg, y);
+      y += 5;
+
+      // Helper para títulos de seção
+      const tituloSecao = (txt: string, cor: [number, number, number] = [30, 41, 59]) => {
+        doc.setFillColor(241, 245, 249);
+        doc.rect(marg, y, wTotal, 5.5, "F");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8);
+        doc.setTextColor(...cor);
+        doc.text(txt.toUpperCase(), marg + 2, y + 4);
+        y += 7.5;
+      };
+
+      // Helper para campos em 2 colunas
+      const gridDuasColunas = (
+        r1: string, v1: string,
+        r2: string, v2: string,
+        mono1 = false, mono2 = false
+      ) => {
+        const colW = (wTotal - 6) / 2;
+        const col2X = marg + colW + 6;
+
+        doc.setFontSize(6.5);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(100, 116, 139);
+        doc.text(r1.toUpperCase(), marg, y);
+        doc.text(r2.toUpperCase(), col2X, y);
+        y += 3.5;
+
+        doc.setFontSize(8);
+        doc.setFont(mono1 ? "courier" : "helvetica", mono1 ? "bold" : "normal");
+        doc.setTextColor(15, 23, 42);
+        doc.text(v1 || "—", marg, y);
+
+        doc.setFont(mono2 ? "courier" : "helvetica", mono2 ? "bold" : "normal");
+        doc.text(v2 || "—", col2X, y);
+        y += 5;
+      };
+
+      const campoLinha = (r: string, v: string) => {
+        doc.setFontSize(6.5);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(100, 116, 139);
+        doc.text(r.toUpperCase(), marg, y);
+        y += 3.5;
+
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(15, 23, 42);
+        const linhas = doc.splitTextToSize(v || "—", wTotal);
+        doc.text(linhas, marg, y);
+        y += linhas.length * 4 + 1;
+      };
+
+      // ── SEÇÃO 1: DADOS DO CLIENTE ──
+      tituloSecao("1. Dados do Cliente e Instalação");
+      gridDuasColunas("Nome Completo", cliente.nome, "CPF", cliente.cpf, false, true);
+      gridDuasColunas("Telefone / WhatsApp", cliente.telefone, "Data do Cadastro", formatarData(cliente.criadoEm));
+      campoLinha("Endereço Completo da Instalação", cliente.endereco);
+      y += 2;
+
+      // ── SEÇÃO 2: DADOS DO EQUIPAMENTO ──
+      tituloSecao("2. Dados do Equipamento / Central");
+      gridDuasColunas("Modelo da Central", cliente.modeloCentral, "MAC Address da Central", cliente.macCentral, false, true);
+      if (obsLimpa) {
+        campoLinha("Observações Técnicas", obsLimpa);
+      }
+      y += 2;
+
+      // ── SEÇÃO 3: CONDIÇÕES COMERCIAIS & PAGAMENTO ──
+      tituloSecao("3. Condições Comerciais & Pagamento", [5, 150, 105]);
+
+      const boxW = (wTotal - 4) / 2;
+      const boxH = 17;
+
+      // Card Esquerda: Valor do Serviço
+      doc.setFillColor(240, 253, 244);
+      doc.setDrawColor(187, 247, 208);
+      doc.roundedRect(marg, y, boxW, boxH, 2, 2, "FD");
+
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(71, 85, 105);
+      doc.text("VALOR DO SERVIÇO / INSTALAÇÃO", marg + 3, y + 4.5);
+
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(4, 120, 87);
+      doc.text(garantia.valorServico ? `R$ ${garantia.valorServico}` : "Sob consulta", marg + 3, y + 10);
+
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(71, 85, 105);
+      doc.text(`Forma de Pagamento: ${garantia.formaPagamento || "PIX"}`, marg + 3, y + 14.5);
+
+      // Card Direita: Garantia Estendida
+      const card2X = marg + boxW + 4;
+      doc.setFillColor(239, 246, 255);
+      doc.setDrawColor(191, 219, 254);
+      doc.roundedRect(card2X, y, boxW, boxH, 2, 2, "FD");
+
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(71, 85, 105);
+      doc.text("COBRANÇA DA GARANTIA ESTENDIDA", card2X + 3, y + 4.5);
+
+      if (garantia.coberturas.length > 0) {
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(29, 78, 216);
+        const txtValor = garantia.tipoCobrancaGarantia === "total" && garantia.valorTotalGarantia
+          ? `R$ ${garantia.valorTotalGarantia.toFixed(2).replace(".", ",")} Total à Vista`
+          : garantia.valorMensalGarantia
+            ? `R$ ${garantia.valorMensalGarantia.toFixed(2).replace(".", ",")}/mês`
+            : "Incluso";
+        doc.text(txtValor, card2X + 3, y + 10);
+
+        doc.setFontSize(6);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(71, 85, 105);
+        doc.text(`${garantia.coberturas.length} item(ns) contratado(s)`, card2X + 3, y + 14.5);
+      } else {
+        doc.setFontSize(8.5);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(180, 83, 9);
+        doc.text("Garantia Legal CDC (Inclusa)", card2X + 3, y + 10);
+
+        doc.setFontSize(6);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(100, 116, 139);
+        doc.text("Sem cobrança adicional", card2X + 3, y + 14.5);
+      }
+
+      y += boxH + 4;
+
+      // ── SEÇÃO 4: TERMO DE GARANTIA OFICIAL ──
+      // Box principal do termo
+      const termoH = 68;
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(191, 219, 254);
+      doc.roundedRect(marg, y, wTotal, termoH, 2, 2, "FD");
+
+      // Cabeçalho do Termo
+      doc.setFontSize(8.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(30, 58, 138);
+      doc.text("TERMO DE GARANTIA DA MANUTENÇÃO", marg + 4, y + 6);
+
+      // Badge Validade
+      const badgeW = 34;
+      const badgeX = 210 - marg - badgeW - 4;
+      doc.setFillColor(37, 99, 235);
+      doc.roundedRect(badgeX, y + 2, badgeW, 6, 1.5, 1.5, "F");
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(255, 255, 255);
+      doc.text(`Validade: ${garantia.validade}`, badgeX + badgeW / 2, y + 6.2, { align: "center" });
+
+      let termoY = y + 11;
+
+      // Box Modalidade CDC / Estendida
+      if (garantia.coberturas.length === 0) {
+        doc.setFillColor(254, 243, 199);
+        doc.setDrawColor(252, 211, 77);
+        doc.roundedRect(marg + 3, termoY, wTotal - 6, 11, 1.5, 1.5, "FD");
+
+        doc.setFontSize(6.5);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(146, 64, 14);
+        doc.text("MODALIDADE: GARANTIA LEGAL PADRÃO DE 90 DIAS (ART. 26 DO CDC)", marg + 5, termoY + 4);
+
+        doc.setFontSize(5.8);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(120, 53, 15);
+        doc.text("Vigência exclusiva da garantia legal obrigatória de 90 dias (Lei 8.078/1990 CDC) para os serviços executados.", marg + 5, termoY + 8.5);
+      } else {
+        doc.setFillColor(236, 253, 245);
+        doc.setDrawColor(167, 243, 208);
+        doc.roundedRect(marg + 3, termoY, wTotal - 6, 11, 1.5, 1.5, "FD");
+
+        doc.setFontSize(6.5);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(6, 95, 70);
+        doc.text("MODALIDADE: GARANTIA PERSONALIZADA / ESTENDIDA CONTRATADA", marg + 5, termoY + 4);
+
+        doc.setFontSize(5.8);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(4, 120, 87);
+        doc.text(`Coberturas técnicas contratadas com prazo total de ${garantia.validade} (90 dias legais CDC + período adicional).`, marg + 5, termoY + 8.5);
+      }
+
+      termoY += 14;
+
+      // Lista de Coberturas (Todas as 7 opções padrão com check [✓] ou [✕])
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(30, 41, 59);
+      doc.text("1. COBERTURAS DO TERMO:", marg + 4, termoY);
+      termoY += 3.5;
+
+      OPCOES_GARANTIA_PADRAO.forEach((item) => {
+        const incluso = garantia.coberturas.includes(item);
+        if (incluso) {
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(4, 120, 87);
+          doc.text("[✓]", marg + 5, termoY);
+          doc.setTextColor(15, 23, 42);
+          doc.text(item, marg + 11, termoY);
+        } else {
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(156, 163, 175);
+          doc.text("[✕]", marg + 5, termoY);
+          doc.setTextColor(148, 163, 184);
+          doc.text(item, marg + 11, termoY);
+        }
+        termoY += 4.3;
+      });
+
+      y += termoH + 4;
+
+      // ── SEÇÃO 5: CONSIDERAÇÕES FINAIS ──
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(30, 41, 59);
+      doc.text("5. CONSIDERAÇÕES FINAIS:", marg, y);
+      y += 3.5;
+
+      doc.setFontSize(6);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(71, 85, 105);
+      const txtFinal = "A garantia cobre integralmente os serviços e itens descritos neste termo em conformidade com as normas vigentes de proteção ao consumidor (CDC), não se estendendo a danos por mau uso, intervenções de terceiros não autorizados ou causas externas não cobertas.";
+      const linhasFinal = doc.splitTextToSize(txtFinal, wTotal);
+      doc.text(linhasFinal, marg, y);
+      y += linhasFinal.length * 3.2 + 6;
+
+      // ── ASSINATURAS ──
+      const signW = 75;
+      const sign1X = marg + 6;
+      const sign2X = 210 - marg - signW - 6;
+
+      // Linhas de assinatura
+      doc.setDrawColor(100, 116, 139);
+      doc.line(sign1X, y, sign1X + signW, y);
+      doc.line(sign2X, y, sign2X + signW, y);
+      y += 4;
+
+      // Assinatura Cliente
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(15, 23, 42);
+      doc.text(cliente.nome, sign1X + signW / 2, y, { align: "center" });
+
+      doc.setFontSize(6);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 116, 139);
+      doc.text("Assinatura do Cliente / Contratante", sign1X + signW / 2, y + 3.5, { align: "center" });
+      doc.setFont("courier", "normal");
+      doc.text(`CPF: ${cliente.cpf}`, sign1X + signW / 2, y + 6.5, { align: "center" });
+
+      // Assinatura Empresa
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.setTextColor(15, 23, 42);
+      doc.text("WS SEGURANÇA RESIDENCIAL", sign2X + signW / 2, y, { align: "center" });
+
+      doc.setFontSize(6);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 116, 139);
+      doc.text("Responsável Técnico / Emissor", sign2X + signW / 2, y + 3.5, { align: "center" });
+      doc.text("Sistema de Alarme e Segurança", sign2X + signW / 2, y + 6.5, { align: "center" });
+
+      // ── RODAPÉ OFICIAL ──
+      const rodapeY = 290;
+      doc.setDrawColor(226, 232, 240);
+      doc.line(marg, rodapeY - 3, 210 - marg, rodapeY - 3);
+
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 116, 139);
+      doc.text(`Documento oficial emitido por WS Segurança Residencial • (48) 99911-8524 • Emissão: ${formatarData(new Date().toISOString())}`, 210 / 2, rodapeY, { align: "center" });
+
+      // Gera PDF em Base64
+      const pdfBase64 = doc.output("datauristring").split(",")[1];
       const nomeArquivo = `termo_${cliente.nome.replace(/\s+/g, "_").toLowerCase()}_${new Date().toISOString().slice(0, 10)}.pdf`;
 
       // Envia cópia temporária de segurança para o Supabase (auto-apaga em 60s)
-      toast.info("Salvando no Supabase...");
+      toast.info("Enviando ao Supabase...");
       const tempId = await criarDownloadTemporarioSupabase(nomeArquivo, pdfBase64);
 
       // Dispara o download nativo no Android WebView ou navegador
@@ -174,16 +484,17 @@ function Documento() {
 
       if (tempId) {
         setDownloadTemp({ nomeArquivo, segundos: 60 });
-        toast.success("PDF idêntico à tela baixado com sucesso!");
+        toast.success("PDF oficial gerado e salvo na pasta Downloads!");
       } else {
         toast.success("PDF baixado com sucesso!");
       }
     } catch (err) {
-      console.error(err);
-      toast.error("Erro ao gerar imagem do PDF. Tentando modo impressão...");
-      setTimeout(() => window.print(), 500);
+      console.error("Erro ao gerar PDF:", err);
+      toast.error("Erro ao gerar PDF. Abrindo tela de impressão...");
+      setTimeout(() => window.print(), 300);
     }
   }
+
 
 
 
