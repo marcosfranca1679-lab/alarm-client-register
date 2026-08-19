@@ -1,18 +1,29 @@
 package com.ws.seguranca
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.DownloadManager
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.util.Base64
 import android.view.View
 import android.webkit.*
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,8 +33,8 @@ class MainActivity : AppCompatActivity() {
 
     private var fileChooserCallback: ValueCallback<Array<Uri>>? = null
     private val FILE_CHOOSER_RESULT_CODE = 1001
+    private val PERMISSIONS_REQUEST_CODE = 2001
 
-    // ── COLOQUE AQUI O SEU LINK DA VERCEL OU DOMÍNIO DO SITE ──
     companion object {
         const val VERCEL_URL = "https://alarm-client-register.vercel.app"
     }
@@ -43,6 +54,7 @@ class MainActivity : AppCompatActivity() {
             webView.reload()
         }
 
+        verificarPermissoes()
         configurarWebView()
 
         // Carrega o site da Vercel
@@ -61,6 +73,31 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun verificarPermissoes() {
+        val permissoesNecessarias = mutableListOf<String>()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                permissoesNecessarias.add(Manifest.permission.READ_MEDIA_IMAGES)
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissoesNecessarias.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissoesNecessarias.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissoesNecessarias.add(Manifest.permission.CAMERA)
+        }
+
+        if (permissoesNecessarias.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissoesNecessarias.toTypedArray(), PERMISSIONS_REQUEST_CODE)
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -98,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                 fileChooserCallback = filePathCallback
 
                 val intent = fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
-                    type = "*/*"
+                    type = "image/*"
                     addCategory(Intent.CATEGORY_OPENABLE)
                 }
 
@@ -110,6 +147,32 @@ class MainActivity : AppCompatActivity() {
                     return false
                 }
                 return true
+            }
+        }
+
+        // Configuração de Download (Salvar PDF, Backups JSON e Imagens)
+        webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, _ ->
+            if (url.startsWith("data:")) {
+                salvarDataUri(url, mimetype)
+            } else {
+                try {
+                    val request = DownloadManager.Request(Uri.parse(url)).apply {
+                        setMimeType(mimetype)
+                        addRequestHeader("User-Agent", userAgent)
+                        setDescription("Baixando arquivo da WS Segurança...")
+                        setTitle(URLUtil.guessFileName(url, contentDisposition, mimetype))
+                        setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                        setDestinationInExternalPublicDir(
+                            Environment.DIRECTORY_DOWNLOADS,
+                            URLUtil.guessFileName(url, contentDisposition, mimetype)
+                        )
+                    }
+                    val dm = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                    dm.enqueue(request)
+                    Toast.makeText(this, "Iniciando download...", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Erro ao iniciar download: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -165,6 +228,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun salvarDataUri(dataUri: String, mimeType: String?) {
+        try {
+            val base64Data = dataUri.substringAfter("base64,")
+            val decodedBytes = Base64.decode(base64Data, Base64.DEFAULT)
+            val extension = if (dataUri.contains("application/pdf")) "pdf" else if (dataUri.contains("application/json")) "json" else "png"
+            val fileName = "WS_Documento_${System.currentTimeMillis()}.$extension"
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val file = File(downloadsDir, fileName)
+            val fos = FileOutputStream(file)
+            fos.write(decodedBytes)
+            fos.flush()
+            fos.close()
+            Toast.makeText(this, "Arquivo salvo em Downloads: $fileName", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Erro ao salvar arquivo: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FILE_CHOOSER_RESULT_CODE) {
@@ -185,3 +266,4 @@ class MainActivity : AppCompatActivity() {
         webView.restoreState(savedInstanceState)
     }
 }
+

@@ -254,12 +254,14 @@ function LandingPage({
   onAbrirLogin: () => void;
 }) {
   const [categoriaAtiva, setCategoriaAtiva] = useState<string>("Todas");
+  const [produtoDetalhe, setProdutoDetalhe] = useState<Produto | null>(null);
 
   const categorias = ["Todas", ...CATEGORIAS_PRODUTO];
   const produtosFiltrados =
     categoriaAtiva === "Todas"
       ? produtos
       : produtos.filter((p) => p.categoria === categoriaAtiva);
+
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -438,7 +440,10 @@ function LandingPage({
                   key={prod.id}
                   className="group rounded-2xl border border-slate-800 bg-slate-900/80 p-5 flex flex-col justify-between transition-all hover:border-blue-500/50 hover:bg-slate-900 shadow-md space-y-4"
                 >
-                  <div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => setProdutoDetalhe(prod)}
+                  >
                     {/* Imagem / Banner do Produto */}
                     <div className="relative h-44 w-full rounded-xl bg-slate-950/80 border border-slate-800 p-4 flex items-center justify-center overflow-hidden">
                       <img
@@ -471,22 +476,34 @@ function LandingPage({
                       </p>
                     </div>
                   </div>
-                  <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-3">
+                  <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
                     <div>
                       <p className="text-[10px] text-slate-500 font-medium">A partir de</p>
-                      <p className="text-base font-extrabold text-emerald-400">
+                      <p className="text-sm sm:text-base font-extrabold text-emerald-400">
                         R$ {prod.valor || "Sob consulta"}
                       </p>
                     </div>
-                    <a
-                      href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre:%20${encodeURIComponent(prod.nome)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-md cursor-pointer"
-                    >
-                      <MessageCircle className="h-3.5 w-3.5" />
-                      <span>Pedir no Zap</span>
-                    </a>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setProdutoDetalhe(prod)}
+                        className="inline-flex items-center gap-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-2 text-xs font-semibold transition-colors cursor-pointer"
+                        title="Ver detalhes completos"
+                      >
+                        <Eye className="h-3.5 w-3.5 text-blue-400" />
+                        <span>Ver Mais</span>
+                      </button>
+
+                      <a
+                        href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20comprar%20ou%20saber%20mais%20sobre%20o%20produto:%20${encodeURIComponent(prod.nome)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-102"
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" />
+                        <span>Pedir no Zap</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -744,6 +761,79 @@ function LandingPage({
           </div>
         </div>
       </footer>
+
+      {/* ── Modal Ver Mais Detalhes do Produto ── */}
+      <Dialog open={!!produtoDetalhe} onOpenChange={(open) => { if (!open) setProdutoDetalhe(null); }}>
+        <DialogContent className="sm:max-w-lg max-h-[85vh] bg-slate-900 border-slate-800 text-slate-100 p-0 overflow-hidden flex flex-col">
+          {produtoDetalhe && (
+            <div className="flex flex-col flex-1 overflow-hidden">
+              <div className="relative h-60 w-full bg-slate-950 flex items-center justify-center p-6 border-b border-slate-800 shrink-0">
+                <img
+                  src={produtoDetalhe.imagemUrl || "/intelbras.png"}
+                  alt={produtoDetalhe.nome}
+                  className="max-h-48 w-auto object-contain"
+                />
+                <span className="absolute top-4 left-4 text-xs font-bold bg-slate-900/90 text-blue-300 border border-slate-700 px-3 py-1 rounded-lg">
+                  {produtoDetalhe.categoria}
+                </span>
+                {obterLogoMarca(produtoDetalhe.marca) && (
+                  <img
+                    src={obterLogoMarca(produtoDetalhe.marca)}
+                    alt={produtoDetalhe.marca ?? ""}
+                    className="absolute bottom-3 right-3 h-8 w-auto object-contain bg-white/10 rounded-lg p-1"
+                  />
+                )}
+              </div>
+
+              <div className="p-6 space-y-4 overflow-y-auto flex-1">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    {produtoDetalhe.marca && (
+                      <span className="text-xs text-blue-400 font-bold uppercase tracking-wider">
+                        {produtoDetalhe.marca}
+                      </span>
+                    )}
+                    {produtoDetalhe.destaque && (
+                      <span className="text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md">
+                        ★ Destaque Oficial
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-bold text-white">{produtoDetalhe.nome}</h3>
+                </div>
+
+                <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-4 space-y-1.5">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Descrição & Funções
+                  </p>
+                  <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+                    {produtoDetalhe.descricao || "Equipamento de alta tecnologia e confiabilidade homologado para segurança residencial e comercial."}
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-slate-800">
+                  <div>
+                    <p className="text-xs text-slate-400">Investimento a partir de</p>
+                    <p className="text-2xl font-black text-emerald-400">
+                      R$ {produtoDetalhe.valor || "Sob consulta"}
+                    </p>
+                  </div>
+
+                  <a
+                    href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento%20para%20o%20produto:%20${encodeURIComponent(produtoDetalhe.nome)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 text-sm font-bold transition-all shadow-lg shadow-emerald-950/50 cursor-pointer hover:scale-102"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    <span>Pedir no WhatsApp</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
