@@ -170,7 +170,7 @@ function AppPrincipal() {
                 id="user"
                 value={loginUser}
                 onChange={(e) => setLoginUser(e.target.value)}
-                placeholder="williammax"
+                placeholder="Digite seu usuário"
                 className="bg-slate-800 border-slate-700 text-white focus:border-blue-500"
                 autoComplete="username"
               />
@@ -804,7 +804,7 @@ function PainelAdministrativo({ onLogout }: { onLogout: () => void }) {
             <div className="flex items-center gap-2">
               <h1 className="text-base font-extrabold text-white">PAINEL DO TÉCNICO</h1>
               <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                williammax
+                Autenticado
               </span>
             </div>
             <p className="text-xs text-slate-400 font-medium">
