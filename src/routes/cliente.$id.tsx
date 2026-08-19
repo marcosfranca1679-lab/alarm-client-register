@@ -25,16 +25,27 @@ import {
   dispararDownloadBase64,
 } from "@/lib/clientes.supabase";
 
-/** Carrega jsPDF via CDN dinamicamente se ainda não estiver carregado */
-async function carregarJsPDF(): Promise<any> {
-  if ((window as any).jspdf?.jsPDF) return (window as any).jspdf.jsPDF;
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-    script.onload = () => resolve((window as any).jspdf?.jsPDF);
-    script.onerror = () => reject(new Error("Falha ao carregar jsPDF"));
-    document.head.appendChild(script);
-  });
+/** Carrega jsPDF e html2canvas via CDN dinamicamente */
+async function carregarBibliotecasPDF(): Promise<{ JsPDF: any; html2canvas: any }> {
+  const carregarScript = (src: string, globalName: string) => {
+    if ((window as any)[globalName]) return Promise.resolve((window as any)[globalName]);
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => resolve((window as any)[globalName]);
+      script.onerror = () => reject(new Error(`Falha ao carregar ${globalName}`));
+      document.head.appendChild(script);
+    });
+  };
+
+  const [jspdfObj, html2canvasObj] = await Promise.all([
+    carregarScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js", "jspdf"),
+    carregarScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js", "html2canvas"),
+  ]);
+
+  const JsPDF = (window as any).jspdf?.jsPDF || (jspdfObj as any)?.jsPDF;
+  const html2canvas = (window as any).html2canvas || html2canvasObj;
+  return { JsPDF, html2canvas };
 }
 
 
@@ -114,120 +125,66 @@ function Documento() {
 
   async function gerarEBaixarPDF() {
     if (!cliente) return;
-    toast.info("Gerando PDF...");
+    toast.info("Capturando documento e gerando PDF...");
     try {
-      const JsPDF = await carregarJsPDF();
-      if (!JsPDF) throw new Error("jsPDF não carregou");
+      const { JsPDF, html2canvas } = await carregarBibliotecasPDF();
+      if (!JsPDF || !html2canvas) throw new Error("Bibliotecas de PDF não carregaram");
 
-      const doc = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-      const marg = 15;
-      const larg = 210 - marg * 2;
-      let y = 20;
+      const elemento = document.getElementById("documento-termo-garantia");
+      if (!elemento) throw new Error("Documento não encontrado na tela");
 
-      const linha = (txt: string, tamanho = 10, negrito = false, cor: [number, number, number] = [30, 30, 30]) => {
-        doc.setFontSize(tamanho);
-        doc.setFont("helvetica", negrito ? "bold" : "normal");
-        doc.setTextColor(...cor);
-        doc.text(txt, marg, y);
-        y += tamanho * 0.45 + 2;
-      };
-      const divisor = () => {
-        doc.setDrawColor(180, 180, 180);
-        doc.line(marg, y, 210 - marg, y);
-        y += 4;
-      };
-      const campo = (rotulo: string, valor: string) => {
-        doc.setFontSize(8);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(100, 100, 100);
-        doc.text(rotulo.toUpperCase(), marg, y);
-        y += 4;
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        const linhas = doc.splitTextToSize(valor || "—", larg);
-        doc.text(linhas, marg, y);
-        y += linhas.length * 5 + 2;
-      };
+      // Captura o documento exatamente como aparece na tela com alta definição (scale: 2)
+      const canvas = await html2canvas(elemento, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+      });
 
-      // Cabeçalho
-      doc.setFillColor(15, 23, 42);
-      doc.rect(0, 0, 210, 28, "F");
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(255, 255, 255);
-      doc.text("WS Segurança Residencial", marg, 12);
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(180, 200, 255);
-      doc.text("Documento de Cadastro & Termo de Garantia", marg, 19);
-      doc.setTextColor(140, 160, 200);
-      doc.text(`Emitido em: ${new Date().toLocaleDateString("pt-BR", { dateStyle: "full" })}`, marg, 25);
-      y = 38;
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
-      // Seção: Dados do Cliente
-      linha("DADOS DO CLIENTE", 12, true, [15, 23, 42]);
-      divisor();
-      campo("Nome Completo", cliente.nome);
-      campo("CPF", cliente.cpf);
-      campo("Telefone / WhatsApp", cliente.telefone);
-      campo("Endereço", cliente.endereco);
-      divisor();
+      const pdfLargura = 210;
+      const pdfAltura = (canvas.height * pdfLargura) / canvas.width;
+      const pageHeight = 297;
 
-      // Seção: Equipamento
-      linha("EQUIPAMENTO", 12, true, [15, 23, 42]);
-      divisor();
-      campo("Modelo da Central", cliente.modeloCentral);
-      campo("MAC da Central", cliente.macCentral);
-      divisor();
+      let alturaRestante = pdfAltura;
+      let posicaoY = 0;
 
-      // Seção: Serviço
-      linha("SERVIÇO & PAGAMENTO", 12, true, [15, 23, 42]);
-      divisor();
-      campo("Valor do Serviço", garantia.valorServico || "—");
-      campo("Forma de Pagamento", garantia.formaPagamento || "—");
-      if (cliente.observacoes) campo("Observações", obsLimpa || "—");
-      divisor();
+      pdf.addImage(imgData, "PNG", 0, posicaoY, pdfLargura, pdfAltura, undefined, "FAST");
+      alturaRestante -= pageHeight;
 
-      // Seção: Garantia
-      linha("TERMO DE GARANTIA", 12, true, [15, 23, 42]);
-      divisor();
-      campo("Validade da Garantia", garantia.validade);
-      if (garantia.coberturas?.length) {
-        campo("Coberturas Incluídas", garantia.coberturas.join(", "));
+      while (alturaRestante > 0) {
+        posicaoY -= pageHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, posicaoY, pdfLargura, pdfAltura, undefined, "FAST");
+        alturaRestante -= pageHeight;
       }
 
-      // Rodapé
-      const rodapeY = 287;
-      doc.setDrawColor(200, 200, 200);
-      doc.line(marg, rodapeY - 4, 210 - marg, rodapeY - 4);
-      doc.setFontSize(7.5);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(120, 120, 120);
-      doc.text("WS Segurança Residencial  •  (48) 99911-8524  •  Documento gerado eletronicamente", marg, rodapeY);
-
       // Gera PDF como base64
-      const pdfBase64 = doc.output("datauristring").split(",")[1];
+      const pdfBase64 = pdf.output("datauristring").split(",")[1];
       const nomeArquivo = `termo_${cliente.nome.replace(/\s+/g, "_").toLowerCase()}_${new Date().toISOString().slice(0, 10)}.pdf`;
 
-      // Envia para Supabase (temporário 60s)
-      toast.info("Enviando para o Supabase...");
+      // Envia cópia temporária de segurança para o Supabase (auto-apaga em 60s)
+      toast.info("Salvando no Supabase...");
       const tempId = await criarDownloadTemporarioSupabase(nomeArquivo, pdfBase64);
 
-      // Dispara o download via Android nativo ou web
+      // Dispara o download nativo no Android WebView ou navegador
       dispararDownloadBase64(nomeArquivo, pdfBase64, "application/pdf");
 
       if (tempId) {
         setDownloadTemp({ nomeArquivo, segundos: 60 });
-        toast.success("PDF baixado! Cópia removida da nuvem em 60s.");
+        toast.success("PDF idêntico à tela baixado com sucesso!");
       } else {
-        toast.success("PDF gerado e download iniciado!");
+        toast.success("PDF baixado com sucesso!");
       }
     } catch (err) {
       console.error(err);
-      toast.error("Erro ao gerar PDF. Tente usar o botão Imprimir.");
+      toast.error("Erro ao gerar imagem do PDF. Tentando modo impressão...");
+      setTimeout(() => window.print(), 500);
     }
   }
+
 
 
   return (
@@ -276,7 +233,10 @@ function Documento() {
         )}
 
         {cliente && (
-          <article className="card-elevated print-sheet p-8 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-7">
+          <article
+            id="documento-termo-garantia"
+            className="card-elevated print-sheet p-8 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-7"
+          >
             {/* ── Cabeçalho Oficial ── */}
             <header className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
               <img
