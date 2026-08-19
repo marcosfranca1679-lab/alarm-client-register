@@ -264,6 +264,84 @@ function ModalAssinaturaDigital({
   );
 }
 
+function SeloAutenticidadeCartorio({
+  clienteId,
+  dataHora,
+}: {
+  clienteId: string;
+  dataHora: string;
+}) {
+  const serial = `WS-${clienteId.slice(0, 8).toUpperCase()}`;
+  return (
+    <div className="relative mb-2 w-full max-w-[270px] overflow-hidden rounded-xl border-2 border-blue-500/70 bg-gradient-to-br from-blue-50/90 via-sky-50/80 to-indigo-50/90 p-0 shadow-lg ring-1 ring-blue-400/30 dark:from-slate-900 dark:via-blue-950/50 dark:to-slate-900 select-none">
+      {/* Padrão Guilloché decorativo em SVG (ondas de segurança de cartório) */}
+      <svg
+        className="pointer-events-none absolute right-0 top-0 h-full w-32 opacity-30 text-blue-600 dark:text-blue-400"
+        viewBox="0 0 120 100"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0.75"
+      >
+        <path d="M 10,10 C 40,80 60,20 110,90 M 15,10 C 45,80 65,20 115,90 M 20,10 C 50,80 70,20 120,90" />
+        <circle cx="95" cy="50" r="38" strokeDasharray="1,1" />
+        <circle cx="95" cy="50" r="28" strokeDasharray="2,1" />
+        <circle cx="95" cy="50" r="18" strokeDasharray="1,2" />
+      </svg>
+
+      <div className="flex">
+        {/* Faixa Holográfica Esquerda (Efeito Holograma de Segurança) */}
+        <div className="relative w-8 shrink-0 bg-gradient-to-b from-amber-400 via-emerald-400 via-cyan-400 to-purple-500 p-1 flex flex-col items-center justify-between overflow-hidden shadow-inner border-r border-amber-300/60">
+          <div className="absolute inset-0 bg-white/20 backdrop-blur-[0.5px]" />
+          <div className="relative text-[6.5px] font-black uppercase text-slate-950 tracking-tight [writing-mode:vertical-rl] rotate-180 drop-shadow-xs">
+            ★ WS ORIGIN ★
+          </div>
+          <div className="relative my-auto h-4 w-4 rounded-full border border-white/90 bg-white/60 shadow-xs flex items-center justify-center text-[7.5px] font-black text-slate-950">
+            WS
+          </div>
+          <div className="relative text-[6.5px] font-bold uppercase text-slate-950 tracking-tight [writing-mode:vertical-rl] rotate-180">
+            AUTÊNTICO
+          </div>
+        </div>
+
+        {/* Corpo do Selo Cartorial */}
+        <div className="flex-1 p-2 space-y-1 relative z-10">
+          {/* Faixa Superior: SELO DE AUTENTICIDADE */}
+          <div className="rounded bg-gradient-to-r from-blue-700 via-blue-800 to-blue-900 px-2 py-0.5 text-center shadow-xs">
+            <p className="text-[8.5px] font-black tracking-widest text-white uppercase font-sans drop-shadow-xs">
+              SELO DE AUTENTICIDADE
+            </p>
+          </div>
+
+          {/* Logo e Nome da Empresa */}
+          <div className="flex items-center gap-1.5 pt-0.5">
+            <img src="/logo.jpg" alt="WS" className="h-6 w-6 rounded-full object-cover border border-blue-400/80 shadow-xs shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="text-[9.5px] font-extrabold text-blue-950 dark:text-blue-100 uppercase leading-none truncate">
+                WS SEGURANÇA RESIDENCIAL
+              </p>
+              <p className="text-[7.5px] text-blue-700 dark:text-blue-400 leading-tight">
+                Sistemas Eletrônicos de Segurança
+              </p>
+            </div>
+          </div>
+
+          {/* Dados de Validação e Segurança */}
+          <div className="border-t border-blue-200/80 dark:border-blue-800/80 pt-1 space-y-0.5 text-[7.5px] font-mono text-slate-700 dark:text-slate-300">
+            <div className="flex justify-between items-center">
+              <span className="font-bold text-blue-900 dark:text-blue-300">SELO Nº:</span>
+              <span className="font-bold text-blue-950 dark:text-white bg-blue-100/90 dark:bg-blue-900/80 px-1 rounded border border-blue-200 dark:border-blue-700">{serial}</span>
+            </div>
+            <div className="flex justify-between items-center text-[7px] text-slate-500 dark:text-slate-400 pt-0.5">
+              <span>DATA: {dataHora}</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-100/80 dark:bg-emerald-950/80 px-1 rounded">● AUTÊNTICO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Linha({ rotulo, valor, mono }: { rotulo: string; valor: string; mono?: boolean }) {
   return (
     <div className="border-b border-slate-200 dark:border-slate-800 py-2.5">
@@ -857,40 +935,86 @@ function Documento() {
         }
       }
 
-      // Selo de Autenticidade Digital Oficial da WS Segurança
-      const seloW = 68;
-      const seloH = 14.5;
+      // Selo de Autenticidade Cartorial Oficial da WS Segurança
+      const seloW = 74;
+      const seloH = 19;
       const seloX = sign2X + (signW - seloW) / 2;
-      const seloY = y2 - 15.5;
+      const seloY = y2 - 20;
 
-      doc.setFillColor(236, 253, 245);
-      doc.setDrawColor(5, 150, 105);
+      // Fundo papel de segurança cartorial
+      doc.setFillColor(240, 249, 255);
+      doc.setDrawColor(37, 99, 235);
       doc.setLineWidth(0.4);
       doc.roundedRect(seloX, seloY, seloW, seloH, 1.5, 1.5, "FD");
 
-      // Borda interna dupla sutil
-      doc.setDrawColor(167, 243, 208);
-      doc.setLineWidth(0.2);
-      doc.roundedRect(seloX + 0.8, seloY + 0.8, seloW - 1.6, seloH - 1.6, 1, 1, "D");
+      // Faixa Holográfica Esquerda (Efeito Holograma Metalizado)
+      doc.setFillColor(251, 191, 36); // Dourado
+      doc.roundedRect(seloX + 0.4, seloY + 0.4, 7.5, seloH - 0.8, 1, 1, "F");
+
+      doc.setFillColor(52, 211, 153); // Esmeralda no meio
+      doc.rect(seloX + 0.4, seloY + 6.5, 7.5, 6, "F");
+
+      doc.setFillColor(56, 189, 248); // Cyan na base
+      doc.rect(seloX + 0.4, seloY + 12.5, 7.5, seloH - 12.9, "F");
+
+      // Círculo holográfico central
+      doc.setFillColor(255, 255, 255);
+      doc.circle(seloX + 4.15, seloY + 9.5, 2.2, "F");
+      doc.setFontSize(4.2);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(15, 23, 42);
+      doc.text("WS", seloX + 4.15, seloY + 10.3, { align: "center" });
+
+      // Faixa Superior "SELO DE AUTENTICIDADE"
+      doc.setFillColor(29, 78, 216); // Azul cartório
+      doc.roundedRect(seloX + 8.8, seloY + 0.8, seloW - 9.6, 4, 0.8, 0.8, "F");
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(5.5);
-      doc.setTextColor(6, 95, 70);
-      doc.text("★ AUTENTICAÇÃO DIGITAL OFICIAL ★", seloX + seloW / 2, seloY + 3.4, { align: "center" });
+      doc.setTextColor(255, 255, 255);
+      doc.text("SELO DE AUTENTICIDADE", seloX + 8.8 + (seloW - 9.6) / 2, seloY + 3.6, { align: "center" });
 
-      doc.setFontSize(6.5);
+      // Curvas Guilloché de Segurança no fundo direito
+      doc.setDrawColor(191, 219, 254);
+      doc.setLineWidth(0.15);
+      doc.ellipse(seloX + seloW - 8, seloY + 11, 12, 6);
+      doc.ellipse(seloX + seloW - 8, seloY + 11, 8, 4);
+
+      // Logo thumbnail e Dados da WS Segurança
+      if (logoBase64) {
+        try { doc.addImage(logoBase64, "JPEG", seloX + 9.5, seloY + 5.5, 6.5, 6.5); } catch {}
+      }
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(6.2);
       doc.setTextColor(15, 23, 42);
-      doc.text("WS SEGURANÇA RESIDENCIAL", seloX + seloW / 2, seloY + 7, { align: "center" });
+      doc.text("WS SEGURANÇA RESIDENCIAL", seloX + 17, seloY + 7.8);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(4.5);
+      doc.setTextColor(37, 99, 235);
+      doc.text("Sistemas Eletrônicos de Segurança", seloX + 17, seloY + 10.5);
+
+      // Linha separadora
+      doc.setDrawColor(203, 213, 225);
+      doc.setLineWidth(0.2);
+      doc.line(seloX + 9, seloY + 12.5, seloX + seloW - 1, seloY + 12.5);
+
+      // Serial e Data de Validação
+      doc.setFont("courier", "bold");
+      doc.setFontSize(4.8);
+      doc.setTextColor(30, 58, 138);
+      doc.text(`SELO Nº: WS-${cliente.id.slice(0, 8).toUpperCase()}`, seloX + 9.5, seloY + 15.2);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(4.5);
+      doc.setTextColor(5, 150, 105);
+      doc.text("● AUTÊNTICO", seloX + seloW - 2, seloY + 15.2, { align: "right" });
 
       doc.setFont("courier", "normal");
-      doc.setFontSize(5);
-      doc.setTextColor(4, 120, 87);
-      const agoraStr = new Date().toLocaleDateString("pt-BR") + " " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-      doc.text(`Assinado: ${agoraStr}`, seloX + seloW / 2, seloY + 10.2, { align: "center" });
-
-      doc.setFontSize(4.6);
+      doc.setFontSize(4.2);
       doc.setTextColor(71, 85, 105);
-      doc.text(`CHAVE: ${cliente.id.slice(0, 12).toUpperCase()} • EMISSÃO VÁLIDA`, seloX + seloW / 2, seloY + 13.2, { align: "center" });
+      const dataHoraAtual = new Date().toLocaleDateString("pt-BR") + " " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      doc.text(`Emissão: ${dataHoraAtual}`, seloX + 9.5, seloY + 17.8);
 
       // Linhas de assinatura
       doc.setDrawColor(100, 116, 139);
@@ -1384,23 +1508,12 @@ function Documento() {
                 <p className="text-[10px] text-muted-foreground font-mono mt-0.5">CPF: {cliente.cpf}</p>
               </div>
 
-              {/* Bloco Empresa com Selo de Autenticidade Digital */}
+              {/* Bloco Empresa com Selo Cartorial de Autenticidade */}
               <div className="border-t border-slate-400 pt-2 flex flex-col items-center justify-end min-h-[100px]">
-                <div className="mb-2 rounded-xl border-2 border-emerald-600/90 bg-emerald-50/90 dark:bg-emerald-950/40 p-2.5 text-center shadow-xs max-w-[250px] w-full">
-                  <div className="flex items-center justify-center gap-1 text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
-                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <span>AUTENTICAÇÃO DIGITAL OFICIAL</span>
-                  </div>
-                  <div className="mt-0.5 border-t border-emerald-200 dark:border-emerald-800/80 pt-1 text-[9.5px] font-bold text-emerald-950 dark:text-emerald-200 leading-tight">
-                    WS SEGURANÇA RESIDENCIAL
-                  </div>
-                  <div className="text-[8.5px] text-emerald-700 dark:text-emerald-400 mt-0.5 font-mono">
-                    Assinado: {new Date().toLocaleDateString("pt-BR")} às {new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-                  </div>
-                  <div className="text-[8px] text-emerald-600 dark:text-emerald-500 font-mono tracking-tighter mt-0.5">
-                    CHAVE: {cliente.id.slice(0, 12).toUpperCase()} • EMISSÃO VÁLIDA
-                  </div>
-                </div>
+                <SeloAutenticidadeCartorio
+                  clienteId={cliente.id}
+                  dataHora={`${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`}
+                />
 
                 <p className="font-bold text-slate-900 dark:text-slate-100">WS SEGURANÇA RESIDENCIAL</p>
                 <p className="text-[11px] text-muted-foreground">Responsável Técnico / Emissor</p>
