@@ -943,11 +943,8 @@ function PainelAdministrativo({
       setForm(vazio);
       setValorServico("");
       setFormaPagamento("PIX");
-      setCoberturasGarantia([
-        OPCOES_GARANTIA_PADRAO[0],
-        OPCOES_GARANTIA_PADRAO[1],
-        OPCOES_GARANTIA_PADRAO[2],
-      ]);
+      setCoberturasGarantia(OPCOES_GARANTIA_PADRAO.slice(0, 3));
+
       setValidadeGarantia("90 dias (CDC) + 3 meses estendida (Total: 6 meses)");
       setTipoCobrancaGarantia("mensal");
       toast.success("Cliente cadastrado com sucesso no painel!");
