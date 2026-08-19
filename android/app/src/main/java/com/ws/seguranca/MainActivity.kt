@@ -54,6 +54,15 @@ class MainActivity : AppCompatActivity() {
             webView.reload()
         }
 
+        // Garante que o SwipeRefresh só ativa no topo absoluto (scrollY == 0) e nunca trava a rolagem para cima
+        swipeRefresh.setOnChildScrollUpCallback { _, _ ->
+            webView.scrollY > 0
+        }
+        webView.viewTreeObserver.addOnScrollChangedListener {
+            swipeRefresh.isEnabled = (webView.scrollY == 0)
+        }
+
+
         verificarPermissoes()
         configurarWebView()
 
