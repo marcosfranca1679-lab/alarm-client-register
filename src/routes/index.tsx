@@ -1799,154 +1799,156 @@ function PainelAdministrativo({
 
       {/* ── Modal Adicionar / Editar Produto ── */}
       <Dialog open={modalProdutoAberto} onOpenChange={setModalProdutoAberto}>
-        <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-slate-100">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-md max-h-[85vh] flex flex-col bg-slate-900 border-slate-800 text-slate-100 p-0 overflow-hidden">
+          <DialogHeader className="p-5 pb-2 shrink-0 border-b border-slate-800/80">
             <DialogTitle className="text-white font-bold flex items-center gap-2">
               <Package className="h-5 w-5 text-blue-400" />
               {produtoEditando ? "Editar Produto / Banner" : "Adicionar Novo Produto / Banner"}
             </DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={salvarProdutoModal} className="space-y-4 py-2">
-            <div className="space-y-1.5">
-              <Label className="field-label text-xs text-slate-300">Nome do Produto</Label>
-              <Input
-                value={formProdNome}
-                onChange={(e) => setFormProdNome(e.target.value)}
-                placeholder="Ex.: Câmera Wi-Fi Intelbras Full HD"
-                className="bg-slate-800 border-slate-700 text-white"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
+          <form onSubmit={salvarProdutoModal} className="flex flex-col flex-1 overflow-hidden">
+            <div className="space-y-4 p-5 overflow-y-auto flex-1 max-h-[calc(85vh-140px)]">
               <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300">Valor (R$)</Label>
+                <Label className="field-label text-xs text-slate-300">Nome do Produto</Label>
                 <Input
-                  value={formProdValor}
-                  onChange={(e) => setFormProdValor(e.target.value)}
-                  placeholder="299,00"
+                  value={formProdNome}
+                  onChange={(e) => setFormProdNome(e.target.value)}
+                  placeholder="Ex.: Câmera Wi-Fi Intelbras Full HD"
                   className="bg-slate-800 border-slate-700 text-white"
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="field-label text-xs text-slate-300">Valor (R$)</Label>
+                  <Input
+                    value={formProdValor}
+                    onChange={(e) => setFormProdValor(e.target.value)}
+                    placeholder="299,00"
+                    className="bg-slate-800 border-slate-700 text-white"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="field-label text-xs text-slate-300">Categoria</Label>
+                  <select
+                    value={formProdCategoria}
+                    onChange={(e) => setFormProdCategoria(e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-white"
+                  >
+                    {CATEGORIAS_PRODUTO.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300">Categoria</Label>
+                <Label className="field-label text-xs text-slate-300">
+                  Marca do Equipamento
+                </Label>
                 <select
-                  value={formProdCategoria}
-                  onChange={(e) => setFormProdCategoria(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-white"
+                  value={formProdMarca}
+                  onChange={(e) => handleMarcaChange(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-white cursor-pointer"
                 >
-                  {CATEGORIAS_PRODUTO.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
+                  {MARCAS_PRODUTO.map((m) => (
+                    <option key={m} value={m}>{m}</option>
                   ))}
                 </select>
               </div>
-            </div>
 
-            <div className="space-y-1.5">
-              <Label className="field-label text-xs text-slate-300">
-                Marca do Equipamento
-              </Label>
-              <select
-                value={formProdMarca}
-                onChange={(e) => handleMarcaChange(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-white cursor-pointer"
-              >
-                {MARCAS_PRODUTO.map((m) => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Preview de Imagem */}
-            {formProdImagem && (
-              <div className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-800/50 p-3">
-                <img
-                  src={formProdImagem}
-                  alt="Preview"
-                  className="h-14 w-14 object-contain rounded-md bg-slate-900"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                />
-                <div className="text-xs text-slate-400">
-                  <p className="font-semibold text-slate-200">Preview da imagem</p>
-                  <p className="text-[11px] truncate max-w-[180px]">{formProdMarca}</p>
+              {/* Preview de Imagem */}
+              {formProdImagem && (
+                <div className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-800/50 p-3">
+                  <img
+                    src={formProdImagem}
+                    alt="Preview"
+                    className="h-14 w-14 object-contain rounded-md bg-slate-900"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                  <div className="text-xs text-slate-400">
+                    <p className="font-semibold text-slate-200">Preview da imagem</p>
+                    <p className="text-[11px] truncate max-w-[180px]">{formProdMarca}</p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <div className="space-y-2">
-              <Label className="field-label text-xs text-slate-300">Imagem do Produto</Label>
-              {/* Upload de foto do dispositivo */}
-              <input
-                type="file"
-                accept="image/*"
-                ref={imgUploadRef}
-                className="hidden"
-                onChange={handleImagemUpload}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => imgUploadRef.current?.click()}
-                className="w-full text-xs bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 cursor-pointer gap-2"
-              >
-                <Upload className="h-3.5 w-3.5 text-blue-400" />
-                Carregar Imagem do Dispositivo
-              </Button>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { label: "Intelbras", src: "/intelbras.png" },
-                  { label: "JFL", src: "/jfl.png" },
-                  { label: "Logo WS", src: "/logo.jpg" },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => setFormProdImagem(item.src)}
-                    className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${
-                      formProdImagem === item.src
-                        ? "border-blue-500 bg-blue-950/40 text-blue-300"
-                        : "border-slate-700 bg-slate-800/60 text-slate-400 hover:bg-slate-800"
-                    }`}
-                  >
-                    <img src={item.src} alt={item.label} className="h-6 w-auto object-contain" />
-                    <span className="text-[10px]">{item.label}</span>
-                  </button>
-                ))}
+              <div className="space-y-2">
+                <Label className="field-label text-xs text-slate-300">Imagem do Produto</Label>
+                {/* Upload de foto do dispositivo */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={imgUploadRef}
+                  className="hidden"
+                  onChange={handleImagemUpload}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => imgUploadRef.current?.click()}
+                  className="w-full text-xs bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 cursor-pointer gap-2"
+                >
+                  <Upload className="h-3.5 w-3.5 text-blue-400" />
+                  Carregar Imagem do Dispositivo
+                </Button>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: "Intelbras", src: "/intelbras.png" },
+                    { label: "JFL", src: "/jfl.png" },
+                    { label: "Logo WS", src: "/logo.jpg" },
+                  ].map((item) => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={() => setFormProdImagem(item.src)}
+                      className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${
+                        formProdImagem === item.src
+                          ? "border-blue-500 bg-blue-950/40 text-blue-300"
+                          : "border-slate-700 bg-slate-800/60 text-slate-400 hover:bg-slate-800"
+                      }`}
+                    >
+                      <img src={item.src} alt={item.label} className="h-6 w-auto object-contain" />
+                      <span className="text-[10px]">{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <Input
+                  value={formProdImagem.startsWith("data:") ? "" : formProdImagem}
+                  onChange={(e) => setFormProdImagem(e.target.value)}
+                  placeholder="Ou cole um link de imagem online..."
+                  className="bg-slate-800/60 border-slate-700 text-xs text-slate-300"
+                />
               </div>
-              <Input
-                value={formProdImagem.startsWith("data:") ? "" : formProdImagem}
-                onChange={(e) => setFormProdImagem(e.target.value)}
-                placeholder="Ou cole um link de imagem online..."
-                className="bg-slate-800/60 border-slate-700 text-xs text-slate-300"
-              />
+
+              <div className="space-y-1.5">
+                <Label className="field-label text-xs text-slate-300">Descrição do Produto</Label>
+                <Textarea
+                  rows={3}
+                  value={formProdDescricao}
+                  onChange={(e) => setFormProdDescricao(e.target.value)}
+                  placeholder="Principais funções, zonas, alcance, resolução..."
+                  className="bg-slate-800 border-slate-700 text-white text-xs"
+                />
+              </div>
+
+              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formProdDestaque}
+                  onChange={(e) => setFormProdDestaque(e.target.checked)}
+                  className="rounded border-slate-700 text-blue-600 focus:ring-blue-500"
+                />
+                <span>Destacar este produto na tela principal pública</span>
+              </label>
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="field-label text-xs text-slate-300">Descrição do Produto</Label>
-              <Textarea
-                rows={3}
-                value={formProdDescricao}
-                onChange={(e) => setFormProdDescricao(e.target.value)}
-                placeholder="Principais funções, zonas, alcance, resolução..."
-                className="bg-slate-800 border-slate-700 text-white text-xs"
-              />
-            </div>
-
-            <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formProdDestaque}
-                onChange={(e) => setFormProdDestaque(e.target.checked)}
-                className="rounded border-slate-700 text-blue-600 focus:ring-blue-500"
-              />
-              <span>Destacar este produto na tela principal pública</span>
-            </label>
-
-            <DialogFooter className="pt-2">
+            <DialogFooter className="p-4 border-t border-slate-800 shrink-0 bg-slate-900 flex items-center justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -1957,7 +1959,7 @@ function PainelAdministrativo({
               </Button>
               <Button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-500 text-white font-bold cursor-pointer"
+                className="bg-blue-600 hover:bg-blue-500 text-white font-bold cursor-pointer shadow-md"
               >
                 Salvar Produto
               </Button>
