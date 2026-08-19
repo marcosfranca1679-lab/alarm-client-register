@@ -1171,31 +1171,35 @@ function PainelAdministrativo({
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       {/* ── Header do Painel ── */}
-      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-30">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-4">
-          <img
-            src="/logo.jpg"
-            alt="WS Segurança Residencial"
-            className="h-11 w-11 rounded-2xl object-cover border border-blue-400/30 shadow-md ring-2 ring-blue-500/20"
-          />
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base font-extrabold text-white">PAINEL ADMINISTRATIVO</h1>
-              <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                Autenticado
-              </span>
+      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 sm:px-5 py-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <img
+              src="/logo.jpg"
+              alt="WS Segurança"
+              className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl object-cover border border-blue-400/30 shadow-sm shrink-0"
+            />
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h1 className="text-xs sm:text-sm font-black text-white tracking-tight truncate">
+                  PAINEL ADMINISTRATIVO
+                </h1>
+                <span className="text-[9px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full shrink-0">
+                  Online
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400 font-medium truncate hidden sm:block">
+                WS Segurança — Clientes, Garantias & Produtos
+              </p>
             </div>
-            <p className="text-xs text-slate-400 font-medium">
-              WS Segurança Residencial — Gerenciador de Clientes & Produtos
-            </p>
           </div>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex items-center gap-1.5 shrink-0">
             <Button
               variant="outline"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hidden sm:inline-flex"
+              className="text-xs h-8 bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hidden md:inline-flex"
             >
               <Upload className="h-3.5 w-3.5 mr-1 text-slate-400" /> Importar
             </Button>
@@ -1203,51 +1207,55 @@ function PainelAdministrativo({
               variant="outline"
               size="sm"
               onClick={exportarJson}
-              className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hidden sm:inline-flex"
+              className="text-xs h-8 bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hidden md:inline-flex"
             >
               <Download className="h-3.5 w-3.5 mr-1 text-slate-400" /> Exportar
             </Button>
 
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={onLogout}
-              className="text-xs text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 ml-2 cursor-pointer"
+              className="text-xs h-8 text-rose-300 bg-rose-950/40 border-rose-900/50 hover:bg-rose-900/60 cursor-pointer font-bold px-2.5"
             >
-              <LogOut className="h-3.5 w-3.5 mr-1" /> Sair
+              <LogOut className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">Sair</span>
             </Button>
           </div>
         </div>
 
-        {/* Abas de Navegação do Painel */}
-        <div className="mx-auto max-w-6xl px-5 flex items-center gap-2 border-t border-slate-800/80 pt-2 pb-2">
-          <button
-            type="button"
-            onClick={() => setAbaAtiva("clientes")}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              abaAtiva === "clientes"
-                ? "bg-blue-600 text-white shadow-md"
-                : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-            }`}
-          >
-            <UserCheck className="h-4 w-4" />
-            <span>Cadastros & Termos de Garantia ({clientes.length})</span>
-          </button>
+        {/* Abas de Navegação Responsivas em Grid 2 Colunas */}
+        <div className="mx-auto max-w-6xl px-3 sm:px-5 pb-2">
+          <div className="grid grid-cols-2 gap-2 bg-slate-950/60 p-1 rounded-xl border border-slate-800">
+            <button
+              type="button"
+              onClick={() => setAbaAtiva("clientes")}
+              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer truncate ${
+                abaAtiva === "clientes"
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              }`}
+            >
+              <UserCheck className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">Cadastros ({clientes.length})</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setAbaAtiva("produtos")}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              abaAtiva === "produtos"
-                ? "bg-blue-600 text-white shadow-md"
-                : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-            }`}
-          >
-            <Package className="h-4 w-4" />
-            <span>Banners & Produtos da Tela Principal ({produtos.length})</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setAbaAtiva("produtos")}
+              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer truncate ${
+                abaAtiva === "produtos"
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              }`}
+            >
+              <Package className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">Banners ({produtos.length})</span>
+            </button>
+          </div>
         </div>
       </header>
+
 
       {/* ── CONTEÚDO 1: GERENCIADOR DE CLIENTES ── */}
       {abaAtiva === "clientes" && (
@@ -1804,52 +1812,51 @@ function PainelAdministrativo({
 
       {/* ── CONTEÚDO 2: GERENCIADOR DE BANNERS & PRODUTOS DA TELA PRINCIPAL ── */}
       {abaAtiva === "produtos" && (
-        <main className="mx-auto max-w-6xl px-5 py-8 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 p-6 rounded-2xl border border-slate-800">
+        <main className="mx-auto max-w-6xl px-3 sm:px-5 py-5 sm:py-8 space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-800 shadow-md">
             <div>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Package className="h-5 w-5 text-blue-400" />
-                Gerenciador de Banners & Produtos da Tela Principal
+              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <Package className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
+                Gerenciador de Banners & Produtos
               </h2>
-              <p className="text-xs text-slate-400 mt-1">
-                Adicione, altere preços, troque imagens e descrições dos produtos que aparecem no site
-                público.
+              <p className="text-xs text-slate-400 mt-0.5">
+                Edite valores, troque fotos e adicione novos itens à tela principal.
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pt-1 sm:pt-0">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={restaurarCatalogoPadrao}
-                className="text-xs bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 cursor-pointer"
+                className="text-xs h-9 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 cursor-pointer flex-1 sm:flex-initial"
               >
-                <RotateCcw className="h-3.5 w-3.5 mr-1" /> Restaurar Padrão
+                <RotateCcw className="h-3.5 w-3.5 mr-1" /> Restaurar
               </Button>
               <Button
                 size="sm"
                 onClick={abrirModalCriarProduto}
-                className="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold cursor-pointer shadow-md"
+                className="text-xs h-9 bg-blue-600 hover:bg-blue-500 text-white font-bold cursor-pointer shadow-md flex-1 sm:flex-initial"
               >
-                <Plus className="h-4 w-4 mr-1" /> Novo Produto / Banner
+                <Plus className="h-4 w-4 mr-1" /> Novo Banner
               </Button>
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {produtos.map((prod) => (
               <div
                 key={prod.id}
-                className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5 flex flex-col justify-between space-y-4"
+                className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 sm:p-5 flex flex-col justify-between space-y-3 sm:space-y-4 shadow-sm"
               >
                 <div>
-                  <div className="relative h-36 w-full rounded-xl bg-slate-950 border border-slate-800 p-3 flex items-center justify-center">
+                  <div className="relative h-40 w-full rounded-xl bg-slate-950 border border-slate-800 p-3 flex items-center justify-center overflow-hidden">
                     <img
                       src={prod.imagemUrl || "/intelbras.png"}
                       alt={prod.nome}
-                      className="max-h-24 w-auto object-contain"
+                      className="max-h-28 max-w-full object-contain rounded"
                     />
-                    <span className="absolute top-2 left-2 text-[10px] font-bold bg-slate-900 text-blue-300 border border-slate-700 px-2 py-0.5 rounded-md">
+                    <span className="absolute top-2 left-2 text-[10px] font-bold bg-slate-900/90 text-blue-300 border border-slate-700 px-2 py-0.5 rounded-md">
                       {prod.categoria}
                     </span>
                     {prod.destaque && (
@@ -1857,7 +1864,7 @@ function PainelAdministrativo({
                         ★ Destaque
                       </span>
                     )}
-                    {obterLogoMarca(prod.marca) && (
+                    {obterLogoMarca(prod.marca) && prod.imagemUrl !== obterLogoMarca(prod.marca) && (
                       <img
                         src={obterLogoMarca(prod.marca)}
                         alt={prod.marca ?? ""}
@@ -1867,7 +1874,7 @@ function PainelAdministrativo({
                   </div>
 
                   <div className="mt-3 space-y-1">
-                    <h3 className="text-sm font-bold text-white">{prod.nome}</h3>
+                    <h3 className="text-sm font-bold text-white leading-snug">{prod.nome}</h3>
                     <p className="text-xs text-slate-400 line-clamp-2">{prod.descricao}</p>
                     <p className="text-sm font-extrabold text-emerald-400 pt-1">
                       R$ {prod.valor || "Sob consulta"}
@@ -1875,7 +1882,7 @@ function PainelAdministrativo({
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+                <div className="pt-2.5 border-t border-slate-800 flex items-center justify-between">
                   <span className="text-[10px] text-slate-500 font-mono">
                     ID: {prod.id.slice(0, 8)}
                   </span>
@@ -1884,15 +1891,15 @@ function PainelAdministrativo({
                       variant="outline"
                       size="sm"
                       onClick={() => abrirModalEditarProduto(prod)}
-                      className="text-xs h-7 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 cursor-pointer"
+                      className="text-xs h-8 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 cursor-pointer"
                     >
-                      <Edit3 className="h-3 w-3 mr-1" /> Editar
+                      <Edit3 className="h-3.5 w-3.5 mr-1 text-blue-400" /> Editar
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => removerProduto(prod.id)}
-                      className="h-7 w-7 text-rose-400 hover:bg-rose-950/40 cursor-pointer"
+                      className="h-8 w-8 text-rose-400 hover:bg-rose-950/40 cursor-pointer"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
