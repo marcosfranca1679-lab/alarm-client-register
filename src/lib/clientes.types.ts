@@ -53,7 +53,7 @@ export const MARCAS_PRODUTO = [
   "JFL Alarmes",
   "WS Segurança",
   "Outra Marca",
-];
+] as const satisfies readonly string[];
 
 export function obterLogoMarca(marca?: string): string {
   if (!marca) return "";
@@ -69,7 +69,7 @@ export const CATEGORIAS_PRODUTO = [
   "Sensores & Barreiras",
   "Cerca Elétrica",
   "Baterias & Acessórios",
-];
+] as const satisfies readonly string[];
 
 export const PRODUTOS_PADRAO: Produto[] = [
   {
