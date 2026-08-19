@@ -857,6 +857,41 @@ function Documento() {
         }
       }
 
+      // Selo de Autenticidade Digital Oficial da WS Segurança
+      const seloW = 68;
+      const seloH = 14.5;
+      const seloX = sign2X + (signW - seloW) / 2;
+      const seloY = y2 - 15.5;
+
+      doc.setFillColor(236, 253, 245);
+      doc.setDrawColor(5, 150, 105);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(seloX, seloY, seloW, seloH, 1.5, 1.5, "FD");
+
+      // Borda interna dupla sutil
+      doc.setDrawColor(167, 243, 208);
+      doc.setLineWidth(0.2);
+      doc.roundedRect(seloX + 0.8, seloY + 0.8, seloW - 1.6, seloH - 1.6, 1, 1, "D");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(5.5);
+      doc.setTextColor(6, 95, 70);
+      doc.text("★ AUTENTICAÇÃO DIGITAL OFICIAL ★", seloX + seloW / 2, seloY + 3.4, { align: "center" });
+
+      doc.setFontSize(6.5);
+      doc.setTextColor(15, 23, 42);
+      doc.text("WS SEGURANÇA RESIDENCIAL", seloX + seloW / 2, seloY + 7, { align: "center" });
+
+      doc.setFont("courier", "normal");
+      doc.setFontSize(5);
+      doc.setTextColor(4, 120, 87);
+      const agoraStr = new Date().toLocaleDateString("pt-BR") + " " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      doc.text(`Assinado: ${agoraStr}`, seloX + seloW / 2, seloY + 10.2, { align: "center" });
+
+      doc.setFontSize(4.6);
+      doc.setTextColor(71, 85, 105);
+      doc.text(`CHAVE: ${cliente.id.slice(0, 12).toUpperCase()} • EMISSÃO VÁLIDA`, seloX + seloW / 2, seloY + 13.2, { align: "center" });
+
       // Linhas de assinatura
       doc.setDrawColor(100, 116, 139);
       doc.setLineWidth(0.4);
@@ -1349,8 +1384,24 @@ function Documento() {
                 <p className="text-[10px] text-muted-foreground font-mono mt-0.5">CPF: {cliente.cpf}</p>
               </div>
 
-              {/* Bloco Empresa */}
+              {/* Bloco Empresa com Selo de Autenticidade Digital */}
               <div className="border-t border-slate-400 pt-2 flex flex-col items-center justify-end min-h-[100px]">
+                <div className="mb-2 rounded-xl border-2 border-emerald-600/90 bg-emerald-50/90 dark:bg-emerald-950/40 p-2.5 text-center shadow-xs max-w-[250px] w-full">
+                  <div className="flex items-center justify-center gap-1 text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span>AUTENTICAÇÃO DIGITAL OFICIAL</span>
+                  </div>
+                  <div className="mt-0.5 border-t border-emerald-200 dark:border-emerald-800/80 pt-1 text-[9.5px] font-bold text-emerald-950 dark:text-emerald-200 leading-tight">
+                    WS SEGURANÇA RESIDENCIAL
+                  </div>
+                  <div className="text-[8.5px] text-emerald-700 dark:text-emerald-400 mt-0.5 font-mono">
+                    Assinado: {new Date().toLocaleDateString("pt-BR")} às {new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                  </div>
+                  <div className="text-[8px] text-emerald-600 dark:text-emerald-500 font-mono tracking-tighter mt-0.5">
+                    CHAVE: {cliente.id.slice(0, 12).toUpperCase()} • EMISSÃO VÁLIDA
+                  </div>
+                </div>
+
                 <p className="font-bold text-slate-900 dark:text-slate-100">WS SEGURANÇA RESIDENCIAL</p>
                 <p className="text-[11px] text-muted-foreground">Responsável Técnico / Emissor</p>
                 <p className="text-[10px] text-muted-foreground font-mono mt-0.5">Sistema de Alarme e Segurança</p>
