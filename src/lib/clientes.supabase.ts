@@ -1,9 +1,11 @@
-import type { Cliente, NovoCliente } from "./clientes.types";
+import type { Cliente, NovoCliente, Produto } from "./clientes.types";
 
 export const SUPABASE_URL = "https://adyauaubmitdkfbutgix.supabase.co";
 export const SUPABASE_ANON_KEY = "sb_publishable_Ugmm5Baa21OQAqPF4wB_9A_EdqzF0gx";
 
 const TABLE = "clientes";
+const SYSTEM_PROD_CPF = "000.000.000-00";
+const SYSTEM_PROD_NOME = "__CATALOGO_PRODUTOS__";
 
 const baseHeaders = {
   apikey: SUPABASE_ANON_KEY,
@@ -24,7 +26,13 @@ export async function buscarClientesSupabase(): Promise<Cliente[] | null> {
     const data = await res.json();
     if (!Array.isArray(data)) return null;
 
-    return data.map((item: any) => ({
+    // Filtra o registro especial de catálogo de produtos do sistema
+    const clientesReais = data.filter(
+      (item: any) =>
+        item.cpf !== SYSTEM_PROD_CPF && item.nome !== SYSTEM_PROD_NOME
+    );
+
+    return clientesReais.map((item: any) => ({
       id: item.id,
       nome: item.nome ?? "",
       endereco: item.endereco ?? "",
@@ -35,13 +43,73 @@ export async function buscarClientesSupabase(): Promise<Cliente[] | null> {
       observacoes: item.observacoes ?? "",
       status: item.status ?? "ativo",
       criadoEm: item.criado_em ?? new Date().toISOString(),
-      manutencoes: [],  // coluna ainda não existe na tabela
+      manutencoes: [], // coluna ainda não existe na tabela
     }));
   } catch (err) {
     console.warn("Erro ao buscar clientes:", err);
     return null;
   }
 }
+
+export async function buscarProdutosSupabase(): Promise<Produto[] | null> {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/${TABLE}?cpf=eq.${SYSTEM_PROD_CPF}&select=*`,
+      { method: "GET", headers: baseHeaders }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return null;
+    const raw = data[0]?.observacoes;
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (err) {
+    console.warn("Erro ao buscar produtos no Supabase:", err);
+    return null;
+  }
+}
+
+export async function salvarProdutosSupabase(produtos: Produto[]): Promise<boolean> {
+  try {
+    const resGet = await fetch(
+      `${SUPABASE_URL}/rest/v1/${TABLE}?cpf=eq.${SYSTEM_PROD_CPF}&select=id`,
+      { method: "GET", headers: baseHeaders }
+    );
+    const data = resGet.ok ? await resGet.json() : [];
+    const payload = {
+      nome: SYSTEM_PROD_NOME,
+      endereco: "SISTEMA",
+      cpf: SYSTEM_PROD_CPF,
+      telefone: "00000000000",
+      mac_central: "000000000000",
+      modelo_central: "SISTEMA",
+      observacoes: JSON.stringify(produtos),
+      status: "sistema",
+    };
+
+    if (Array.isArray(data) && data.length > 0) {
+      const id = data[0].id;
+      const resUpdate = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?id=eq.${id}`, {
+        method: "PATCH",
+        headers: baseHeaders,
+        body: JSON.stringify(payload),
+      });
+      return resUpdate.ok;
+    } else {
+      const resInsert = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify(payload),
+      });
+      return resInsert.ok;
+    }
+  } catch (err) {
+    console.warn("Erro ao salvar produtos no Supabase:", err);
+    return false;
+  }
+}
+
 
 export async function salvarClienteSupabase(dados: NovoCliente): Promise<Cliente> {
   const payload = {

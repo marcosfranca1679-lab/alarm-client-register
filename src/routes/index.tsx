@@ -87,6 +87,8 @@ import {
   removerClienteSupabase,
   atualizarManutencoesSupabase,
   lerManutencoesLocais,
+  buscarProdutosSupabase,
+  salvarProdutosSupabase,
 } from "@/lib/clientes.supabase";
 
 const WHATSAPP_NUMERO = "5548999118524";
@@ -131,13 +133,28 @@ function AppPrincipal() {
     if (salvo === "true") {
       setAutenticado(true);
     }
-    setProdutos(lerProdutosLocais());
+
+    // Carrega do localStorage primeiro (instantâneo)
+    const locais = lerProdutosLocais();
+    setProdutos(locais);
+
+    // E sincroniza com a nuvem do Supabase
+    buscarProdutosSupabase().then((prodsSupa) => {
+      if (prodsSupa !== null) {
+        setProdutos(prodsSupa);
+        salvarProdutosLocais(prodsSupa);
+      } else if (locais.length > 0) {
+        salvarProdutosSupabase(locais);
+      }
+    });
   }, []);
 
   function handleSalvarProdutos(novos: Produto[]) {
     setProdutos(novos);
     salvarProdutosLocais(novos);
+    salvarProdutosSupabase(novos).catch((err) => console.warn(err));
   }
+
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
