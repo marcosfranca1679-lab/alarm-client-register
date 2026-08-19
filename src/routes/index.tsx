@@ -462,28 +462,29 @@ function LandingPage({
                     onClick={() => setProdutoDetalhe(prod)}
                   >
                     {/* Imagem / Banner do Produto */}
-                    <div className="relative h-44 w-full rounded-xl bg-slate-950/80 border border-slate-800 p-4 flex items-center justify-center overflow-hidden">
+                    <div className="relative h-44 w-full rounded-xl bg-white p-3 flex items-center justify-center overflow-hidden shadow-sm">
                       <img
                         src={prod.imagemUrl || "/intelbras.png"}
                         alt={prod.nome}
-                        className="max-h-28 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                        className="max-h-32 max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-105"
                       />
-                      <span className="absolute top-2.5 left-2.5 text-[10px] font-bold bg-slate-900/90 text-blue-300 border border-slate-700 px-2 py-0.5 rounded-md">
+                      <span className="absolute top-2.5 left-2.5 text-[10px] font-bold bg-slate-900/90 text-white px-2 py-0.5 rounded-md shadow">
                         {prod.categoria}
                       </span>
                       {prod.destaque && (
-                        <span className="absolute top-2.5 right-2.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md">
+                        <span className="absolute top-2.5 right-2.5 text-[10px] font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md shadow">
                           ★ Destaque
                         </span>
                       )}
-                      {obterLogoMarca(prod.marca) && (
+                      {obterLogoMarca(prod.marca) && prod.imagemUrl !== obterLogoMarca(prod.marca) && (
                         <img
                           src={obterLogoMarca(prod.marca)}
                           alt={prod.marca ?? ""}
-                          className="absolute bottom-2 right-2 h-6 w-auto object-contain opacity-90 bg-white/10 rounded px-1"
+                          className="absolute bottom-2 right-2 h-5 w-auto object-contain bg-slate-900/90 rounded px-1.5 py-0.5 shadow"
                         />
                       )}
                     </div>
+
                     <div className="mt-4 space-y-2">
                       <h3 className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors leading-snug">
                         {prod.nome}
@@ -784,23 +785,24 @@ function LandingPage({
         <DialogContent className="sm:max-w-lg max-h-[85vh] bg-slate-900 border-slate-800 text-slate-100 p-0 overflow-hidden flex flex-col">
           {produtoDetalhe && (
             <div className="flex flex-col flex-1 overflow-hidden">
-              <div className="relative h-60 w-full bg-slate-950 flex items-center justify-center p-6 border-b border-slate-800 shrink-0">
+              <div className="relative h-60 w-full bg-white flex items-center justify-center p-6 border-b border-slate-800 shrink-0">
                 <img
                   src={produtoDetalhe.imagemUrl || "/intelbras.png"}
                   alt={produtoDetalhe.nome}
-                  className="max-h-48 w-auto object-contain"
+                  className="max-h-48 max-w-[90%] object-contain"
                 />
-                <span className="absolute top-4 left-4 text-xs font-bold bg-slate-900/90 text-blue-300 border border-slate-700 px-3 py-1 rounded-lg">
+                <span className="absolute top-4 left-4 text-xs font-bold bg-slate-900/90 text-white px-3 py-1 rounded-lg shadow">
                   {produtoDetalhe.categoria}
                 </span>
-                {obterLogoMarca(produtoDetalhe.marca) && (
+                {obterLogoMarca(produtoDetalhe.marca) && produtoDetalhe.imagemUrl !== obterLogoMarca(produtoDetalhe.marca) && (
                   <img
                     src={obterLogoMarca(produtoDetalhe.marca)}
                     alt={produtoDetalhe.marca ?? ""}
-                    className="absolute bottom-3 right-3 h-8 w-auto object-contain bg-white/10 rounded-lg p-1"
+                    className="absolute bottom-3 right-3 h-6 w-auto object-contain bg-slate-900/90 rounded-lg px-2 py-1 shadow"
                   />
                 )}
               </div>
+
 
               <div className="p-6 space-y-4 overflow-y-auto flex-1">
                 <div>
@@ -1850,17 +1852,17 @@ function PainelAdministrativo({
                 className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 sm:p-5 flex flex-col justify-between space-y-3 sm:space-y-4 shadow-sm"
               >
                 <div>
-                  <div className="relative h-40 w-full rounded-xl bg-slate-950 border border-slate-800 p-3 flex items-center justify-center overflow-hidden">
+                  <div className="relative h-40 w-full rounded-xl bg-white p-3 flex items-center justify-center overflow-hidden shadow-sm">
                     <img
                       src={prod.imagemUrl || "/intelbras.png"}
                       alt={prod.nome}
-                      className="max-h-28 max-w-full object-contain rounded"
+                      className="max-h-32 max-w-[90%] object-contain"
                     />
-                    <span className="absolute top-2 left-2 text-[10px] font-bold bg-slate-900/90 text-blue-300 border border-slate-700 px-2 py-0.5 rounded-md">
+                    <span className="absolute top-2 left-2 text-[10px] font-bold bg-slate-900/90 text-white px-2 py-0.5 rounded-md shadow">
                       {prod.categoria}
                     </span>
                     {prod.destaque && (
-                      <span className="absolute top-2 right-2 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md">
+                      <span className="absolute top-2 right-2 text-[10px] font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md shadow">
                         ★ Destaque
                       </span>
                     )}
@@ -1868,10 +1870,11 @@ function PainelAdministrativo({
                       <img
                         src={obterLogoMarca(prod.marca)}
                         alt={prod.marca ?? ""}
-                        className="absolute bottom-2 right-2 h-5 w-auto object-contain opacity-90 bg-white/10 rounded px-1"
+                        className="absolute bottom-2 right-2 h-5 w-auto object-contain bg-slate-900/90 rounded px-1.5 py-0.5 shadow"
                       />
                     )}
                   </div>
+
 
                   <div className="mt-3 space-y-1">
                     <h3 className="text-sm font-bold text-white leading-snug">{prod.nome}</h3>
