@@ -121,9 +121,10 @@ function ModalAssinaturaDigital({
     let clientY = 0;
 
     if ("touches" in e) {
-      if (e.touches.length > 0) {
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
+      const t = e.touches[0];
+      if (t) {
+        clientX = t.clientX;
+        clientY = t.clientY;
       }
     } else {
       clientX = e.clientX;
