@@ -77,10 +77,16 @@ export const PERIODOS_VALIDADE_GARANTIA = [
 ];
 
 export function calcularPrecoItemGarantia(validade: string): number {
+  if (validade.includes("+ 3 meses estendida") || validade.startsWith("3 meses")) {
+    return 12.60;
+  }
   if (
-    validade.includes("6 meses") ||
-    validade.includes("9 meses") ||
-    validade.includes("1 ano")
+    validade.includes("+ 6 meses estendida") ||
+    validade.includes("+ 9 meses estendida") ||
+    validade.includes("+ 1 ano estendida") ||
+    validade.includes("6 meses estendida") ||
+    validade.includes("9 meses estendida") ||
+    validade.includes("1 ano estendida")
   ) {
     return 9.99;
   }
