@@ -19,7 +19,8 @@ import {
   extrairGarantia,
   OPCOES_GARANTIA_PADRAO,
 } from "@/lib/clientes.types";
-import { buscarClientesSupabase, criarDownloadTemporarioSupabase } from "@/lib/clientes.supabase";
+import { buscarClientesSupabase, criarDownloadTemporarioSupabase, dispararDownloadArquivo } from "@/lib/clientes.supabase";
+
 
 
 export const Route = createFileRoute("/cliente/$id")({
@@ -102,13 +103,8 @@ function Documento() {
     toast.info("Enviando documento para o Supabase...");
     const tempId = await criarDownloadTemporarioSupabase(nomeArquivo, docData);
 
-    const blob = new Blob([docData], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = nomeArquivo;
-    a.click();
-    URL.revokeObjectURL(url);
+    // Dispara o download: Android WebView (via MediaStore nativo) ou navegador web
+    dispararDownloadArquivo(nomeArquivo, docData, "application/json");
 
     if (tempId) {
       setDownloadTemp({ id: tempId, nomeArquivo, segundos: 60 });
@@ -117,6 +113,7 @@ function Documento() {
       toast.success("Download do termo iniciado!");
     }
   }
+
 
   return (
     <div className="min-h-screen py-8 bg-slate-100/60 dark:bg-slate-950">

@@ -275,3 +275,50 @@ export async function buscarDownloadTemporarioSupabase(
   }
 }
 
+/**
+ * Executa o download direto do arquivo com suporte total a Android WebView e navegadores:
+ * 1. No app Android nativo: salva direto na pasta Downloads via MediaStore
+ * 2. Em navegadores web: faz download nativo
+ */
+export function dispararDownloadArquivo(
+  nomeArquivo: string,
+  conteudo: string,
+  mimeType = "application/json"
+): void {
+  if (typeof window !== "undefined" && (window as any).AndroidApp?.baixarArquivo) {
+    try {
+      const base64 = btoa(unescape(encodeURIComponent(conteudo)));
+      (window as any).AndroidApp.baixarArquivo(nomeArquivo, base64, mimeType);
+      return;
+    } catch (err) {
+      console.warn("Falha no AndroidApp bridge, tentando fallback:", err);
+    }
+  }
+
+  try {
+    const base64 = btoa(unescape(encodeURIComponent(conteudo)));
+    const dataUri = `data:${mimeType};charset=utf-8;base64,${base64}`;
+    const a = document.createElement("a");
+    a.href = dataUri;
+    a.download = nomeArquivo;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+    }, 1000);
+  } catch {
+    const blob = new Blob([conteudo], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = nomeArquivo;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 2000);
+  }
+}
+
+

@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.ActivityNotFoundException
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Base64
 import android.view.View
 import android.webkit.*
@@ -24,6 +26,7 @@ import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import java.io.File
 import java.io.FileOutputStream
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -159,10 +162,33 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Adiciona ponte Javascript nativa para downloads seguros e diretos
+        webView.addJavascriptInterface(WebAppInterface(this), "AndroidApp")
+
         // Configuração de Download (Salvar PDF, Backups JSON e Imagens)
         webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, _ ->
             if (url.startsWith("data:")) {
                 salvarDataUri(url, mimetype)
+            } else if (url.startsWith("blob:")) {
+                // Para URLs blob, executa conversão segura via Javascript
+                val js = """
+                    (function() {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('GET', '$url', true);
+                        xhr.responseType = 'blob';
+                        xhr.onload = function() {
+                            var reader = new FileReader();
+                            reader.onloadend = function() {
+                                if (window.AndroidApp && window.AndroidApp.baixarArquivo) {
+                                    window.AndroidApp.baixarArquivo('download_${System.currentTimeMillis()}.json', reader.result, '${mimetype ?: "application/json"}');
+                                }
+                            };
+                            reader.readAsDataURL(xhr.response);
+                        };
+                        xhr.send();
+                    })();
+                """.trimIndent()
+                webView.evaluateJavascript(js, null)
             } else {
                 try {
                     val request = DownloadManager.Request(Uri.parse(url)).apply {
@@ -237,22 +263,52 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun salvarDataUri(dataUri: String, mimeType: String?) {
-        try {
-            val base64Data = dataUri.substringAfter("base64,")
-            val decodedBytes = Base64.decode(base64Data, Base64.DEFAULT)
-            val extension = if (dataUri.contains("application/pdf")) "pdf" else if (dataUri.contains("application/json")) "json" else "png"
-            val fileName = "WS_Documento_${System.currentTimeMillis()}.$extension"
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val file = File(downloadsDir, fileName)
-            val fos = FileOutputStream(file)
-            fos.write(decodedBytes)
-            fos.flush()
-            fos.close()
-            Toast.makeText(this, "Arquivo salvo em Downloads: $fileName", Toast.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Erro ao salvar arquivo: ${e.message}", Toast.LENGTH_SHORT).show()
+    fun salvarBase64(nomeArquivo: String, base64Conteudo: String, mimeType: String) {
+        runOnUiThread {
+            try {
+                val cleanBase64 = if (base64Conteudo.contains("base64,")) {
+                    base64Conteudo.substringAfter("base64,")
+                } else {
+                    base64Conteudo
+                }
+                val decodedBytes = Base64.decode(cleanBase64, Base64.DEFAULT)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val values = ContentValues().apply {
+                        put(MediaStore.MediaColumns.DISPLAY_NAME, nomeArquivo)
+                        put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+                        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                    }
+                    val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                    if (uri != null) {
+                        contentResolver.openOutputStream(uri)?.use { os ->
+                            os.write(decodedBytes)
+                            os.flush()
+                        }
+                        Toast.makeText(this, "Arquivo salvo em Downloads: $nomeArquivo", Toast.LENGTH_LONG).show()
+                    } else {
+                        throw Exception("Não foi possível criar o arquivo no MediaStore")
+                    }
+                } else {
+                    val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    if (!downloadsDir.exists()) downloadsDir.mkdirs()
+                    val file = File(downloadsDir, nomeArquivo)
+                    FileOutputStream(file).use { fos ->
+                        fos.write(decodedBytes)
+                        fos.flush()
+                    }
+                    Toast.makeText(this, "Arquivo salvo em Downloads: $nomeArquivo", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this, "Erro ao salvar arquivo: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
+    }
+
+    private fun salvarDataUri(dataUri: String, mimeType: String?) {
+        val extension = if (dataUri.contains("application/pdf")) "pdf" else if (dataUri.contains("application/json")) "json" else "png"
+        val fileName = "WS_Documento_${System.currentTimeMillis()}.$extension"
+        salvarBase64(fileName, dataUri, mimeType ?: "application/octet-stream")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -275,4 +331,12 @@ class MainActivity : AppCompatActivity() {
         webView.restoreState(savedInstanceState)
     }
 }
+
+class WebAppInterface(private val activity: MainActivity) {
+    @JavascriptInterface
+    fun baixarArquivo(nomeArquivo: String, base64Conteudo: String, mimeType: String) {
+        activity.salvarBase64(nomeArquivo, base64Conteudo, mimeType)
+    }
+}
+
 

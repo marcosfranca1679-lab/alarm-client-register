@@ -90,7 +90,9 @@ import {
   buscarProdutosSupabase,
   salvarProdutosSupabase,
   criarDownloadTemporarioSupabase,
+  dispararDownloadArquivo,
 } from "@/lib/clientes.supabase";
+
 
 
 const WHATSAPP_NUMERO = "5548999118524";
@@ -1017,13 +1019,7 @@ function PainelAdministrativo({
     const tempId = await criarDownloadTemporarioSupabase(nomeArquivo, jsonStr);
 
     // Dispara o download nativo para WebView / Navegador
-    const blob = new Blob([jsonStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = nomeArquivo;
-    a.click();
-    URL.revokeObjectURL(url);
+    dispararDownloadArquivo(nomeArquivo, jsonStr, "application/json");
 
     if (tempId) {
       setDownloadTemp({ id: tempId, nomeArquivo, segundos: 60 });
@@ -1032,6 +1028,7 @@ function PainelAdministrativo({
       toast.success("Download iniciado com sucesso!");
     }
   }
+
 
 
   // ── Importar JSON ──
