@@ -43,9 +43,25 @@ export type Produto = {
   descricao: string;
   valor: string;
   categoria: string;
+  marca: string;
   imagemUrl: string;
   destaque?: boolean;
 };
+
+export const MARCAS_PRODUTO = [
+  "Intelbras",
+  "JFL Alarmes",
+  "WS Segurança",
+  "Outra Marca",
+];
+
+export function obterLogoMarca(marca?: string): string {
+  if (!marca) return "";
+  if (marca.toLowerCase().includes("intelbras")) return "/intelbras.png";
+  if (marca.toLowerCase().includes("jfl")) return "/jfl.png";
+  if (marca.toLowerCase().includes("ws")) return "/logo.jpg";
+  return "";
+}
 
 export const CATEGORIAS_PRODUTO = [
   "Centrais de Alarme",
@@ -63,6 +79,7 @@ export const PRODUTOS_PADRAO: Produto[] = [
       "Central de alarme 100% sem fio com alcance de até 600m, comunicação em nuvem, controle por aplicativo e bateria de longa duração.",
     valor: "890,00",
     categoria: "Centrais de Alarme",
+    marca: "Intelbras",
     imagemUrl: "/intelbras.png",
     destaque: true,
   },
@@ -73,6 +90,7 @@ export const PRODUTOS_PADRAO: Produto[] = [
       "Kit com câmeras de alta definição com visão noturna infravermelha de 20m, gravação contínua e acesso ao vivo no celular.",
     valor: "750,00",
     categoria: "Câmeras CFTV",
+    marca: "Intelbras",
     imagemUrl: "/intelbras.png",
     destaque: true,
   },
@@ -83,6 +101,7 @@ export const PRODUTOS_PADRAO: Produto[] = [
       "Central de alta performance com até 20 zonas, módulo Ethernet/Wi-Fi integrado e aplicativo celular dedicado.",
     valor: "680,00",
     categoria: "Centrais de Alarme",
+    marca: "JFL Alarmes",
     imagemUrl: "/jfl.png",
     destaque: true,
   },
@@ -93,6 +112,7 @@ export const PRODUTOS_PADRAO: Produto[] = [
       "Barreira perimetral para muros e portões com detecção precisa contra invasão e alta resistência a sol e chuva.",
     valor: "240,00",
     categoria: "Sensores & Barreiras",
+    marca: "JFL Alarmes",
     imagemUrl: "/jfl.png",
     destaque: true,
   },
@@ -103,6 +123,7 @@ export const PRODUTOS_PADRAO: Produto[] = [
       "Bateria selada de alta durabilidade para manter seu sistema de alarme funcionando mesmo durante quedas de energia.",
     valor: "140,00",
     categoria: "Baterias & Acessórios",
+    marca: "WS Segurança",
     imagemUrl: "/intelbras.png",
     destaque: false,
   },

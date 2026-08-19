@@ -60,14 +60,15 @@ import {
   OPCOES_GARANTIA_PADRAO,
   PERIODOS_VALIDADE_GARANTIA,
   CATEGORIAS_PRODUTO,
+  MARCAS_PRODUTO,
   PRODUTOS_PADRAO,
   lerProdutosLocais,
   salvarProdutosLocais,
+  obterLogoMarca,
   calcularPrecoItemGarantia,
   obterMesesEstendidos,
   extrairGarantia,
   embutirGarantia,
-  formatarMoeda,
   apenasDigitos,
   cpfValido,
   formatarCpf,
@@ -437,67 +438,62 @@ function LandingPage({
                   key={prod.id}
                   className="group rounded-2xl border border-slate-800 bg-slate-900/80 p-5 flex flex-col justify-between transition-all hover:border-blue-500/50 hover:bg-slate-900 shadow-md space-y-4"
                 >
-                <div>
-                  {/* Imagem / Banner do Produto */}
-                  <div className="relative h-44 w-full rounded-xl bg-slate-950/80 border border-slate-800 p-4 flex items-center justify-center overflow-hidden">
-                    <img
-                      src={prod.imagemUrl || "/intelbras.png"}
-                      alt={prod.nome}
-                      className="max-h-28 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <span className="absolute top-2.5 left-2.5 text-[10px] font-bold bg-slate-900/90 text-blue-300 border border-slate-700 px-2 py-0.5 rounded-md">
-                      {prod.categoria}
-                    </span>
-                    {prod.destaque && (
-                      <span className="absolute top-2.5 right-2.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md">
-                        ★ Destaque
+                  <div>
+                    {/* Imagem / Banner do Produto */}
+                    <div className="relative h-44 w-full rounded-xl bg-slate-950/80 border border-slate-800 p-4 flex items-center justify-center overflow-hidden">
+                      <img
+                        src={prod.imagemUrl || "/intelbras.png"}
+                        alt={prod.nome}
+                        className="max-h-28 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <span className="absolute top-2.5 left-2.5 text-[10px] font-bold bg-slate-900/90 text-blue-300 border border-slate-700 px-2 py-0.5 rounded-md">
+                        {prod.categoria}
                       </span>
-                    )}
+                      {prod.destaque && (
+                        <span className="absolute top-2.5 right-2.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md">
+                          ★ Destaque
+                        </span>
+                      )}
+                      {obterLogoMarca(prod.marca) && (
+                        <img
+                          src={obterLogoMarca(prod.marca)}
+                          alt={prod.marca ?? ""}
+                          className="absolute bottom-2 right-2 h-6 w-auto object-contain opacity-90 bg-white/10 rounded px-1"
+                        />
+                      )}
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <h3 className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors leading-snug">
+                        {prod.nome}
+                      </h3>
+                      <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
+                        {prod.descricao}
+                      </p>
+                    </div>
                   </div>
-
-                  <div className="mt-4 space-y-2">
-                    <h3 className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors leading-snug">
-                      {prod.nome}
-                    </h3>
-                    <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
-                      {prod.descricao}
-                    </p>
+                  <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[10px] text-slate-500 font-medium">A partir de</p>
+                      <p className="text-base font-extrabold text-emerald-400">
+                        R$ {prod.valor || "Sob consulta"}
+                      </p>
+                    </div>
+                    <a
+                      href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre:%20${encodeURIComponent(prod.nome)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-md cursor-pointer"
+                    >
+                      <MessageCircle className="h-3.5 w-3.5" />
+                      <span>Pedir no Zap</span>
+                    </a>
                   </div>
                 </div>
-
-                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-[10px] text-slate-500 font-medium">A partir de</p>
-                    <p className="text-base font-extrabold text-emerald-400">
-                      R$ {prod.valor || "Sob consulta"}
-                    </p>
-                  </div>
-
-                  <a
-                    href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20comprar%20ou%20saber%20mais%20sobre%20o%20produto:%20${encodeURIComponent(
-                      prod.nome
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-102"
-            <a
-              href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20comprar%20ou%20saber%20mais%20sobre%20o%20produto:%20${encodeURIComponent(
-                prod.nome
-              )}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-102"
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-              <span>Pedir no Zap</span>
-            </a>
-          </div>
+              ))}
+            </div>
+          )}
         </div>
-      ))}
-    </div>
-  )}
-</div>
-</section>
+      </section>
 
 {/* ── Marcas Parceiras / Homologadas ── */}
 <section id="marcas" className="py-16 bg-slate-900/50 border-b border-slate-800/80">
@@ -796,9 +792,12 @@ function PainelAdministrativo({
   const [formProdDescricao, setFormProdDescricao] = useState("");
   const [formProdImagem, setFormProdImagem] = useState("/intelbras.png");
   const [formProdDestaque, setFormProdDestaque] = useState(true);
+  const [formProdMarca, setFormProdMarca] = useState(MARCAS_PRODUTO[0]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imgUploadRef = useRef<HTMLInputElement>(null);
   const qc = useQueryClient();
+
 
   // Cálculos da Garantia Estendida
   const precoItem = calcularPrecoItemGarantia(validadeGarantia);
@@ -969,8 +968,9 @@ function PainelAdministrativo({
     setFormProdNome("");
     setFormProdValor("");
     setFormProdCategoria(CATEGORIAS_PRODUTO[0]);
+    setFormProdMarca(MARCAS_PRODUTO[0]);
     setFormProdDescricao("");
-    setFormProdImagem("/intelbras.png");
+    setFormProdImagem(obterLogoMarca(MARCAS_PRODUTO[0]) || "/intelbras.png");
     setFormProdDestaque(true);
     setModalProdutoAberto(true);
   }
@@ -980,10 +980,32 @@ function PainelAdministrativo({
     setFormProdNome(p.nome);
     setFormProdValor(p.valor);
     setFormProdCategoria(p.categoria);
+    setFormProdMarca(p.marca || MARCAS_PRODUTO[0]);
     setFormProdDescricao(p.descricao);
     setFormProdImagem(p.imagemUrl);
     setFormProdDestaque(p.destaque ?? true);
     setModalProdutoAberto(true);
+  }
+
+  function handleMarcaChange(marca: string) {
+    setFormProdMarca(marca);
+    const logo = obterLogoMarca(marca);
+    if (logo) setFormProdImagem(logo);
+  }
+
+  function handleImagemUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Imagem muito grande. Máximo 2MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setFormProdImagem(ev.target?.result as string);
+      toast.success("Imagem carregada com sucesso!");
+    };
+    reader.readAsDataURL(file);
   }
 
   function salvarProdutoModal(e: React.FormEvent) {
@@ -993,33 +1015,24 @@ function PainelAdministrativo({
       return;
     }
 
+    const dadosProd = {
+      nome: formProdNome.trim(),
+      valor: formProdValor.trim(),
+      categoria: formProdCategoria,
+      marca: formProdMarca,
+      descricao: formProdDescricao.trim(),
+      imagemUrl: formProdImagem,
+      destaque: formProdDestaque,
+    };
+
     if (produtoEditando) {
       const atualizados = produtos.map((p) =>
-        p.id === produtoEditando.id
-          ? {
-              ...p,
-              nome: formProdNome.trim(),
-              valor: formProdValor.trim(),
-              categoria: formProdCategoria,
-              descricao: formProdDescricao.trim(),
-              imagemUrl: formProdImagem,
-              destaque: formProdDestaque,
-            }
-          : p
+        p.id === produtoEditando.id ? { ...p, ...dadosProd } : p
       );
       onAtualizarProdutos(atualizados);
       toast.success("Produto atualizado com sucesso!");
     } else {
-      const novo: Produto = {
-        id: gerarId(),
-        nome: formProdNome.trim(),
-        valor: formProdValor.trim(),
-        categoria: formProdCategoria,
-        descricao: formProdDescricao.trim(),
-        imagemUrl: formProdImagem,
-        destaque: formProdDestaque,
-      };
-      onAtualizarProdutos([novo, ...produtos]);
+      onAtualizarProdutos([{ id: gerarId(), ...dadosProd }, ...produtos]);
       toast.success("Novo produto adicionado à vitrine!");
     }
     setModalProdutoAberto(false);
@@ -1035,6 +1048,7 @@ function PainelAdministrativo({
     onAtualizarProdutos(PRODUTOS_PADRAO);
     toast.success("Catálogo padrão restaurado!");
   }
+
 
   const filtrados = clientes.filter((c) => {
     const t = busca.trim().toLowerCase();
@@ -1736,6 +1750,13 @@ function PainelAdministrativo({
                         ★ Destaque
                       </span>
                     )}
+                    {obterLogoMarca(prod.marca) && (
+                      <img
+                        src={obterLogoMarca(prod.marca)}
+                        alt={prod.marca ?? ""}
+                        className="absolute bottom-2 right-2 h-5 w-auto object-contain opacity-90 bg-white/10 rounded px-1"
+                      />
+                    )}
                   </div>
 
                   <div className="mt-3 space-y-1">
@@ -1826,57 +1847,82 @@ function PainelAdministrativo({
 
             <div className="space-y-1.5">
               <Label className="field-label text-xs text-slate-300">
-                Banner / Imagem da Marca
+                Marca do Equipamento
               </Label>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setFormProdImagem("/intelbras.png")}
-                  className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 cursor-pointer ${
-                    formProdImagem === "/intelbras.png"
-                      ? "border-emerald-500 bg-emerald-950/40 text-emerald-300"
-                      : "border-slate-700 bg-slate-800/60 text-slate-400"
-                  }`}
-                >
-                  <img src="/intelbras.png" alt="Intelbras" className="h-5 w-auto object-contain" />
-                  <span className="text-[10px]">Intelbras</span>
-                </button>
+              <select
+                value={formProdMarca}
+                onChange={(e) => handleMarcaChange(e.target.value)}
+                className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-white cursor-pointer"
+              >
+                {MARCAS_PRODUTO.map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </div>
 
-                <button
-                  type="button"
-                  onClick={() => setFormProdImagem("/jfl.png")}
-                  className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 cursor-pointer ${
-                    formProdImagem === "/jfl.png"
-                      ? "border-amber-500 bg-amber-950/40 text-amber-300"
-                      : "border-slate-700 bg-slate-800/60 text-slate-400"
-                  }`}
-                >
-                  <img src="/jfl.png" alt="JFL" className="h-6 w-auto object-contain rounded" />
-                  <span className="text-[10px]">JFL Alarmes</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setFormProdImagem("/logo.jpg")}
-                  className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 cursor-pointer ${
-                    formProdImagem === "/logo.jpg"
-                      ? "border-blue-500 bg-blue-950/40 text-blue-300"
-                      : "border-slate-700 bg-slate-800/60 text-slate-400"
-                  }`}
-                >
-                  <img src="/logo.jpg" alt="WS" className="h-5 w-5 object-cover rounded" />
-                  <span className="text-[10px]">Logo WS</span>
-                </button>
-              </div>
-
-              <div className="pt-1">
-                <Input
-                  value={formProdImagem}
-                  onChange={(e) => setFormProdImagem(e.target.value)}
-                  placeholder="Ou cole o link de uma imagem online"
-                  className="bg-slate-800/60 border-slate-700 text-xs text-slate-300"
+            {/* Preview de Imagem */}
+            {formProdImagem && (
+              <div className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-800/50 p-3">
+                <img
+                  src={formProdImagem}
+                  alt="Preview"
+                  className="h-14 w-14 object-contain rounded-md bg-slate-900"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                 />
+                <div className="text-xs text-slate-400">
+                  <p className="font-semibold text-slate-200">Preview da imagem</p>
+                  <p className="text-[11px] truncate max-w-[180px]">{formProdMarca}</p>
+                </div>
               </div>
+            )}
+
+            <div className="space-y-2">
+              <Label className="field-label text-xs text-slate-300">Imagem do Produto</Label>
+              {/* Upload de foto do dispositivo */}
+              <input
+                type="file"
+                accept="image/*"
+                ref={imgUploadRef}
+                className="hidden"
+                onChange={handleImagemUpload}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => imgUploadRef.current?.click()}
+                className="w-full text-xs bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 cursor-pointer gap-2"
+              >
+                <Upload className="h-3.5 w-3.5 text-blue-400" />
+                Carregar Imagem do Dispositivo
+              </Button>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { label: "Intelbras", src: "/intelbras.png" },
+                  { label: "JFL", src: "/jfl.png" },
+                  { label: "Logo WS", src: "/logo.jpg" },
+                ].map((item) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => setFormProdImagem(item.src)}
+                    className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${
+                      formProdImagem === item.src
+                        ? "border-blue-500 bg-blue-950/40 text-blue-300"
+                        : "border-slate-700 bg-slate-800/60 text-slate-400 hover:bg-slate-800"
+                    }`}
+                  >
+                    <img src={item.src} alt={item.label} className="h-6 w-auto object-contain" />
+                    <span className="text-[10px]">{item.label}</span>
+                  </button>
+                ))}
+              </div>
+              <Input
+                value={formProdImagem.startsWith("data:") ? "" : formProdImagem}
+                onChange={(e) => setFormProdImagem(e.target.value)}
+                placeholder="Ou cole um link de imagem online..."
+                className="bg-slate-800/60 border-slate-700 text-xs text-slate-300"
+              />
             </div>
 
             <div className="space-y-1.5">
