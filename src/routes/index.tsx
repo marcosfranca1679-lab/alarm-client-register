@@ -138,20 +138,24 @@ function AppPrincipal() {
       setAutenticado(true);
     }
 
-    // Carrega do localStorage primeiro (instantâneo)
+    // Carrega do localStorage primeiro (instantâneo), se já houver algo salvo
     const locais = lerProdutosLocais();
-    setProdutos(locais);
+    if (locais && locais.length > 0) setProdutos(locais);
 
-    // E sincroniza com a nuvem do Supabase
+    // E sincroniza com a nuvem
     buscarProdutosSupabase().then((prodsSupa) => {
-      if (prodsSupa !== null) {
+      if (prodsSupa && prodsSupa.length > 0) {
+        // Nuvem é a fonte da verdade
         setProdutos(prodsSupa);
         salvarProdutosLocais(prodsSupa);
-      } else if (locais.length > 0) {
+      } else if (prodsSupa !== null && locais && locais.length > 0) {
+        // Nuvem vazia (nunca salva) e há dados locais reais → envia para a nuvem
         salvarProdutosSupabase(locais);
       }
+      // Se prodsSupa === null (falha de rede), NÃO sobrescreve a nuvem
     });
   }, []);
+
 
   function handleSalvarProdutos(novos: Produto[]) {
     setProdutos(novos);
