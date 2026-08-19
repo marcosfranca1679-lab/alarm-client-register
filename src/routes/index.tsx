@@ -160,8 +160,16 @@ function AppPrincipal() {
   function handleSalvarProdutos(novos: Produto[]) {
     setProdutos(novos);
     salvarProdutosLocais(novos);
-    salvarProdutosSupabase(novos).catch((err) => console.warn(err));
+    salvarProdutosSupabase(novos)
+      .then((ok) => {
+        if (!ok) toast.error("Não foi possível salvar os banners na nuvem. Verifique a internet e tente novamente.");
+      })
+      .catch((err) => {
+        console.warn(err);
+        toast.error("Falha ao salvar os banners na nuvem.");
+      });
   }
+
 
 
   function handleLogin(e: React.FormEvent) {
