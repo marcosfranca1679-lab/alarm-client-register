@@ -420,12 +420,23 @@ function LandingPage({
           </div>
 
           {/* Grid de Produtos */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {produtosFiltrados.map((prod) => (
-              <div
-                key={prod.id}
-                className="group rounded-2xl border border-slate-800 bg-slate-900/80 p-5 flex flex-col justify-between transition-all hover:border-blue-500/50 hover:bg-slate-900 shadow-md space-y-4"
-              >
+          {produtosFiltrados.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-800 p-12 text-center bg-slate-900/40">
+              <Package className="h-10 w-10 mx-auto text-slate-600 mb-2" />
+              <p className="text-sm font-semibold text-slate-300">
+                Nenhum produto ou banner cadastrado no momento.
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                Fale conosco diretamente pelo WhatsApp para consultar valores e disponibilidade.
+              </p>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {produtosFiltrados.map((prod) => (
+                <div
+                  key={prod.id}
+                  className="group rounded-2xl border border-slate-800 bg-slate-900/80 p-5 flex flex-col justify-between transition-all hover:border-blue-500/50 hover:bg-slate-900 shadow-md space-y-4"
+                >
                 <div>
                   {/* Imagem / Banner do Produto */}
                   <div className="relative h-44 w-full rounded-xl bg-slate-950/80 border border-slate-800 p-4 flex items-center justify-center overflow-hidden">
@@ -469,19 +480,27 @@ function LandingPage({
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-102"
-                  >
-                    <MessageCircle className="h-3.5 w-3.5" />
-                    <span>Pedir no Zap</span>
-                  </a>
-                </div>
-              </div>
-            ))}
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20comprar%20ou%20saber%20mais%20sobre%20o%20produto:%20${encodeURIComponent(
+                prod.nome
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-102"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              <span>Pedir no Zap</span>
+            </a>
           </div>
         </div>
-      </section>
+      ))}
+    </div>
+  )}
+</div>
+</section>
 
-      {/* ── Marcas Parceiras / Homologadas ── */}
-      <section id="marcas" className="py-16 bg-slate-900/50 border-b border-slate-800/80">
+{/* ── Marcas Parceiras / Homologadas ── */}
+<section id="marcas" className="py-16 bg-slate-900/50 border-b border-slate-800/80">
         <div className="mx-auto max-w-6xl px-5 text-center space-y-6">
           <p className="text-xs font-bold uppercase tracking-widest text-blue-400">
             Equipamentos Homologados & Linhas Oficiais

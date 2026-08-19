@@ -112,14 +112,14 @@ export function lerProdutosLocais(): Produto[] {
   if (typeof window === "undefined") return PRODUTOS_PADRAO;
   try {
     const raw = localStorage.getItem("ws_produtos");
-    if (!raw) {
+    if (raw === null) {
       localStorage.setItem("ws_produtos", JSON.stringify(PRODUTOS_PADRAO));
       return PRODUTOS_PADRAO;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : PRODUTOS_PADRAO;
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return PRODUTOS_PADRAO;
+    return [];
   }
 }
 
