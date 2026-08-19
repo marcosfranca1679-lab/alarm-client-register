@@ -33,6 +33,13 @@ import {
   Building2,
   Home,
   UserCheck,
+  Package,
+  Sparkles,
+  ShoppingBag,
+  Tag,
+  Edit3,
+  SlidersHorizontal,
+  RotateCcw,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -52,6 +59,10 @@ import {
   FORMAS_PAGAMENTO,
   OPCOES_GARANTIA_PADRAO,
   PERIODOS_VALIDADE_GARANTIA,
+  CATEGORIAS_PRODUTO,
+  PRODUTOS_PADRAO,
+  lerProdutosLocais,
+  salvarProdutosLocais,
   calcularPrecoItemGarantia,
   obterMesesEstendidos,
   extrairGarantia,
@@ -66,6 +77,7 @@ import {
   gerarId,
   type Cliente,
   type Manutencao,
+  type Produto,
   type TipoCobrancaGarantia,
 } from "@/lib/clientes.types";
 import {
@@ -76,14 +88,17 @@ import {
   lerManutencoesLocais,
 } from "@/lib/clientes.supabase";
 
+const WHATSAPP_NUMERO = "5548999118524";
+const WHATSAPP_FORMATADO = "(48) 99911-8524";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "WS Segurança Residencial — Segurança Eletrônica & Alarmes" },
+      { title: "WS Segurança Residencial — Alarmes, Câmeras & CFTV" },
       {
         name: "description",
         content:
-          "Especialistas em instalação e manutenção de sistemas de alarme, câmeras CFTV e segurança eletrônica residencial e comercial.",
+          "Soluções completas em segurança eletrônica, centrais de alarme Intelbras e JFL, CFTV, garantia técnica e manutenção.",
       },
     ],
   }),
@@ -107,6 +122,7 @@ function AppPrincipal() {
   const [loginUser, setLoginUser] = useState("");
   const [loginPass, setLoginPass] = useState("");
   const [loginErro, setLoginErro] = useState("");
+  const [produtos, setProdutos] = useState<Produto[]>(PRODUTOS_PADRAO);
 
   useEffect(() => {
     setMounted(true);
@@ -114,7 +130,13 @@ function AppPrincipal() {
     if (salvo === "true") {
       setAutenticado(true);
     }
+    setProdutos(lerProdutosLocais());
   }, []);
+
+  function handleSalvarProdutos(novos: Produto[]) {
+    setProdutos(novos);
+    salvarProdutosLocais(novos);
+  }
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -141,9 +163,16 @@ function AppPrincipal() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-600 selection:text-white">
       {autenticado ? (
-        <PainelAdministrativo onLogout={handleLogout} />
+        <PainelAdministrativo
+          onLogout={handleLogout}
+          produtos={produtos}
+          onAtualizarProdutos={handleSalvarProdutos}
+        />
       ) : (
-        <LandingPage onAbrirLogin={() => setModalLoginAberto(true)} />
+        <LandingPage
+          produtos={produtos}
+          onAbrirLogin={() => setModalLoginAberto(true)}
+        />
       )}
 
       {/* ── Modal de Login do Técnico / Administrador ── */}
@@ -157,7 +186,7 @@ function AppPrincipal() {
               Acesso Restrito — Painel do Técnico
             </DialogTitle>
             <p className="text-center text-xs text-slate-400">
-              Digite suas credenciais de administrador para gerenciar clientes e emitir termos.
+              Digite suas credenciais de administrador para gerenciar clientes, termos e produtos.
             </p>
           </DialogHeader>
 
@@ -213,14 +242,28 @@ function AppPrincipal() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// 🌟 1. LANDING PAGE PÚBLICA (MODERNA & PROFISSIONAL)
+// 🌟 1. LANDING PAGE PÚBLICA (MODERNA, CATÁLOGO DE PRODUTOS & WHATSAPP)
 // ══════════════════════════════════════════════════════════════════════════════
 
-function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
+function LandingPage({
+  produtos,
+  onAbrirLogin,
+}: {
+  produtos: Produto[];
+  onAbrirLogin: () => void;
+}) {
+  const [categoriaAtiva, setCategoriaAtiva] = useState<string>("Todas");
+
+  const categorias = ["Todas", ...CATEGORIAS_PRODUTO];
+  const produtosFiltrados =
+    categoriaAtiva === "Todas"
+      ? produtos
+      : produtos.filter((p) => p.categoria === categoriaAtiva);
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       {/* ── Top Bar / Header ── */}
-      <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80">
+      <header className="sticky top-0 z-40 bg-slate-950/85 backdrop-blur-md border-b border-slate-800/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3.5">
             <img
@@ -238,7 +281,10 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-slate-300">
+          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
+            <a href="#produtos" className="hover:text-blue-400 transition-colors flex items-center gap-1">
+              <Package className="h-3.5 w-3.5 text-blue-400" /> Produtos & Banners
+            </a>
             <a href="#servicos" className="hover:text-blue-400 transition-colors">
               Serviços
             </a>
@@ -246,22 +292,22 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
               Marcas
             </a>
             <a href="#garantia" className="hover:text-blue-400 transition-colors">
-              Garantia & Suporte
+              Garantia
             </a>
-            <a href="#diferenciais" className="hover:text-blue-400 transition-colors">
-              Diferenciais
+            <a href="#contato" className="hover:text-blue-400 transition-colors">
+              Contato
             </a>
           </nav>
 
           <div className="flex items-center gap-3">
             <a
-              href="https://wa.me/5511999999999?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento%20de%20segurança."
+              href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento%20com%20a%20WS%20Segurança.`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-md shadow-emerald-950/40 hover:scale-102"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-md shadow-emerald-950/40 hover:scale-102 cursor-pointer"
             >
               <MessageCircle className="h-4 w-4" />
-              <span>Orçamento WhatsApp</span>
+              <span>WhatsApp: {WHATSAPP_FORMATADO}</span>
             </a>
           </div>
         </div>
@@ -292,20 +338,21 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
 
             <div className="flex flex-wrap items-center gap-3.5 pt-2">
               <a
-                href="https://wa.me/5511999999999?text=Olá!%20Gostaria%20de%20agendar%20uma%20visita%20técnica."
+                href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20agendar%20uma%20visita%20técnica.`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 text-sm font-bold transition-all shadow-lg shadow-blue-950/50 hover:scale-102"
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 text-sm font-bold transition-all shadow-lg shadow-blue-950/50 hover:scale-102 cursor-pointer"
               >
                 <span>Solicitar Visita Técnica</span>
                 <ArrowRight className="h-4 w-4" />
               </a>
 
               <a
-                href="#servicos"
-                className="inline-flex items-center gap-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700 px-5 py-3 text-sm font-semibold transition-colors"
+                href="#produtos"
+                className="inline-flex items-center gap-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700 px-5 py-3 text-sm font-semibold transition-colors cursor-pointer"
               >
-                <span>Conhecer Nossas Soluções</span>
+                <Package className="h-4 w-4 text-blue-400" />
+                <span>Ver Produtos & Banners</span>
               </a>
             </div>
 
@@ -316,7 +363,7 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
               </div>
               <div>
                 <p className="text-xl font-extrabold text-blue-400">100%</p>
-                <p className="text-[11px] text-slate-400 font-medium">Garantia Documentada</p>
+                <p className="text-[11px] text-slate-400 font-medium">Garantia Registrada</p>
               </div>
               <div>
                 <p className="text-xl font-extrabold text-emerald-400">24/7</p>
@@ -327,8 +374,114 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
         </div>
       </section>
 
+      {/* ── Vitrine / Catálogo de Produtos e Banners ── */}
+      <section id="produtos" className="py-20 bg-slate-950 border-b border-slate-800/80">
+        <div className="mx-auto max-w-6xl px-5 space-y-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="space-y-2 max-w-xl">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 border border-blue-800/60 px-3 py-1 rounded-full">
+                <Sparkles className="h-3.5 w-3.5 text-blue-400" />
+                <span>Nossos Produtos & Equipamentos</span>
+              </div>
+              <h2 className="text-3xl font-black text-white">Catálogo de Equipamentos</h2>
+              <p className="text-xs sm:text-sm text-slate-400">
+                Centrais de alarme, câmeras, sensores e acessórios com os melhores preços e pronta
+                instalação.
+              </p>
+            </div>
+
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20consultar%20um%20produto%20específico.`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 border border-emerald-800/60 px-4 py-2 rounded-xl transition-colors"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>Pedir orçamento personalizado no WhatsApp</span>
+            </a>
+          </div>
+
+          {/* Filtros de Categoria */}
+          <div className="flex flex-wrap items-center gap-2 pt-2">
+            {categorias.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setCategoriaAtiva(cat)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                  categoriaAtiva === cat
+                    ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-950"
+                    : "bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Grid de Produtos */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {produtosFiltrados.map((prod) => (
+              <div
+                key={prod.id}
+                className="group rounded-2xl border border-slate-800 bg-slate-900/80 p-5 flex flex-col justify-between transition-all hover:border-blue-500/50 hover:bg-slate-900 shadow-md space-y-4"
+              >
+                <div>
+                  {/* Imagem / Banner do Produto */}
+                  <div className="relative h-44 w-full rounded-xl bg-slate-950/80 border border-slate-800 p-4 flex items-center justify-center overflow-hidden">
+                    <img
+                      src={prod.imagemUrl || "/intelbras.png"}
+                      alt={prod.nome}
+                      className="max-h-28 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <span className="absolute top-2.5 left-2.5 text-[10px] font-bold bg-slate-900/90 text-blue-300 border border-slate-700 px-2 py-0.5 rounded-md">
+                      {prod.categoria}
+                    </span>
+                    {prod.destaque && (
+                      <span className="absolute top-2.5 right-2.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md">
+                        ★ Destaque
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-4 space-y-2">
+                    <h3 className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors leading-snug">
+                      {prod.nome}
+                    </h3>
+                    <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
+                      {prod.descricao}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] text-slate-500 font-medium">A partir de</p>
+                    <p className="text-base font-extrabold text-emerald-400">
+                      R$ {prod.valor || "Sob consulta"}
+                    </p>
+                  </div>
+
+                  <a
+                    href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20comprar%20ou%20saber%20mais%20sobre%20o%20produto:%20${encodeURIComponent(
+                      prod.nome
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-102"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" />
+                    <span>Pedir no Zap</span>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── Marcas Parceiras / Homologadas ── */}
-      <section id="marcas" className="py-14 bg-slate-900/60 border-b border-slate-800/80">
+      <section id="marcas" className="py-16 bg-slate-900/50 border-b border-slate-800/80">
         <div className="mx-auto max-w-6xl px-5 text-center space-y-6">
           <p className="text-xs font-bold uppercase tracking-widest text-blue-400">
             Equipamentos Homologados & Linhas Oficiais
@@ -384,7 +537,7 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
             <span className="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 border border-blue-800/60 px-3 py-1 rounded-full">
               O que oferecemos
             </span>
-            <h2 className="text-3xl font-black text-white">Serviços e Produtos Especializados</h2>
+            <h2 className="text-3xl font-black text-white">Serviços e Instalações Especializadas</h2>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
               Soluções completas desde o projeto inicial até a manutenção periódica com emissão de
               ficha de garantia.
@@ -392,7 +545,6 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Card 1 */}
             <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
               <div className="h-10 w-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
                 <Bell className="h-5 w-5" />
@@ -404,19 +556,17 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
               </p>
             </div>
 
-            {/* Card 2 */}
             <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
               <div className="h-10 w-10 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
                 <Camera className="h-5 w-5" />
               </div>
               <h3 className="text-base font-bold text-white">Câmeras de Segurança (CFTV)</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Câmeras de alta definição com visão noturna infravermelha, gravação inteligente e
+                Câmeras de alta definição com visão noturna infravermelha, gravação contínua e
                 visualização remota em tempo real.
               </p>
             </div>
 
-            {/* Card 3 */}
             <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
               <div className="h-10 w-10 rounded-xl bg-amber-600/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
                 <Wrench className="h-5 w-5" />
@@ -428,7 +578,6 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
               </p>
             </div>
 
-            {/* Card 4 */}
             <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
               <div className="h-10 w-10 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
                 <Zap className="h-5 w-5" />
@@ -440,7 +589,6 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
               </p>
             </div>
 
-            {/* Card 5 */}
             <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
               <div className="h-10 w-10 rounded-xl bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
                 <ShieldCheck className="h-5 w-5" />
@@ -452,7 +600,6 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
               </p>
             </div>
 
-            {/* Card 6 */}
             <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
               <div className="h-10 w-10 rounded-xl bg-rose-600/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
                 <Building2 className="h-5 w-5" />
@@ -467,19 +614,20 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
         </div>
       </section>
 
-      {/* ── Diferenciais ── */}
-      <section id="diferenciais" className="py-20 bg-slate-900/40 border-b border-slate-800/80">
+      {/* ── Seção de Garantia & Diferenciais ── */}
+      <section id="garantia" className="py-20 bg-slate-900/40 border-b border-slate-800/80">
         <div className="mx-auto max-w-6xl px-5 grid md:grid-cols-2 gap-10 items-center">
           <div className="space-y-5">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-3 py-1 rounded-full">
-              Por que escolher a WS
+              Garantia & Confiança
             </span>
             <h2 className="text-3xl font-black text-white leading-tight">
-              Compromisso com qualidade técnica e transparência
+              Garantia Legal de 90 Dias (CDC) + Planos Estendidos
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Não vendemos apenas equipamentos — entregamos segurança funcional e documentada para
-              sua total tranquilidade.
+              Todos os nossos serviços contam com garantia legal obrigatória de 90 dias conforme o
+              Código de Defesa do Consumidor, com opção de garantia estendida por apenas R$ 12,60 ou
+              R$ 9,99/mês por item.
             </p>
 
             <div className="space-y-3 pt-2">
@@ -490,8 +638,7 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
                 <div>
                   <h4 className="text-xs font-bold text-white">Protocolo e Ficha de Cadastro</h4>
                   <p className="text-[11px] text-slate-400">
-                    Cada cliente recebe protocolo de atendimento e documento oficial com o histórico de
-                    manutenções.
+                    Cada cliente recebe protocolo de atendimento e documento oficial com histórico.
                   </p>
                 </div>
               </div>
@@ -501,10 +648,9 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
                   <Check className="h-3.5 w-3.5" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white">Cobrança Clara e Facilitada</h4>
+                  <h4 className="text-xs font-bold text-white">Cobertura contra Raios e Surtos</h4>
                   <p className="text-[11px] text-slate-400">
-                    Aceitamos PIX, cartões de crédito e débito com condições facilitadas para serviços e
-                    peças.
+                    Opção de garantia técnica com reposição de componentes danificados por descargas.
                   </p>
                 </div>
               </div>
@@ -514,17 +660,16 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
                   <Check className="h-3.5 w-3.5" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white">Garantia Técnica Personalizada</h4>
+                  <h4 className="text-xs font-bold text-white">Troca de Baterias Inclusa</h4>
                   <p className="text-[11px] text-slate-400">
-                    Opções com cobertura estendida para troca de baterias, defeitos de fabricação e
-                    fenômenos atmosféricos.
+                    Planos com manutenção e reposição periódica de pilhas e baterias.
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-8 space-y-6 shadow-xl">
+          <div id="contato" className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-8 space-y-6 shadow-xl">
             <div className="flex items-center gap-3">
               <img
                 src="/logo.jpg"
@@ -533,23 +678,23 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
               />
               <div>
                 <h3 className="text-base font-extrabold text-white">WS SEGURANÇA RESIDENCIAL</h3>
-                <p className="text-xs text-blue-400 font-medium">Atendimento Especializado</p>
+                <p className="text-xs text-blue-400 font-medium">WhatsApp: {WHATSAPP_FORMATADO}</p>
               </div>
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              Precisa de uma avaliação no seu imóvel ou quer modernizar o seu sistema atual de
-              alarme? Converse diretamente com o nosso responsável técnico.
+              Precisa de uma avaliação no seu imóvel, orçamento para alarmes ou manutenção na sua
+              central? Clique no botão abaixo e fale direto no WhatsApp.
             </p>
 
             <a
-              href="https://wa.me/5511999999999?text=Olá!%20Gostaria%20de%20um%20orçamento%20para%20minha%20casa."
+              href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20um%20orçamento%20para%20minha%20casa.`}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 text-xs font-bold transition-all shadow-md"
+              className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-102"
             >
               <MessageCircle className="h-4 w-4" />
-              <span>Falar pelo WhatsApp Agora</span>
+              <span>Chamar no WhatsApp ({WHATSAPP_FORMATADO})</span>
             </a>
           </div>
         </div>
@@ -567,7 +712,7 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
             <div>
               <p className="text-xs font-bold text-white">WS SEGURANÇA RESIDENCIAL</p>
               <p className="text-[11px] text-slate-500">
-                © {new Date().getFullYear()} Todos os direitos reservados.
+                © {new Date().getFullYear()} Todos os direitos reservados. WhatsApp: {WHATSAPP_FORMATADO}
               </p>
             </div>
           </div>
@@ -589,10 +734,21 @@ function LandingPage({ onAbrirLogin }: { onAbrirLogin: () => void }) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// ⚙️ 2. PAINEL ADMINISTRATIVO (PROTEGIDO POR LOGIN)
+// ⚙️ 2. PAINEL ADMINISTRATIVO (CADASTROS + GERENCIADOR DE BANNERS E PRODUTOS)
 // ══════════════════════════════════════════════════════════════════════════════
 
-function PainelAdministrativo({ onLogout }: { onLogout: () => void }) {
+function PainelAdministrativo({
+  onLogout,
+  produtos,
+  onAtualizarProdutos,
+}: {
+  onLogout: () => void;
+  produtos: Produto[];
+  onAtualizarProdutos: (novos: Produto[]) => void;
+}) {
+  const [abaAtiva, setAbaAtiva] = useState<"clientes" | "produtos">("clientes");
+
+  // Estados dos Clientes
   const [form, setForm] = useState(vazio);
   const [busca, setBusca] = useState("");
   const [clienteManutencao, setClienteManutencao] = useState<Cliente | null>(null);
@@ -611,6 +767,16 @@ function PainelAdministrativo({ onLogout }: { onLogout: () => void }) {
     OPCOES_GARANTIA_PADRAO[1],
     OPCOES_GARANTIA_PADRAO[2],
   ]);
+
+  // Estados do Gerenciador de Produtos / Banners
+  const [modalProdutoAberto, setModalProdutoAberto] = useState(false);
+  const [produtoEditando, setProdutoEditando] = useState<Produto | null>(null);
+  const [formProdNome, setFormProdNome] = useState("");
+  const [formProdValor, setFormProdValor] = useState("");
+  const [formProdCategoria, setFormProdCategoria] = useState(CATEGORIAS_PRODUTO[0]);
+  const [formProdDescricao, setFormProdDescricao] = useState("");
+  const [formProdImagem, setFormProdImagem] = useState("/intelbras.png");
+  const [formProdDestaque, setFormProdDestaque] = useState(true);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const qc = useQueryClient();
@@ -742,8 +908,8 @@ function PainelAdministrativo({ onLogout }: { onLogout: () => void }) {
     reader.readAsText(file);
   }
 
-  // ── Validar e enviar formulário ──
-  function onSubmit(e: React.FormEvent) {
+  // ── Validar e enviar formulário de cliente ──
+  function onSubmitCliente(e: React.FormEvent) {
     e.preventDefault();
     const erro =
       form.nome.trim().length < 3
@@ -764,7 +930,6 @@ function PainelAdministrativo({ onLogout }: { onLogout: () => void }) {
       return;
     }
 
-    // Embutir dados financeiros e de garantia no formato seguro
     const obsFinal = embutirGarantia(form.observacoes, {
       validade: validadeGarantia,
       coberturas: coberturasGarantia,
@@ -777,6 +942,79 @@ function PainelAdministrativo({ onLogout }: { onLogout: () => void }) {
     });
 
     criar.mutate({ ...form, observacoes: obsFinal });
+  }
+
+  // ── Gerenciador de Produtos / Banners ──
+  function abrirModalCriarProduto() {
+    setProdutoEditando(null);
+    setFormProdNome("");
+    setFormProdValor("");
+    setFormProdCategoria(CATEGORIAS_PRODUTO[0]);
+    setFormProdDescricao("");
+    setFormProdImagem("/intelbras.png");
+    setFormProdDestaque(true);
+    setModalProdutoAberto(true);
+  }
+
+  function abrirModalEditarProduto(p: Produto) {
+    setProdutoEditando(p);
+    setFormProdNome(p.nome);
+    setFormProdValor(p.valor);
+    setFormProdCategoria(p.categoria);
+    setFormProdDescricao(p.descricao);
+    setFormProdImagem(p.imagemUrl);
+    setFormProdDestaque(p.destaque ?? true);
+    setModalProdutoAberto(true);
+  }
+
+  function salvarProdutoModal(e: React.FormEvent) {
+    e.preventDefault();
+    if (!formProdNome.trim()) {
+      toast.error("Informe o nome do produto.");
+      return;
+    }
+
+    if (produtoEditando) {
+      const atualizados = produtos.map((p) =>
+        p.id === produtoEditando.id
+          ? {
+              ...p,
+              nome: formProdNome.trim(),
+              valor: formProdValor.trim(),
+              categoria: formProdCategoria,
+              descricao: formProdDescricao.trim(),
+              imagemUrl: formProdImagem,
+              destaque: formProdDestaque,
+            }
+          : p
+      );
+      onAtualizarProdutos(atualizados);
+      toast.success("Produto atualizado com sucesso!");
+    } else {
+      const novo: Produto = {
+        id: gerarId(),
+        nome: formProdNome.trim(),
+        valor: formProdValor.trim(),
+        categoria: formProdCategoria,
+        descricao: formProdDescricao.trim(),
+        imagemUrl: formProdImagem,
+        destaque: formProdDestaque,
+      };
+      onAtualizarProdutos([novo, ...produtos]);
+      toast.success("Novo produto adicionado à vitrine!");
+    }
+    setModalProdutoAberto(false);
+  }
+
+  function removerProduto(id: string) {
+    const atualizados = produtos.filter((p) => p.id !== id);
+    onAtualizarProdutos(atualizados);
+    toast.info("Produto removido.");
+  }
+
+  function restaurarCatalogoPadrao() {
+    onAtualizarProdutos(PRODUTOS_PADRAO);
+    toast.success("Catálogo padrão restaurado!");
   }
 
   const filtrados = clientes.filter((c) => {
@@ -793,7 +1031,7 @@ function PainelAdministrativo({ onLogout }: { onLogout: () => void }) {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       {/* ── Header do Painel ── */}
-      <header className="bg-slate-900 border-b border-slate-800">
+      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-30">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-4">
           <img
             src="/logo.jpg"
@@ -802,29 +1040,22 @@ function PainelAdministrativo({ onLogout }: { onLogout: () => void }) {
           />
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-extrabold text-white">PAINEL DO TÉCNICO</h1>
+              <h1 className="text-base font-extrabold text-white">PAINEL ADMINISTRATIVO</h1>
               <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">
                 Autenticado
               </span>
             </div>
             <p className="text-xs text-slate-400 font-medium">
-              WS Segurança Residencial — Gerenciamento & Termos
+              WS Segurança Residencial — Gerenciador de Clientes & Produtos
             </p>
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={importarJson}
-              accept=".json"
-              className="hidden"
-            />
             <Button
               variant="outline"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700"
+              className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hidden sm:inline-flex"
             >
               <Upload className="h-3.5 w-3.5 mr-1 text-slate-400" /> Importar
             </Button>
@@ -832,7 +1063,7 @@ function PainelAdministrativo({ onLogout }: { onLogout: () => void }) {
               variant="outline"
               size="sm"
               onClick={exportarJson}
-              className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700"
+              className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hidden sm:inline-flex"
             >
               <Download className="h-3.5 w-3.5 mr-1 text-slate-400" /> Exportar
             </Button>
@@ -847,562 +1078,828 @@ function PainelAdministrativo({ onLogout }: { onLogout: () => void }) {
             </Button>
           </div>
         </div>
+
+        {/* Abas de Navegação do Painel */}
+        <div className="mx-auto max-w-6xl px-5 flex items-center gap-2 border-t border-slate-800/80 pt-2 pb-2">
+          <button
+            type="button"
+            onClick={() => setAbaAtiva("clientes")}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              abaAtiva === "clientes"
+                ? "bg-blue-600 text-white shadow-md"
+                : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            }`}
+          >
+            <UserCheck className="h-4 w-4" />
+            <span>Cadastros & Termos de Garantia ({clientes.length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAbaAtiva("produtos")}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              abaAtiva === "produtos"
+                ? "bg-blue-600 text-white shadow-md"
+                : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            }`}
+          >
+            <Package className="h-4 w-4" />
+            <span>Banners & Produtos da Tela Principal ({produtos.length})</span>
+          </button>
+        </div>
       </header>
 
-      <main className="mx-auto grid max-w-6xl gap-6 px-5 py-8 lg:grid-cols-[minmax(0,450px)_1fr]">
-        {/* ── Formulário de Cadastro ── */}
-        <section className="card-elevated h-fit p-6 bg-slate-900 border-slate-800 text-slate-100 rounded-xl border">
-          <h2 className="text-base font-bold text-white">Novo cadastro de cliente</h2>
-          <p className="mt-1 text-xs text-slate-400">
-            Preencha os dados cadastrais, valores, forma de pagamento e termo de garantia.
-          </p>
+      {/* ── CONTEÚDO 1: GERENCIADOR DE CLIENTES ── */}
+      {abaAtiva === "clientes" && (
+        <main className="mx-auto grid max-w-6xl gap-6 px-5 py-8 lg:grid-cols-[minmax(0,450px)_1fr]">
+          {/* Formulário de Cadastro */}
+          <section className="card-elevated h-fit p-6 bg-slate-900 border-slate-800 text-slate-100 rounded-xl border">
+            <h2 className="text-base font-bold text-white">Novo cadastro de cliente</h2>
+            <p className="mt-1 text-xs text-slate-400">
+              Preencha os dados cadastrais, valores, forma de pagamento e termo de garantia.
+            </p>
 
-          <form onSubmit={onSubmit} className="mt-6 space-y-4">
-            <div className="space-y-1.5">
-              <Label className="field-label text-xs text-slate-300" htmlFor="nome">
-                Nome completo do cliente
-              </Label>
-              <Input
-                id="nome"
-                value={form.nome}
-                maxLength={120}
-                onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                placeholder="Ex.: Marcos Ribeiro de Souza"
-                className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
+            <form onSubmit={onSubmitCliente} className="mt-6 space-y-4">
               <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300" htmlFor="cpf">
-                  CPF
+                <Label className="field-label text-xs text-slate-300" htmlFor="nome">
+                  Nome completo do cliente
                 </Label>
                 <Input
-                  id="cpf"
-                  inputMode="numeric"
-                  value={form.cpf}
-                  onChange={(e) => setForm({ ...form, cpf: formatarCpf(e.target.value) })}
-                  placeholder="000.000.000-00"
+                  id="nome"
+                  value={form.nome}
+                  maxLength={120}
+                  onChange={(e) => setForm({ ...form, nome: e.target.value })}
+                  placeholder="Ex.: Marcos Ribeiro de Souza"
                   className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
                 />
               </div>
-              <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300" htmlFor="telefone">
-                  Telefone
-                </Label>
-                <Input
-                  id="telefone"
-                  inputMode="tel"
-                  value={form.telefone}
-                  onChange={(e) => setForm({ ...form, telefone: formatarTelefone(e.target.value) })}
-                  placeholder="(00) 00000-0000"
-                  className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
-                />
-              </div>
-            </div>
 
-            <div className="space-y-1.5">
-              <Label className="field-label text-xs text-slate-300" htmlFor="endereco">
-                Endereço da instalação
-              </Label>
-              <Input
-                id="endereco"
-                value={form.endereco}
-                maxLength={200}
-                onChange={(e) => setForm({ ...form, endereco: e.target.value })}
-                placeholder="Rua, número, bairro, cidade/UF"
-                className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300" htmlFor="mac">
-                  MAC da central
-                </Label>
-                <Input
-                  id="mac"
-                  value={form.macCentral}
-                  onChange={(e) => setForm({ ...form, macCentral: formatarMac(e.target.value) })}
-                  placeholder="00:1A:2B:3C:4D:5E"
-                  className="font-mono bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300" htmlFor="modeloCentral">
-                  Modelo da central
-                </Label>
-                <select
-                  id="modeloCentral"
-                  value={form.modeloCentral}
-                  onChange={(e) => setForm({ ...form, modeloCentral: e.target.value })}
-                  className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 cursor-pointer text-white"
-                >
-                  <option value="" disabled>
-                    Selecione o modelo
-                  </option>
-                  {MODELOS_CENTRAL.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* ── Seção de Valores e Pagamento ── */}
-            <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 space-y-3">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
-                <DollarSign className="h-4 w-4" />
-                <span>Valores do Serviço & Forma de Pagamento</span>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <Label className="field-label text-xs text-slate-300" htmlFor="valorServico">
-                    Valor do Serviço (R$)
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label className="field-label text-xs text-slate-300" htmlFor="cpf">
+                    CPF
                   </Label>
-                  <div className="relative">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-semibold">
-                      R$
-                    </span>
-                    <Input
-                      id="valorServico"
-                      value={valorServico}
-                      onChange={(e) => setValorServico(e.target.value)}
-                      placeholder="150,00"
-                      className="pl-8 text-sm font-semibold bg-slate-800 border-slate-700 text-white"
-                    />
-                  </div>
+                  <Input
+                    id="cpf"
+                    inputMode="numeric"
+                    value={form.cpf}
+                    onChange={(e) => setForm({ ...form, cpf: formatarCpf(e.target.value) })}
+                    placeholder="000.000.000-00"
+                    className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
+                  />
                 </div>
+                <div className="space-y-1.5">
+                  <Label className="field-label text-xs text-slate-300" htmlFor="telefone">
+                    Telefone
+                  </Label>
+                  <Input
+                    id="telefone"
+                    inputMode="tel"
+                    value={form.telefone}
+                    onChange={(e) => setForm({ ...form, telefone: formatarTelefone(e.target.value) })}
+                    placeholder="(00) 00000-0000"
+                    className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
+                  />
+                </div>
+              </div>
 
-                <div className="space-y-1">
-                  <Label className="field-label text-xs text-slate-300" htmlFor="formaPagamento">
-                    Forma de Pagamento
+              <div className="space-y-1.5">
+                <Label className="field-label text-xs text-slate-300" htmlFor="endereco">
+                  Endereço da instalação
+                </Label>
+                <Input
+                  id="endereco"
+                  value={form.endereco}
+                  maxLength={200}
+                  onChange={(e) => setForm({ ...form, endereco: e.target.value })}
+                  placeholder="Rua, número, bairro, cidade/UF"
+                  className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label className="field-label text-xs text-slate-300" htmlFor="mac">
+                    MAC da central
+                  </Label>
+                  <Input
+                    id="mac"
+                    value={form.macCentral}
+                    onChange={(e) => setForm({ ...form, macCentral: formatarMac(e.target.value) })}
+                    placeholder="00:1A:2B:3C:4D:5E"
+                    className="font-mono bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="field-label text-xs text-slate-300" htmlFor="modeloCentral">
+                    Modelo da central
                   </Label>
                   <select
-                    id="formaPagamento"
-                    value={formaPagamento}
-                    onChange={(e) => setFormaPagamento(e.target.value)}
-                    className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 cursor-pointer text-white font-medium"
+                    id="modeloCentral"
+                    value={form.modeloCentral}
+                    onChange={(e) => setForm({ ...form, modeloCentral: e.target.value })}
+                    className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 cursor-pointer text-white"
                   >
-                    {FORMAS_PAGAMENTO.map((fp) => (
-                      <option key={fp} value={fp}>
-                        {fp}
+                    <option value="" disabled>
+                      Selecione o modelo
+                    </option>
+                    {MODELOS_CENTRAL.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
                       </option>
                     ))}
                   </select>
                 </div>
               </div>
-            </div>
 
-            {/* ── Seção de Seleção do Termo de Garantia e Precificação ── */}
-            <div className="rounded-xl border border-blue-900/60 bg-blue-950/20 p-4 space-y-3.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-blue-300">
-                  <ShieldCheck className="h-4 w-4 text-blue-400" />
-                  <span>Termo de Garantia da Manutenção</span>
+              {/* Seção de Valores e Pagamento */}
+              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 space-y-3">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
+                  <DollarSign className="h-4 w-4" />
+                  <span>Valores do Serviço & Forma de Pagamento</span>
                 </div>
-                <span
-                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                    coberturasGarantia.length === 0
-                      ? "text-amber-300 bg-amber-900/60"
-                      : "text-emerald-300 bg-emerald-900/60"
-                  }`}
-                >
-                  {coberturasGarantia.length === 0 ? "Padrão CDC 90 dias" : "Personalizada"}
-                </span>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-1">
+                    <Label className="field-label text-xs text-slate-300" htmlFor="valorServico">
+                      Valor do Serviço (R$)
+                    </Label>
+                    <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-semibold">
+                        R$
+                      </span>
+                      <Input
+                        id="valorServico"
+                        value={valorServico}
+                        onChange={(e) => setValorServico(e.target.value)}
+                        placeholder="150,00"
+                        className="pl-8 text-sm font-semibold bg-slate-800 border-slate-700 text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="field-label text-xs text-slate-300" htmlFor="formaPagamento">
+                      Forma de Pagamento
+                    </Label>
+                    <select
+                      id="formaPagamento"
+                      value={formaPagamento}
+                      onChange={(e) => setFormaPagamento(e.target.value)}
+                      className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 cursor-pointer text-white font-medium"
+                    >
+                      {FORMAS_PAGAMENTO.map((fp) => (
+                        <option key={fp} value={fp}>
+                          {fp}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
 
-              {coberturasGarantia.length === 0 ? (
-                <div className="rounded-md bg-amber-950/40 p-2.5 border border-amber-800/80 text-[11px] text-amber-200 leading-tight">
-                  ⚖️ <strong>Garantia Legal de 90 dias (CDC)</strong>: Ativa automaticamente. Cobrindo
-                  todos os serviços executados conforme a lei do consumidor.
+              {/* Seção do Termo de Garantia */}
+              <div className="rounded-xl border border-blue-900/60 bg-blue-950/20 p-4 space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-blue-300">
+                    <ShieldCheck className="h-4 w-4 text-blue-400" />
+                    <span>Termo de Garantia da Manutenção</span>
+                  </div>
+                  <span
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                      coberturasGarantia.length === 0
+                        ? "text-amber-300 bg-amber-900/60"
+                        : "text-emerald-300 bg-emerald-900/60"
+                    }`}
+                  >
+                    {coberturasGarantia.length === 0 ? "Padrão CDC 90 dias" : "Personalizada"}
+                  </span>
                 </div>
-              ) : (
-                <div className="rounded-md bg-emerald-950/40 p-2.5 border border-emerald-800/80 text-[11px] text-emerald-200 leading-tight">
-                  🛡️ <strong>90 Dias Legais (CDC) + Garantia Estendida</strong>: O prazo adicional
-                  selecionado abaixo se <u>soma aos 90 dias obrigatórios da lei</u> com{" "}
-                  {coberturasGarantia.length} cobertura(s) incluída(s).
+
+                {coberturasGarantia.length === 0 ? (
+                  <div className="rounded-md bg-amber-950/40 p-2.5 border border-amber-800/80 text-[11px] text-amber-200 leading-tight">
+                    ⚖️ <strong>Garantia Legal de 90 dias (CDC)</strong>: Ativa automaticamente. Cobrindo
+                    todos os serviços executados conforme a lei do consumidor.
+                  </div>
+                ) : (
+                  <div className="rounded-md bg-emerald-950/40 p-2.5 border border-emerald-800/80 text-[11px] text-emerald-200 leading-tight">
+                    🛡️ <strong>90 Dias Legais (CDC) + Garantia Estendida</strong>: O prazo adicional
+                    selecionado abaixo se <u>soma aos 90 dias obrigatórios da lei</u> com{" "}
+                    {coberturasGarantia.length} cobertura(s) incluída(s).
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setCoberturasGarantia([]);
+                      setValidadeGarantia("90 dias (Apenas Garantia Legal CDC)");
+                    }}
+                    className={`text-[11px] h-7 flex-1 font-medium bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 ${
+                      coberturasGarantia.length === 0
+                        ? "border-amber-500 bg-amber-950/40 text-amber-200 font-bold"
+                        : ""
+                    }`}
+                  >
+                    ⚖️ Apenas 90 Dias (CDC)
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setCoberturasGarantia([...OPCOES_GARANTIA_PADRAO]);
+                      setValidadeGarantia("90 dias (CDC) + 3 meses estendida (Total: 6 meses)");
+                    }}
+                    className={`text-[11px] h-7 flex-1 font-medium bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 ${
+                      coberturasGarantia.length === OPCOES_GARANTIA_PADRAO.length
+                        ? "border-blue-500 bg-blue-950/40 text-blue-200 font-bold"
+                        : ""
+                    }`}
+                  >
+                    ➕ Marcar Todas
+                  </Button>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="field-label text-xs text-slate-300">
+                    Período da Garantia Estendida
+                  </Label>
+                  <select
+                    value={validadeGarantia}
+                    onChange={(e) => setValidadeGarantia(e.target.value)}
+                    className="flex h-8 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 cursor-pointer text-white font-medium"
+                  >
+                    {PERIODOS_VALIDADE_GARANTIA.map((p) => (
+                      <option key={p} value={p}>
+                        {p}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="rounded-md bg-blue-900/30 p-2.5 border border-blue-800 text-xs space-y-1">
+                  <div className="flex justify-between items-center font-semibold text-blue-200">
+                    <span>Valor por item adicional:</span>
+                    <span className="text-emerald-400 font-bold">
+                      R$ {precoItem.toFixed(2).replace(".", ",")} / item / mês
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-blue-300">
+                    {precoItem === 12.6
+                      ? "📌 Plano de 3 meses estendida: R$ 12,60/mês por item."
+                      : "🎉 Plano acima de 6 meses (desconto): R$ 9,99/mês por item!"}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="field-label text-xs font-semibold text-slate-300">
+                    Selecione os itens cobertos na garantia:
+                  </p>
+                  <div className="space-y-1.5">
+                    {OPCOES_GARANTIA_PADRAO.map((op) => {
+                      const checked = coberturasGarantia.includes(op);
+                      return (
+                        <label
+                          key={op}
+                          className={`flex items-start gap-2 rounded-md p-2 text-xs border transition-colors cursor-pointer select-none ${
+                            checked
+                              ? "bg-slate-800 border-blue-500/50 text-white font-medium"
+                              : "bg-transparent border-dashed border-slate-800 text-slate-500 opacity-70"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setCoberturasGarantia([...coberturasGarantia, op]);
+                              } else {
+                                setCoberturasGarantia(coberturasGarantia.filter((c) => c !== op));
+                              }
+                            }}
+                            className="mt-0.5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          />
+                          <span className="leading-tight">{op}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {coberturasGarantia.length > 0 && (
+                  <div className="space-y-2 pt-1 border-t border-slate-800">
+                    <Label className="field-label text-xs font-semibold text-slate-300">
+                      Como o cliente vai pagar a garantia estendida?
+                    </Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setTipoCobrancaGarantia("mensal")}
+                        className={`p-2 rounded-lg border text-left text-xs transition-all cursor-pointer ${
+                          tipoCobrancaGarantia === "mensal"
+                            ? "border-emerald-500 bg-emerald-950/50 text-emerald-200 font-bold"
+                            : "border-slate-800 bg-slate-800/60 text-slate-400 hover:bg-slate-800"
+                        }`}
+                      >
+                        <p className="flex items-center gap-1">
+                          <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
+                          <span>Por Mês</span>
+                        </p>
+                        <p className="mt-1 text-sm font-extrabold text-emerald-300">
+                          R$ {valorMensalGarantia.toFixed(2).replace(".", ",")}
+                          <span className="text-[10px] font-normal text-slate-400">/mês</span>
+                        </p>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setTipoCobrancaGarantia("total")}
+                        className={`p-2 rounded-lg border text-left text-xs transition-all cursor-pointer ${
+                          tipoCobrancaGarantia === "total"
+                            ? "border-blue-500 bg-blue-950/50 text-blue-200 font-bold"
+                            : "border-slate-800 bg-slate-800/60 text-slate-400 hover:bg-slate-800"
+                        }`}
+                      >
+                        <p className="flex items-center gap-1">
+                          <Calculator className="h-3.5 w-3.5 text-blue-400" />
+                          <span>Valor Total Já</span>
+                        </p>
+                        <p className="mt-1 text-sm font-extrabold text-blue-300">
+                          R$ {valorTotalGarantia.toFixed(2).replace(".", ",")}
+                          <span className="text-[10px] font-normal text-slate-400">
+                            {" "}
+                            ({mesesEstendidos}x)
+                          </span>
+                        </p>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="field-label text-xs text-slate-300" htmlFor="obs">
+                  Observações adicionais (opcional)
+                </Label>
+                <Textarea
+                  id="obs"
+                  rows={2}
+                  maxLength={500}
+                  value={form.observacoes}
+                  onChange={(e) => setForm({ ...form, observacoes: e.target.value })}
+                  placeholder="Zonas, sensores instalados, senha de coação, etc."
+                  className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500 text-xs"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full font-bold bg-blue-600 hover:bg-blue-500 text-white py-2.5 cursor-pointer shadow-md"
+                disabled={criar.isPending}
+              >
+                <Plus className="h-4 w-4 mr-1.5" />
+                {criar.isPending ? "Salvando..." : "Cadastrar Cliente & Emitir Termo"}
+              </Button>
+            </form>
+          </section>
+
+          {/* Lista de Clientes */}
+          <section className="card-elevated p-6 bg-slate-900 border-slate-800 text-slate-100 rounded-xl border">
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="text-base font-bold text-white">Clientes cadastrados</h2>
+              <div className="relative ml-auto w-full sm:w-64">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                <Input
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  placeholder="Buscar por nome, CPF ou MAC"
+                  className="pl-9 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-4">
+              {isLoading && (
+                <p className="text-sm text-slate-400">Carregando dados do Supabase...</p>
+              )}
+              {!isLoading && filtrados.length === 0 && (
+                <div className="rounded-lg border border-dashed border-slate-800 p-10 text-center">
+                  <p className="text-sm text-slate-400">
+                    Nenhum cadastro encontrado. Registre o primeiro cliente ao lado.
+                  </p>
                 </div>
               )}
 
-              {/* Botões de Seleção Rápida */}
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setCoberturasGarantia([]);
-                    setValidadeGarantia("90 dias (Apenas Garantia Legal CDC)");
-                  }}
-                  className={`text-[11px] h-7 flex-1 font-medium bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 ${
-                    coberturasGarantia.length === 0
-                      ? "border-amber-500 bg-amber-950/40 text-amber-200 font-bold"
-                      : ""
-                  }`}
-                >
-                  ⚖️ Apenas 90 Dias (CDC)
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setCoberturasGarantia([...OPCOES_GARANTIA_PADRAO]);
-                    setValidadeGarantia("90 dias (CDC) + 3 meses estendida (Total: 6 meses)");
-                  }}
-                  className={`text-[11px] h-7 flex-1 font-medium bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 ${
-                    coberturasGarantia.length === OPCOES_GARANTIA_PADRAO.length
-                      ? "border-blue-500 bg-blue-950/40 text-blue-200 font-bold"
-                      : ""
-                  }`}
-                >
-                  ➕ Marcar Todas
-                </Button>
+              {filtrados.map((c) => {
+                const manuts = c.manutencoes || [];
+                const ultima = manuts[0] ?? null;
+                const { obsLimpa, garantia } = extrairGarantia(c.observacoes);
+
+                return (
+                  <article
+                    key={c.id}
+                    className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 transition-all hover:border-slate-700 space-y-2.5"
+                  >
+                    <div className="flex flex-wrap items-start gap-4">
+                      <div className="min-w-[180px] flex-1">
+                        <h3 className="text-sm font-semibold text-white">{c.nome}</h3>
+                        <p className="text-xs text-slate-400">
+                          <span>{c.cpf}</span> · <span>{c.telefone}</span>
+                        </p>
+                        <p className="mt-0.5 text-xs text-slate-500">{c.endereco}</p>
+                      </div>
+
+                      <div className="min-w-[140px]">
+                        <p className="field-label text-slate-500 text-[11px]">Central</p>
+                        <p className="text-sm font-medium text-slate-200">{c.modeloCentral}</p>
+                        <p className="font-mono text-xs text-slate-400">{c.macCentral}</p>
+                      </div>
+
+                      <div className="min-w-[110px]">
+                        <p className="field-label text-slate-500 text-[11px]">Cadastro</p>
+                        <p className="text-xs text-slate-400">{formatarData(c.criadoEm)}</p>
+                      </div>
+
+                      <div className="ml-auto flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setClienteManutencao(c);
+                            setDescricaoManutencao("");
+                          }}
+                          className="text-xs border-amber-700/50 text-amber-300 bg-amber-950/30 hover:bg-amber-900/50 font-semibold cursor-pointer"
+                        >
+                          <Wrench className="h-3.5 w-3.5 mr-1 text-amber-400" /> Manutenção
+                        </Button>
+
+                        <Button asChild variant="secondary" size="sm" className="cursor-pointer bg-slate-800 hover:bg-slate-700 text-white">
+                          <Link to="/cliente/$id" params={{ id: c.id }}>
+                            <FileText className="h-4 w-4 mr-1 text-slate-300" /> Documento & Garantia
+                          </Link>
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Excluir ${c.nome}`}
+                          onClick={() => excluir.mutate(c.id)}
+                          className="cursor-pointer hover:bg-rose-950/40"
+                        >
+                          <Trash2 className="h-4 w-4 text-rose-400 hover:text-rose-300" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Informações Financeiras e Badge de Garantia */}
+                    <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80">
+                      {garantia.valorServico && (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-950/60 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-md">
+                          <DollarSign className="h-3 w-3 text-emerald-400" />
+                          <span>Serviço: R$ {garantia.valorServico}</span>
+                          {garantia.formaPagamento && (
+                            <span className="text-emerald-400 font-normal">
+                              ({garantia.formaPagamento})
+                            </span>
+                          )}
+                        </span>
+                      )}
+
+                      {garantia.coberturas.length === 0 ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-amber-950/50 text-amber-300 border border-amber-800 px-2 py-0.5 rounded-md">
+                          <ShieldCheck className="h-3 w-3 text-amber-400" />
+                          <span>Garantia Legal: 90 dias (Padrão CDC)</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-blue-950/50 text-blue-300 border border-blue-800 px-2 py-0.5 rounded-md">
+                          <ShieldCheck className="h-3 w-3 text-blue-400" />
+                          <span>
+                            Garantia Estendida:{" "}
+                            {garantia.tipoCobrancaGarantia === "total" && garantia.valorTotalGarantia
+                              ? `R$ ${garantia.valorTotalGarantia.toFixed(2).replace(".", ",")} Total`
+                              : garantia.valorMensalGarantia
+                                ? `R$ ${garantia.valorMensalGarantia.toFixed(2).replace(".", ",")}/mês`
+                                : ""}
+                          </span>
+                          <span className="text-blue-400 font-normal">
+                            ({garantia.coberturas.length} coberturas)
+                          </span>
+                        </span>
+                      )}
+
+                      {obsLimpa && (
+                        <span className="text-[11px] text-slate-400 truncate max-w-xs ml-auto">
+                          Obs: {obsLimpa}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Histórico de Manutenções */}
+                    {manuts.length > 0 ? (
+                      <div className="mt-2 border-t border-slate-800/80 pt-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 text-xs text-amber-300 font-medium">
+                            <Clock className="h-3.5 w-3.5 text-amber-400" />
+                            <span>
+                              <span>Última manutenção: </span>
+                              <strong>{formatarData(ultima?.dataHora || "")}</strong>
+                            </span>
+                            {ultima?.descricao && (
+                              <span className="text-slate-400 font-normal ml-1">
+                                ({ultima.descricao})
+                              </span>
+                            )}
+                          </div>
+                          {manuts.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setHistoricoExpandido(
+                                  historicoExpandido === c.id ? null : c.id
+                                )
+                              }
+                              className="text-xs text-slate-400 hover:text-white underline font-medium cursor-pointer"
+                            >
+                              {historicoExpandido === c.id
+                                ? "Ocultar histórico"
+                                : `Ver histórico (${manuts.length})`}
+                            </button>
+                          )}
+                        </div>
+                        {historicoExpandido === c.id && (
+                          <div className="mt-2 space-y-1.5 rounded-md bg-slate-900 p-2.5 border border-slate-800 text-xs">
+                            <p className="font-semibold text-slate-200 mb-1 flex items-center gap-1">
+                              <History className="h-3.5 w-3.5" /> Histórico completo:
+                            </p>
+                            {manuts.map((m) => (
+                              <div
+                                key={m.id}
+                                className="flex justify-between border-b border-slate-800 pb-1 last:border-0 last:pb-0"
+                              >
+                                <span className="font-mono text-slate-200 font-medium">
+                                  📅 {formatarData(m.dataHora)}
+                                </span>
+                                <span className="text-slate-400">{m.descricao}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="mt-1 border-t border-slate-800/60 pt-1.5 text-[11px] text-slate-500 flex items-center gap-1">
+                        <Clock className="h-3 w-3 opacity-60" /> Nenhuma manutenção registrada ainda.
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        </main>
+      )}
+
+      {/* ── CONTEÚDO 2: GERENCIADOR DE BANNERS & PRODUTOS DA TELA PRINCIPAL ── */}
+      {abaAtiva === "produtos" && (
+        <main className="mx-auto max-w-6xl px-5 py-8 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 p-6 rounded-2xl border border-slate-800">
+            <div>
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <Package className="h-5 w-5 text-blue-400" />
+                Gerenciador de Banners & Produtos da Tela Principal
+              </h2>
+              <p className="text-xs text-slate-400 mt-1">
+                Adicione, altere preços, troque imagens e descrições dos produtos que aparecem no site
+                público.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={restaurarCatalogoPadrao}
+                className="text-xs bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 cursor-pointer"
+              >
+                <RotateCcw className="h-3.5 w-3.5 mr-1" /> Restaurar Padrão
+              </Button>
+              <Button
+                size="sm"
+                onClick={abrirModalCriarProduto}
+                className="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold cursor-pointer shadow-md"
+              >
+                <Plus className="h-4 w-4 mr-1" /> Novo Produto / Banner
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {produtos.map((prod) => (
+              <div
+                key={prod.id}
+                className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5 flex flex-col justify-between space-y-4"
+              >
+                <div>
+                  <div className="relative h-36 w-full rounded-xl bg-slate-950 border border-slate-800 p-3 flex items-center justify-center">
+                    <img
+                      src={prod.imagemUrl || "/intelbras.png"}
+                      alt={prod.nome}
+                      className="max-h-24 w-auto object-contain"
+                    />
+                    <span className="absolute top-2 left-2 text-[10px] font-bold bg-slate-900 text-blue-300 border border-slate-700 px-2 py-0.5 rounded-md">
+                      {prod.categoria}
+                    </span>
+                    {prod.destaque && (
+                      <span className="absolute top-2 right-2 text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md">
+                        ★ Destaque
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-3 space-y-1">
+                    <h3 className="text-sm font-bold text-white">{prod.nome}</h3>
+                    <p className="text-xs text-slate-400 line-clamp-2">{prod.descricao}</p>
+                    <p className="text-sm font-extrabold text-emerald-400 pt-1">
+                      R$ {prod.valor || "Sob consulta"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    ID: {prod.id.slice(0, 8)}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => abrirModalEditarProduto(prod)}
+                      className="text-xs h-7 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 cursor-pointer"
+                    >
+                      <Edit3 className="h-3 w-3 mr-1" /> Editar
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removerProduto(prod.id)}
+                      className="h-7 w-7 text-rose-400 hover:bg-rose-950/40 cursor-pointer"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </main>
+      )}
+
+      {/* ── Modal Adicionar / Editar Produto ── */}
+      <Dialog open={modalProdutoAberto} onOpenChange={setModalProdutoAberto}>
+        <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-slate-100">
+          <DialogHeader>
+            <DialogTitle className="text-white font-bold flex items-center gap-2">
+              <Package className="h-5 w-5 text-blue-400" />
+              {produtoEditando ? "Editar Produto / Banner" : "Adicionar Novo Produto / Banner"}
+            </DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={salvarProdutoModal} className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label className="field-label text-xs text-slate-300">Nome do Produto</Label>
+              <Input
+                value={formProdNome}
+                onChange={(e) => setFormProdNome(e.target.value)}
+                placeholder="Ex.: Câmera Wi-Fi Intelbras Full HD"
+                className="bg-slate-800 border-slate-700 text-white"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="field-label text-xs text-slate-300">Valor (R$)</Label>
+                <Input
+                  value={formProdValor}
+                  onChange={(e) => setFormProdValor(e.target.value)}
+                  placeholder="299,00"
+                  className="bg-slate-800 border-slate-700 text-white"
+                />
               </div>
 
-              {/* Seletor de Período */}
-              <div className="space-y-1">
-                <Label className="field-label text-xs text-slate-300">
-                  Período da Garantia Estendida
-                </Label>
+              <div className="space-y-1.5">
+                <Label className="field-label text-xs text-slate-300">Categoria</Label>
                 <select
-                  value={validadeGarantia}
-                  onChange={(e) => setValidadeGarantia(e.target.value)}
-                  className="flex h-8 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 cursor-pointer text-white font-medium"
+                  value={formProdCategoria}
+                  onChange={(e) => setFormProdCategoria(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-white"
                 >
-                  {PERIODOS_VALIDADE_GARANTIA.map((p) => (
-                    <option key={p} value={p}>
-                      {p}
+                  {CATEGORIAS_PRODUTO.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
                     </option>
                   ))}
                 </select>
               </div>
-
-              {/* Tabela de Preço por Item */}
-              <div className="rounded-md bg-blue-900/30 p-2.5 border border-blue-800 text-xs space-y-1">
-                <div className="flex justify-between items-center font-semibold text-blue-200">
-                  <span>Valor por item adicional:</span>
-                  <span className="text-emerald-400 font-bold">
-                    R$ {precoItem.toFixed(2).replace(".", ",")} / item / mês
-                  </span>
-                </div>
-                <p className="text-[11px] text-blue-300">
-                  {precoItem === 12.6
-                    ? "📌 Plano de 3 meses estendida: R$ 12,60/mês por item."
-                    : "🎉 Plano acima de 6 meses (desconto): R$ 9,99/mês por item!"}
-                </p>
-              </div>
-
-              {/* Checkboxes de Coberturas */}
-              <div className="space-y-2">
-                <p className="field-label text-xs font-semibold text-slate-300">
-                  Selecione o que o cliente aceitou/contratou:
-                </p>
-                <div className="space-y-1.5">
-                  {OPCOES_GARANTIA_PADRAO.map((op) => {
-                    const checked = coberturasGarantia.includes(op);
-                    return (
-                      <label
-                        key={op}
-                        className={`flex items-start gap-2 rounded-md p-2 text-xs border transition-colors cursor-pointer select-none ${
-                          checked
-                            ? "bg-slate-800 border-blue-500/50 text-white font-medium"
-                            : "bg-transparent border-dashed border-slate-800 text-slate-500 opacity-70"
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setCoberturasGarantia([...coberturasGarantia, op]);
-                            } else {
-                              setCoberturasGarantia(coberturasGarantia.filter((c) => c !== op));
-                            }
-                          }}
-                          className="mt-0.5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                        />
-                        <span className="leading-tight">{op}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Seletor de Pagamento da Garantia (Mensal vs Total) */}
-              {coberturasGarantia.length > 0 && (
-                <div className="space-y-2 pt-1 border-t border-slate-800">
-                  <Label className="field-label text-xs font-semibold text-slate-300">
-                    Como o cliente vai pagar a garantia estendida?
-                  </Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setTipoCobrancaGarantia("mensal")}
-                      className={`p-2 rounded-lg border text-left text-xs transition-all cursor-pointer ${
-                        tipoCobrancaGarantia === "mensal"
-                          ? "border-emerald-500 bg-emerald-950/50 text-emerald-200 font-bold"
-                          : "border-slate-800 bg-slate-800/60 text-slate-400 hover:bg-slate-800"
-                      }`}
-                    >
-                      <p className="flex items-center gap-1">
-                        <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
-                        <span>Por Mês</span>
-                      </p>
-                      <p className="mt-1 text-sm font-extrabold text-emerald-300">
-                        R$ {valorMensalGarantia.toFixed(2).replace(".", ",")}
-                        <span className="text-[10px] font-normal text-slate-400">/mês</span>
-                      </p>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setTipoCobrancaGarantia("total")}
-                      className={`p-2 rounded-lg border text-left text-xs transition-all cursor-pointer ${
-                        tipoCobrancaGarantia === "total"
-                          ? "border-blue-500 bg-blue-950/50 text-blue-200 font-bold"
-                          : "border-slate-800 bg-slate-800/60 text-slate-400 hover:bg-slate-800"
-                      }`}
-                    >
-                      <p className="flex items-center gap-1">
-                        <Calculator className="h-3.5 w-3.5 text-blue-400" />
-                        <span>Valor Total Já</span>
-                      </p>
-                      <p className="mt-1 text-sm font-extrabold text-blue-300">
-                        R$ {valorTotalGarantia.toFixed(2).replace(".", ",")}
-                        <span className="text-[10px] font-normal text-slate-400">
-                          {" "}
-                          ({mesesEstendidos}x)
-                        </span>
-                      </p>
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
 
             <div className="space-y-1.5">
-              <Label className="field-label text-xs text-slate-300" htmlFor="obs">
-                Observações adicionais (opcional)
+              <Label className="field-label text-xs text-slate-300">
+                Banner / Imagem da Marca
               </Label>
-              <Textarea
-                id="obs"
-                rows={2}
-                maxLength={500}
-                value={form.observacoes}
-                onChange={(e) => setForm({ ...form, observacoes: e.target.value })}
-                placeholder="Zonas, sensores instalados, senha de coação, etc."
-                className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500 text-xs"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full font-bold bg-blue-600 hover:bg-blue-500 text-white py-2.5 cursor-pointer shadow-md"
-              disabled={criar.isPending}
-            >
-              <Plus className="h-4 w-4 mr-1.5" />
-              {criar.isPending ? "Salvando..." : "Cadastrar Cliente & Emitir Termo"}
-            </Button>
-          </form>
-        </section>
-
-        {/* ── Lista de Clientes Cadastrados ── */}
-        <section className="card-elevated p-6 bg-slate-900 border-slate-800 text-slate-100 rounded-xl border">
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-base font-bold text-white">Clientes cadastrados</h2>
-            <div className="relative ml-auto w-full sm:w-64">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-              <Input
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-                placeholder="Buscar por nome, CPF ou MAC"
-                className="pl-9 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-xs"
-              />
-            </div>
-          </div>
-
-          <div className="mt-5 space-y-4">
-            {isLoading && (
-              <p className="text-sm text-slate-400">Carregando dados do Supabase...</p>
-            )}
-            {!isLoading && filtrados.length === 0 && (
-              <div className="rounded-lg border border-dashed border-slate-800 p-10 text-center">
-                <p className="text-sm text-slate-400">
-                  Nenhum cadastro encontrado. Registre o primeiro cliente ao lado.
-                </p>
-              </div>
-            )}
-
-            {filtrados.map((c) => {
-              const manuts = c.manutencoes || [];
-              const ultima = manuts[0] ?? null;
-              const { obsLimpa, garantia } = extrairGarantia(c.observacoes);
-
-              return (
-                <article
-                  key={c.id}
-                  className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 transition-all hover:border-slate-700 space-y-2.5"
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormProdImagem("/intelbras.png")}
+                  className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                    formProdImagem === "/intelbras.png"
+                      ? "border-emerald-500 bg-emerald-950/40 text-emerald-300"
+                      : "border-slate-700 bg-slate-800/60 text-slate-400"
+                  }`}
                 >
-                  <div className="flex flex-wrap items-start gap-4">
-                    <div className="min-w-[180px] flex-1">
-                      <h3 className="text-sm font-semibold text-white">{c.nome}</h3>
-                      <p className="text-xs text-slate-400">
-                        <span>{c.cpf}</span> · <span>{c.telefone}</span>
-                      </p>
-                      <p className="mt-0.5 text-xs text-slate-500">{c.endereco}</p>
-                    </div>
+                  <img src="/intelbras.png" alt="Intelbras" className="h-5 w-auto object-contain" />
+                  <span className="text-[10px]">Intelbras</span>
+                </button>
 
-                    <div className="min-w-[140px]">
-                      <p className="field-label text-slate-500 text-[11px]">Central</p>
-                      <p className="text-sm font-medium text-slate-200">{c.modeloCentral}</p>
-                      <p className="font-mono text-xs text-slate-400">{c.macCentral}</p>
-                    </div>
+                <button
+                  type="button"
+                  onClick={() => setFormProdImagem("/jfl.png")}
+                  className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                    formProdImagem === "/jfl.png"
+                      ? "border-amber-500 bg-amber-950/40 text-amber-300"
+                      : "border-slate-700 bg-slate-800/60 text-slate-400"
+                  }`}
+                >
+                  <img src="/jfl.png" alt="JFL" className="h-6 w-auto object-contain rounded" />
+                  <span className="text-[10px]">JFL Alarmes</span>
+                </button>
 
-                    <div className="min-w-[110px]">
-                      <p className="field-label text-slate-500 text-[11px]">Cadastro</p>
-                      <p className="text-xs text-slate-400">{formatarData(c.criadoEm)}</p>
-                    </div>
+                <button
+                  type="button"
+                  onClick={() => setFormProdImagem("/logo.jpg")}
+                  className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                    formProdImagem === "/logo.jpg"
+                      ? "border-blue-500 bg-blue-950/40 text-blue-300"
+                      : "border-slate-700 bg-slate-800/60 text-slate-400"
+                  }`}
+                >
+                  <img src="/logo.jpg" alt="WS" className="h-5 w-5 object-cover rounded" />
+                  <span className="text-[10px]">Logo WS</span>
+                </button>
+              </div>
 
-                    <div className="ml-auto flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setClienteManutencao(c);
-                          setDescricaoManutencao("");
-                        }}
-                        className="text-xs border-amber-700/50 text-amber-300 bg-amber-950/30 hover:bg-amber-900/50 font-semibold cursor-pointer"
-                      >
-                        <Wrench className="h-3.5 w-3.5 mr-1 text-amber-400" /> Manutenção
-                      </Button>
+              <div className="pt-1">
+                <Input
+                  value={formProdImagem}
+                  onChange={(e) => setFormProdImagem(e.target.value)}
+                  placeholder="Ou cole o link de uma imagem online"
+                  className="bg-slate-800/60 border-slate-700 text-xs text-slate-300"
+                />
+              </div>
+            </div>
 
-                      <Button asChild variant="secondary" size="sm" className="cursor-pointer bg-slate-800 hover:bg-slate-700 text-white">
-                        <Link to="/cliente/$id" params={{ id: c.id }}>
-                          <FileText className="h-4 w-4 mr-1 text-slate-300" /> Documento & Garantia
-                        </Link>
-                      </Button>
+            <div className="space-y-1.5">
+              <Label className="field-label text-xs text-slate-300">Descrição do Produto</Label>
+              <Textarea
+                rows={3}
+                value={formProdDescricao}
+                onChange={(e) => setFormProdDescricao(e.target.value)}
+                placeholder="Principais funções, zonas, alcance, resolução..."
+                className="bg-slate-800 border-slate-700 text-white text-xs"
+              />
+            </div>
 
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label={`Excluir ${c.nome}`}
-                        onClick={() => excluir.mutate(c.id)}
-                        className="cursor-pointer hover:bg-rose-950/40"
-                      >
-                        <Trash2 className="h-4 w-4 text-rose-400 hover:text-rose-300" />
-                      </Button>
-                    </div>
-                  </div>
+            <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formProdDestaque}
+                onChange={(e) => setFormProdDestaque(e.target.checked)}
+                className="rounded border-slate-700 text-blue-600 focus:ring-blue-500"
+              />
+              <span>Destacar este produto na tela principal pública</span>
+            </label>
 
-                  {/* Informações Financeiras e Badge de Garantia */}
-                  <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80">
-                    {garantia.valorServico && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-950/60 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-md">
-                        <DollarSign className="h-3 w-3 text-emerald-400" />
-                        <span>Serviço: R$ {garantia.valorServico}</span>
-                        {garantia.formaPagamento && (
-                          <span className="text-emerald-400 font-normal">
-                            ({garantia.formaPagamento})
-                          </span>
-                        )}
-                      </span>
-                    )}
-
-                    {garantia.coberturas.length === 0 ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-amber-950/50 text-amber-300 border border-amber-800 px-2 py-0.5 rounded-md">
-                        <ShieldCheck className="h-3 w-3 text-amber-400" />
-                        <span>Garantia Legal: 90 dias (Padrão CDC)</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-blue-950/50 text-blue-300 border border-blue-800 px-2 py-0.5 rounded-md">
-                        <ShieldCheck className="h-3 w-3 text-blue-400" />
-                        <span>
-                          Garantia Estendida:{" "}
-                          {garantia.tipoCobrancaGarantia === "total" && garantia.valorTotalGarantia
-                            ? `R$ ${garantia.valorTotalGarantia.toFixed(2).replace(".", ",")} Total`
-                            : garantia.valorMensalGarantia
-                              ? `R$ ${garantia.valorMensalGarantia.toFixed(2).replace(".", ",")}/mês`
-                              : ""}
-                        </span>
-                        <span className="text-blue-400 font-normal">
-                          ({garantia.coberturas.length} coberturas)
-                        </span>
-                      </span>
-                    )}
-
-                    {obsLimpa && (
-                      <span className="text-[11px] text-slate-400 truncate max-w-xs ml-auto">
-                        Obs: {obsLimpa}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Histórico de Manutenções */}
-                  {manuts.length > 0 ? (
-                    <div className="mt-2 border-t border-slate-800/80 pt-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 text-xs text-amber-300 font-medium">
-                          <Clock className="h-3.5 w-3.5 text-amber-400" />
-                          <span>
-                            <span>Última manutenção: </span>
-                            <strong>{formatarData(ultima?.dataHora || "")}</strong>
-                          </span>
-                          {ultima?.descricao && (
-                            <span className="text-slate-400 font-normal ml-1">
-                              ({ultima.descricao})
-                            </span>
-                          )}
-                        </div>
-                        {manuts.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setHistoricoExpandido(
-                                historicoExpandido === c.id ? null : c.id
-                              )
-                            }
-                            className="text-xs text-slate-400 hover:text-white underline font-medium cursor-pointer"
-                          >
-                            {historicoExpandido === c.id
-                              ? "Ocultar histórico"
-                              : `Ver histórico (${manuts.length})`}
-                          </button>
-                        )}
-                      </div>
-                      {historicoExpandido === c.id && (
-                        <div className="mt-2 space-y-1.5 rounded-md bg-slate-900 p-2.5 border border-slate-800 text-xs">
-                          <p className="font-semibold text-slate-200 mb-1 flex items-center gap-1">
-                            <History className="h-3.5 w-3.5" /> Histórico completo:
-                          </p>
-                          {manuts.map((m) => (
-                            <div
-                              key={m.id}
-                              className="flex justify-between border-b border-slate-800 pb-1 last:border-0 last:pb-0"
-                            >
-                              <span className="font-mono text-slate-200 font-medium">
-                                📅 {formatarData(m.dataHora)}
-                              </span>
-                              <span className="text-slate-400">{m.descricao}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="mt-1 border-t border-slate-800/60 pt-1.5 text-[11px] text-slate-500 flex items-center gap-1">
-                      <Clock className="h-3 w-3 opacity-60" /> Nenhuma manutenção registrada ainda.
-                    </div>
-                  )}
-                </article>
-              );
-            })}
-          </div>
-        </section>
-      </main>
+            <DialogFooter className="pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setModalProdutoAberto(false)}
+                className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 cursor-pointer"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-500 text-white font-bold cursor-pointer"
+              >
+                Salvar Produto
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* ── Modal Salvar Manutenção ── */}
       <Dialog

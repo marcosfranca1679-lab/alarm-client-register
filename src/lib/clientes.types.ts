@@ -37,6 +37,99 @@ export type Cliente = {
 
 export type NovoCliente = Omit<Cliente, "id" | "criadoEm" | "status" | "manutencoes" | "garantia">;
 
+export type Produto = {
+  id: string;
+  nome: string;
+  descricao: string;
+  valor: string;
+  categoria: string;
+  imagemUrl: string;
+  destaque?: boolean;
+};
+
+export const CATEGORIAS_PRODUTO = [
+  "Centrais de Alarme",
+  "Câmeras CFTV",
+  "Sensores & Barreiras",
+  "Cerca Elétrica",
+  "Baterias & Acessórios",
+];
+
+export const PRODUTOS_PADRAO: Produto[] = [
+  {
+    id: "prod-1",
+    nome: "Central de Alarme Intelbras AMT 8000 Sem Fio",
+    descricao:
+      "Central de alarme 100% sem fio com alcance de até 600m, comunicação em nuvem, controle por aplicativo e bateria de longa duração.",
+    valor: "890,00",
+    categoria: "Centrais de Alarme",
+    imagemUrl: "/intelbras.png",
+    destaque: true,
+  },
+  {
+    id: "prod-2",
+    nome: "Kit Câmeras CFTV Full HD Intelbras 1080p",
+    descricao:
+      "Kit com câmeras de alta definição com visão noturna infravermelha de 20m, gravação contínua e acesso ao vivo no celular.",
+    valor: "750,00",
+    categoria: "Câmeras CFTV",
+    imagemUrl: "/intelbras.png",
+    destaque: true,
+  },
+  {
+    id: "prod-3",
+    nome: "Central de Alarme JFL Active 20 Ultra",
+    descricao:
+      "Central de alta performance com até 20 zonas, módulo Ethernet/Wi-Fi integrado e aplicativo celular dedicado.",
+    valor: "680,00",
+    categoria: "Centrais de Alarme",
+    imagemUrl: "/jfl.png",
+    destaque: true,
+  },
+  {
+    id: "prod-4",
+    nome: "Sensor de Barreira Infravermelha Ativa (Feixe Duplo)",
+    descricao:
+      "Barreira perimetral para muros e portões com detecção precisa contra invasão e alta resistência a sol e chuva.",
+    valor: "240,00",
+    categoria: "Sensores & Barreiras",
+    imagemUrl: "/jfl.png",
+    destaque: true,
+  },
+  {
+    id: "prod-5",
+    nome: "Bateria Estacionária 12V 7Ah para Centrais e Nobreaks",
+    descricao:
+      "Bateria selada de alta durabilidade para manter seu sistema de alarme funcionando mesmo durante quedas de energia.",
+    valor: "140,00",
+    categoria: "Baterias & Acessórios",
+    imagemUrl: "/intelbras.png",
+    destaque: false,
+  },
+];
+
+export function lerProdutosLocais(): Produto[] {
+  if (typeof window === "undefined") return PRODUTOS_PADRAO;
+  try {
+    const raw = localStorage.getItem("ws_produtos");
+    if (!raw) {
+      localStorage.setItem("ws_produtos", JSON.stringify(PRODUTOS_PADRAO));
+      return PRODUTOS_PADRAO;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : PRODUTOS_PADRAO;
+  } catch {
+    return PRODUTOS_PADRAO;
+  }
+}
+
+export function salvarProdutosLocais(produtos: Produto[]) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem("ws_produtos", JSON.stringify(produtos));
+  } catch {}
+}
+
 export const MODELOS_CENTRAL = [
   "Intelbras AMT 8000",
   "Intelbras AMT 4010 Smart",
@@ -78,7 +171,7 @@ export const PERIODOS_VALIDADE_GARANTIA = [
 
 export function calcularPrecoItemGarantia(validade: string): number {
   if (validade.includes("+ 3 meses estendida") || validade.startsWith("3 meses")) {
-    return 12.60;
+    return 12.6;
   }
   if (
     validade.includes("+ 6 meses estendida") ||
@@ -90,7 +183,7 @@ export function calcularPrecoItemGarantia(validade: string): number {
   ) {
     return 9.99;
   }
-  return 12.60;
+  return 12.6;
 }
 
 export function obterMesesEstendidos(validade: string): number {
