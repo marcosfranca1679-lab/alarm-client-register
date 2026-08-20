@@ -134,6 +134,7 @@ function AppPrincipal() {
   const [loginUser, setLoginUser] = useState("");
   const [loginPass, setLoginPass] = useState("");
   const [loginErro, setLoginErro] = useState("");
+  const [lembrarLogin, setLembrarLogin] = useState(true);
   const [produtos, setProdutos] = useState<Produto[]>(PRODUTOS_PADRAO);
 
   useEffect(() => {
@@ -142,6 +143,14 @@ function AppPrincipal() {
     if (salvo === "true") {
       setAutenticado(true);
     }
+
+    // Carrega credenciais salvas para não precisar digitar sempre
+    const userSalvo = localStorage.getItem("ws_saved_user");
+    const passSalva = localStorage.getItem("ws_saved_pass");
+    const lembrarSalvo = localStorage.getItem("ws_lembrar_login");
+    if (userSalvo) setLoginUser(userSalvo);
+    if (passSalva) setLoginPass(passSalva);
+    if (lembrarSalvo === "false") setLembrarLogin(false);
 
     // Carrega do localStorage primeiro (instantâneo), se já houver algo salvo
     const locais = lerProdutosLocais();
@@ -175,16 +184,31 @@ function AppPrincipal() {
       });
   }
 
-
+  function preencherCredenciaisOficiais() {
+    setLoginUser("williammax");
+    setLoginPass("williammax2811");
+    setLembrarLogin(true);
+    toast.success("Credenciais salvas preenchidas!");
+  }
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     if (loginUser.trim() === "williammax" && loginPass === "williammax2811") {
       setAutenticado(true);
       localStorage.setItem("ws_auth", "true");
+
+      // Salva as credenciais se a opção estiver marcada
+      if (lembrarLogin) {
+        localStorage.setItem("ws_saved_user", loginUser.trim());
+        localStorage.setItem("ws_saved_pass", loginPass);
+        localStorage.setItem("ws_lembrar_login", "true");
+      } else {
+        localStorage.removeItem("ws_saved_user");
+        localStorage.removeItem("ws_saved_pass");
+        localStorage.setItem("ws_lembrar_login", "false");
+      }
+
       setModalLoginAberto(false);
-      setLoginUser("");
-      setLoginPass("");
       setLoginErro("");
       toast.success("Login realizado com sucesso! Bem-vindo ao Painel.");
     } else {
@@ -210,7 +234,13 @@ function AppPrincipal() {
       ) : (
         <LandingPage
           produtos={produtos}
-          onAbrirLogin={() => setModalLoginAberto(true)}
+          onAbrirLogin={() => {
+            const userSalvo = localStorage.getItem("ws_saved_user");
+            const passSalva = localStorage.getItem("ws_saved_pass");
+            if (userSalvo) setLoginUser(userSalvo);
+            if (passSalva) setLoginPass(passSalva);
+            setModalLoginAberto(true);
+          }}
         />
       )}
 
@@ -257,6 +287,28 @@ function AppPrincipal() {
                 className="bg-slate-800 border-slate-700 text-white focus:border-blue-500"
                 autoComplete="current-password"
               />
+            </div>
+
+            {/* Checkbox para Salvar Login */}
+            <div className="flex items-center justify-between pt-1">
+              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none hover:text-white">
+                <input
+                  type="checkbox"
+                  checked={lembrarLogin}
+                  onChange={(e) => setLembrarLogin(e.target.checked)}
+                  className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500 h-4 w-4 cursor-pointer"
+                />
+                <span className="text-xs">Lembrar login neste aparelho</span>
+              </label>
+
+              <button
+                type="button"
+                onClick={preencherCredenciaisOficiais}
+                className="text-[11px] font-semibold text-blue-400 hover:text-blue-300 hover:underline cursor-pointer flex items-center gap-1"
+              >
+                <Sparkles className="h-3 w-3" />
+                <span>Auto-preencher</span>
+              </button>
             </div>
 
             {loginErro && (
