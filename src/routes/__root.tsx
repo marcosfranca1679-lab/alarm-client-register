@@ -85,7 +85,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-lg rounded-xl border bg-card p-6 shadow-sm text-center">
         <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-          WS Segurança Residencial
+          WS Segurança Eletrônica
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Nova versão do sistema disponível. Clique abaixo para atualizar:
@@ -127,7 +127,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "google", content: "notranslate" },
-      { title: "WS Segurança Residencial — Cadastro & Manutenção" },
+      { title: "WS Segurança Eletrônica — Cadastro & Manutenção" },
       {
         name: "description",
         content: "Sistema de cadastro e controle de centrais de alarme e manutenção.",
