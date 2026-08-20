@@ -358,6 +358,10 @@ function Linha({ rotulo, valor, mono }: { rotulo: string; valor: string; mono?: 
   );
 }
 
+export const Route = createFileRoute("/cliente/$id")({
+  component: Documento,
+});
+
 function Documento() {
   const { id } = Route.useParams();
 
