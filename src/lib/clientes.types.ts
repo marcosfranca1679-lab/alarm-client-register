@@ -129,8 +129,16 @@ export function converterValorNumerico(valorStr?: string): number {
   return isNaN(num) ? 0 : num;
 }
 
-export function formatarMoeda(valor: number): string {
-  return valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export function formatarMoeda(valor: number | string): string {
+  if (typeof valor === "string") {
+    const num = parseFloat(valor.replace(/[^\d,.]/g, "").replace(/\./g, "").replace(",", "."));
+    if (isNaN(num)) return "0,00";
+    return num.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  if (typeof valor === "number" && !isNaN(valor)) {
+    return valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  return "0,00";
 }
 
 export type Produto = {
@@ -469,15 +477,6 @@ export function formatarMac(valor: string) {
     .replace(/[^0-9A-F]/g, "")
     .slice(0, 12);
   return limpo.replace(/(.{2})(?=.)/g, "$1:");
-}
-
-export function formatarMoeda(valor: number | string): string {
-  if (typeof valor === "string") {
-    const num = parseFloat(valor.replace(/\./g, "").replace(",", "."));
-    if (isNaN(num)) return "R$ 0,00";
-    return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-  }
-  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 export function cpfValido(valor: string) {
