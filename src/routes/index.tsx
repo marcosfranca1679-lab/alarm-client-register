@@ -290,7 +290,7 @@ function AppPrincipal() {
             </div>
 
             {/* Checkbox para Salvar Login */}
-            <div className="flex items-center justify-between pt-1">
+            <div className="pt-1">
               <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none hover:text-white">
                 <input
                   type="checkbox"
@@ -300,15 +300,6 @@ function AppPrincipal() {
                 />
                 <span className="text-xs">Lembrar login neste aparelho</span>
               </label>
-
-              <button
-                type="button"
-                onClick={preencherCredenciaisOficiais}
-                className="text-[11px] font-semibold text-blue-400 hover:text-blue-300 hover:underline cursor-pointer flex items-center gap-1"
-              >
-                <Sparkles className="h-3 w-3" />
-                <span>Auto-preencher</span>
-              </button>
             </div>
 
             {loginErro && (
@@ -740,16 +731,6 @@ function LandingPage({
                           <Eye className="h-3.5 w-3.5 text-blue-400" />
                           <span>Ver Mais</span>
                         </button>
-
-                        <a
-                          href={linkZap}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-102"
-                        >
-                          <MessageCircle className="h-3.5 w-3.5" />
-                          <span>Pedir no Zap</span>
-                        </a>
                       </div>
                     </div>
                   </div>
