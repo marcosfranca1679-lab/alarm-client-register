@@ -774,7 +774,7 @@ function LandingPage({
             durabilidade e compatibilidade com aplicativos no celular.
           </p>
 
-          <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto pt-4">
+          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto pt-4">
             {/* Card Intelbras */}
             <div className="group rounded-2xl border border-slate-800 bg-slate-900/90 p-6 flex flex-col items-center justify-center transition-all hover:border-emerald-500/50 hover:bg-slate-900 shadow-md">
               <div className="h-16 flex items-center justify-center mb-4">
@@ -804,6 +804,21 @@ function LandingPage({
               <p className="mt-1 text-xs text-slate-400 text-center leading-relaxed">
                 Centrais Active 20, SmartCloud 18, eletrificadores perimetrais e sensores de alta
                 precisão.
+              </p>
+            </div>
+
+            {/* Card Elgin */}
+            <div className="group rounded-2xl border border-slate-800 bg-slate-900/90 p-6 flex flex-col items-center justify-center transition-all hover:border-sky-500/50 hover:bg-slate-900 shadow-md">
+              <div className="h-16 flex items-center justify-center mb-4">
+                <img
+                  src="/elgin.png"
+                  alt="Elgin"
+                  className="max-h-12 w-auto object-contain rounded-lg transition-transform group-hover:scale-105"
+                />
+              </div>
+              <h3 className="text-sm font-bold text-white">Dispositivos & Automação Elgin</h3>
+              <p className="mt-1 text-xs text-slate-400 text-center leading-relaxed">
+                Fechaduras digitais, câmeras inteligentes, lâmpadas smart, tomadas e automação residencial.
               </p>
             </div>
           </div>
@@ -2381,10 +2396,11 @@ function PainelAdministrativo({
                   <Upload className="h-3.5 w-3.5 text-blue-400" />
                   Carregar Imagem do Dispositivo
                 </Button>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-4 gap-2">
                   {[
                     { label: "Intelbras", src: "/intelbras.png" },
                     { label: "JFL", src: "/jfl.png" },
+                    { label: "Elgin", src: "/elgin.png" },
                     { label: "Logo WS", src: "/logo.jpg" },
                   ].map((item) => (
                     <button
@@ -2398,7 +2414,7 @@ function PainelAdministrativo({
                       }`}
                     >
                       <img src={item.src} alt={item.label} className="h-6 w-auto object-contain" />
-                      <span className="text-[10px]">{item.label}</span>
+                      <span className="text-[10px] truncate max-w-full">{item.label}</span>
                     </button>
                   ))}
                 </div>

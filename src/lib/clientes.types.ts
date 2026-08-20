@@ -156,6 +156,7 @@ export type Produto = {
 export const MARCAS_PRODUTO = [
   "Intelbras",
   "JFL Alarmes",
+  "Elgin",
   "WS Segurança",
   "Outra Marca",
 ];
@@ -164,6 +165,7 @@ export function obterLogoMarca(marca?: string): string {
   if (!marca) return "";
   if (marca.toLowerCase().includes("intelbras")) return "/intelbras.png";
   if (marca.toLowerCase().includes("jfl")) return "/jfl.png";
+  if (marca.toLowerCase().includes("elgin")) return "/elgin.png";
   if (marca.toLowerCase().includes("ws")) return "/logo.jpg";
   return "";
 }
