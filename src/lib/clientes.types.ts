@@ -37,6 +37,102 @@ export type Cliente = {
 
 export type NovoCliente = Omit<Cliente, "id" | "criadoEm" | "status" | "manutencoes" | "garantia">;
 
+export type TipoInstalacao =
+  | "camera"
+  | "sensor"
+  | "central"
+  | "smart"
+  | "nenhuma";
+
+export type OpcaoInstalacao = {
+  id: TipoInstalacao;
+  nome: string;
+  valor: number;
+  valorFormatado: string;
+  descricao: string;
+};
+
+export const OPCOES_INSTALACAO: Record<TipoInstalacao, OpcaoInstalacao> = {
+  camera: {
+    id: "camera",
+    nome: "Instalação câmera IP + configuração",
+    valor: 79.99,
+    valorFormatado: "R$ 79,99",
+    descricao: "Fixação, conexão na rede Wi-Fi/cabeada, configuração no app e ajuste de ângulo",
+  },
+  sensor: {
+    id: "sensor",
+    nome: "Instalação sensores alarme",
+    valor: 29.99,
+    valorFormatado: "R$ 29,99",
+    descricao: "Fixação e alinhamento de sensor perimetral ou interno, endereçamento na central e testes",
+  },
+  central: {
+    id: "central",
+    nome: "Instalação central + sirene + bateria",
+    valor: 329.99,
+    valorFormatado: "R$ 329,99",
+    descricao: "Montagem da central, fixação da sirene, ligação da bateria, testes e configuração do app",
+  },
+  smart: {
+    id: "smart",
+    nome: "Instalação dispositivos smart",
+    valor: 49.99,
+    valorFormatado: "R$ 49,99",
+    descricao: "Instalação física, pareamento na rede inteligente e integração com assistentes virtuais",
+  },
+  nenhuma: {
+    id: "nenhuma",
+    nome: "Sem instalação (somente equipamento)",
+    valor: 0,
+    valorFormatado: "R$ 0,00",
+    descricao: "Apenas fornecimento do equipamento",
+  },
+};
+
+export function obterInstalacaoDoProduto(prod?: Partial<Produto>): OpcaoInstalacao {
+  if (!prod) return OPCOES_INSTALACAO.nenhuma;
+  if (prod.tipoInstalacao && OPCOES_INSTALACAO[prod.tipoInstalacao]) {
+    return OPCOES_INSTALACAO[prod.tipoInstalacao];
+  }
+
+  const nome = (prod.nome || "").toLowerCase();
+  const cat = (prod.categoria || "").toLowerCase();
+
+  // 1. Câmeras
+  if (cat.includes("câmera") || cat.includes("camera") || cat.includes("cftv") || nome.includes("câmera") || nome.includes("camera") || nome.includes("mibo") || nome.includes("dvr") || nome.includes("ip")) {
+    return OPCOES_INSTALACAO.camera;
+  }
+
+  // 2. Sensores
+  if (cat.includes("sensor") || cat.includes("barreira") || nome.includes("sensor") || nome.includes("barreira") || nome.includes("feixe") || nome.includes("abertura") || nome.includes("presença") || nome.includes("presenca") || nome.includes("iva") || nome.includes("infravermelh")) {
+    return OPCOES_INSTALACAO.sensor;
+  }
+
+  // 3. Dispositivos Smart
+  if (cat.includes("smart") || cat.includes("automação") || cat.includes("automacao") || nome.includes("smart") || nome.includes("lâmpada") || nome.includes("lampada") || nome.includes("tomada") || nome.includes("interruptor") || nome.includes("alexa") || nome.includes("fechadura")) {
+    return OPCOES_INSTALACAO.smart;
+  }
+
+  // 4. Centrais & Baterias / Kits
+  if (cat.includes("central") || cat.includes("bateria") || nome.includes("central") || nome.includes("amt") || nome.includes("active") || nome.includes("kit alarme") || nome.includes("sirene")) {
+    return OPCOES_INSTALACAO.central;
+  }
+
+  return OPCOES_INSTALACAO.central;
+}
+
+export function converterValorNumerico(valorStr?: string): number {
+  if (!valorStr) return 0;
+  const limpo = valorStr.replace(/[^\d,.]/g, "").replace(/\./g, "").replace(",", ".");
+  const num = parseFloat(limpo);
+  return isNaN(num) ? 0 : num;
+}
+
+export function formatarMoeda(valor: number): string {
+  return valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 export type Produto = {
   id: string;
   nome: string;
@@ -46,6 +142,7 @@ export type Produto = {
   marca: string;
   imagemUrl: string;
   destaque?: boolean;
+  tipoInstalacao?: TipoInstalacao;
 };
 
 export const MARCAS_PRODUTO = [
@@ -67,6 +164,7 @@ export const CATEGORIAS_PRODUTO = [
   "Centrais de Alarme",
   "Câmeras CFTV",
   "Sensores & Barreiras",
+  "Dispositivos Smart & Automação",
   "Cerca Elétrica",
   "Baterias & Acessórios",
 ];
@@ -82,6 +180,7 @@ export const PRODUTOS_PADRAO: Produto[] = [
     marca: "Intelbras",
     imagemUrl: "/intelbras.png",
     destaque: true,
+    tipoInstalacao: "central",
   },
   {
     id: "prod-2",
@@ -93,6 +192,7 @@ export const PRODUTOS_PADRAO: Produto[] = [
     marca: "Intelbras",
     imagemUrl: "/intelbras.png",
     destaque: true,
+    tipoInstalacao: "camera",
   },
   {
     id: "prod-3",
@@ -104,6 +204,7 @@ export const PRODUTOS_PADRAO: Produto[] = [
     marca: "JFL Alarmes",
     imagemUrl: "/jfl.png",
     destaque: true,
+    tipoInstalacao: "central",
   },
   {
     id: "prod-4",
@@ -115,9 +216,34 @@ export const PRODUTOS_PADRAO: Produto[] = [
     marca: "JFL Alarmes",
     imagemUrl: "/jfl.png",
     destaque: true,
+    tipoInstalacao: "sensor",
   },
   {
     id: "prod-5",
+    nome: "Interruptor / Lâmpada Smart Wi-Fi Intelbras",
+    descricao:
+      "Dispositivo inteligente para controle de iluminação por aplicativo ou comandos de voz, com agendamento e acionamento remoto.",
+    valor: "119,00",
+    categoria: "Dispositivos Smart & Automação",
+    marca: "Intelbras",
+    imagemUrl: "/intelbras.png",
+    destaque: true,
+    tipoInstalacao: "smart",
+  },
+  {
+    id: "prod-6",
+    nome: "Câmera Wi-Fi Intelbras Mibo Full HD 1080p",
+    descricao:
+      "Câmera de segurança residencial sem fio com visão noturna, áudio bidirecional e inteligência artificial de detecção humana.",
+    valor: "220,00",
+    categoria: "Câmeras CFTV",
+    marca: "Intelbras",
+    imagemUrl: "/intelbras.png",
+    destaque: true,
+    tipoInstalacao: "camera",
+  },
+  {
+    id: "prod-7",
     nome: "Bateria Estacionária 12V 7Ah para Centrais e Nobreaks",
     descricao:
       "Bateria selada de alta durabilidade para manter seu sistema de alarme funcionando mesmo durante quedas de energia.",
@@ -126,6 +252,7 @@ export const PRODUTOS_PADRAO: Produto[] = [
     marca: "WS Segurança",
     imagemUrl: "/intelbras.png",
     destaque: false,
+    tipoInstalacao: "central",
   },
 ];
 

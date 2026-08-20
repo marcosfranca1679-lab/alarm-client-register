@@ -62,6 +62,10 @@ import {
   CATEGORIAS_PRODUTO,
   MARCAS_PRODUTO,
   PRODUTOS_PADRAO,
+  OPCOES_INSTALACAO,
+  obterInstalacaoDoProduto,
+  converterValorNumerico,
+  formatarMoeda,
   lerProdutosLocais,
   salvarProdutosLocais,
   obterLogoMarca,
@@ -80,6 +84,7 @@ import {
   type Manutencao,
   type Produto,
   type TipoCobrancaGarantia,
+  type TipoInstalacao,
 } from "@/lib/clientes.types";
 import {
   buscarClientesSupabase,
@@ -276,6 +281,8 @@ function LandingPage({
 }) {
   const [categoriaAtiva, setCategoriaAtiva] = useState<string>("Todas");
   const [produtoDetalhe, setProdutoDetalhe] = useState<Produto | null>(null);
+  const [instalacoesSelecionadas, setInstalacoesSelecionadas] = useState<Record<string, boolean>>({});
+  const [detalheComInstalacao, setDetalheComInstalacao] = useState<boolean>(true);
 
   const categorias = ["Todas", ...CATEGORIAS_PRODUTO];
   const produtosFiltrados =
@@ -395,6 +402,103 @@ function LandingPage({
               </div>
             </div>
           </div>
+
+          {/* ── Tabela Oficial de Serviços de Instalação & Configuração ── */}
+          <div className="rounded-3xl border border-blue-500/40 bg-gradient-to-b from-blue-950/40 via-slate-900/90 to-slate-950 p-6 sm:p-8 space-y-6 shadow-xl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+              <div>
+                <div className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-blue-400 bg-blue-950 px-3 py-1 rounded-full border border-blue-800/80 mb-1.5">
+                  <Wrench className="h-3.5 w-3.5 text-blue-400" />
+                  <span>Tabela de Mão de Obra Especializada</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-white">Serviços de Instalação & Configuração</h3>
+                <p className="text-xs text-slate-400">Valores padronizados para instalação técnica com testes e garantia de funcionamento.</p>
+              </div>
+
+              <a
+                href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20agendar%20um%20serviço%20de%20instalação.`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 text-xs font-bold transition-all shadow-md shrink-0 cursor-pointer"
+              >
+                <MessageCircle className="h-4 w-4" />
+                <span>Agendar Instalação no WhatsApp</span>
+              </a>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* 1. Câmera IP */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 flex flex-col justify-between space-y-3 hover:border-blue-500/50 transition-all shadow-sm group">
+                <div className="space-y-2">
+                  <div className="h-9 w-9 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
+                    <Camera className="h-4 w-4" />
+                  </div>
+                  <h4 className="text-sm font-bold text-white leading-tight">Instalação câmera IP + configuração</h4>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Fixação física, cabeamento/Wi-Fi, configuração no app do celular e teste de gravação.
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-slate-800/80">
+                  <p className="text-[10px] text-slate-500 font-medium">Valor por câmera:</p>
+                  <p className="text-xl font-black text-emerald-400">R$ 79,99</p>
+                </div>
+              </div>
+
+              {/* 2. Sensores */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 flex flex-col justify-between space-y-3 hover:border-blue-500/50 transition-all shadow-sm group">
+                <div className="space-y-2">
+                  <div className="h-9 w-9 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-105 transition-transform">
+                    <Zap className="h-4 w-4" />
+                  </div>
+                  <h4 className="text-sm font-bold text-white leading-tight">Instalação sensores alarme</h4>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Fixação, alinhamento de feixes infravermelhos ou abertura, cadastro na central e teste de zona.
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-slate-800/80">
+                  <p className="text-[10px] text-slate-500 font-medium">Valor por sensor:</p>
+                  <p className="text-xl font-black text-emerald-400">R$ 29,99</p>
+                </div>
+              </div>
+
+              {/* 3. Central + Sirene + Bateria */}
+              <div className="rounded-2xl border border-blue-500/60 bg-blue-950/30 p-4 flex flex-col justify-between space-y-3 hover:border-blue-400 transition-all shadow-md group relative">
+                <span className="absolute -top-2.5 right-3 text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider shadow">
+                  Completo
+                </span>
+                <div className="space-y-2">
+                  <div className="h-9 w-9 rounded-xl bg-blue-600/30 border border-blue-400/40 flex items-center justify-center text-blue-300 group-hover:scale-105 transition-transform">
+                    <Bell className="h-4 w-4" />
+                  </div>
+                  <h4 className="text-sm font-bold text-white leading-tight">Instalação central + sirene + bateria</h4>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Fixação da central e sirene, ligação da bateria estacionária, configuração da nuvem/Wi-Fi e app.
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-slate-800/80">
+                  <p className="text-[10px] text-blue-300 font-medium">Kit Central completo:</p>
+                  <p className="text-xl font-black text-emerald-400">R$ 329,99</p>
+                </div>
+              </div>
+
+              {/* 4. Dispositivos Smart */}
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 flex flex-col justify-between space-y-3 hover:border-blue-500/50 transition-all shadow-sm group">
+                <div className="space-y-2">
+                  <div className="h-9 w-9 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
+                    <Sparkles className="h-4 w-4" />
+                  </div>
+                  <h4 className="text-sm font-bold text-white leading-tight">Instalação dispositivos smart</h4>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Montagem de lâmpadas, tomadas e interruptores inteligentes, pareamento no Wi-Fi e automação.
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-slate-800/80">
+                  <p className="text-[10px] text-slate-500 font-medium">Valor por dispositivo:</p>
+                  <p className="text-xl font-black text-emerald-400">R$ 49,99</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -456,79 +560,137 @@ function LandingPage({
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {produtosFiltrados.map((prod) => (
-                <div
-                  key={prod.id}
-                  className="group rounded-2xl border border-slate-800 bg-slate-900/80 p-5 flex flex-col justify-between transition-all hover:border-blue-500/50 hover:bg-slate-900 shadow-md space-y-4"
-                >
+              {produtosFiltrados.map((prod) => {
+                const instalacao = obterInstalacaoDoProduto(prod);
+                const incluirInstalacao = instalacoesSelecionadas[prod.id] ?? true;
+                const valorNum = converterValorNumerico(prod.valor);
+                const valorTotal = incluirInstalacao && instalacao.id !== "nenhuma"
+                  ? valorNum + instalacao.valor
+                  : valorNum;
+
+                const linkZap = incluirInstalacao && instalacao.id !== "nenhuma"
+                  ? `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(
+                      `Olá! Gostaria de encomendar o produto: *${prod.nome}* COM Instalação Profissional (*${instalacao.nome}* por +${instalacao.valorFormatado}).\nValor total: *R$ ${formatarMoeda(valorTotal)}*.`
+                    )}`
+                  : `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(
+                      `Olá! Gostaria de comprar o equipamento: *${prod.nome}* (somente equipamento). Valor: *R$ ${prod.valor || "Sob consulta"}*.`
+                    )}`;
+
+                return (
                   <div
-                    className="cursor-pointer"
-                    onClick={() => setProdutoDetalhe(prod)}
+                    key={prod.id}
+                    className="group rounded-2xl border border-slate-800 bg-slate-900/80 p-5 flex flex-col justify-between transition-all hover:border-blue-500/50 hover:bg-slate-900 shadow-md space-y-4"
                   >
-                    {/* Imagem / Banner do Produto */}
-                    <div className="relative h-44 w-full rounded-xl bg-white p-3 flex items-center justify-center overflow-hidden shadow-sm">
-                      <img
-                        src={prod.imagemUrl || "/intelbras.png"}
-                        alt={prod.nome}
-                        className="max-h-32 max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-105"
-                      />
-                      <span className="absolute top-2.5 left-2.5 text-[10px] font-bold bg-slate-900/90 text-white px-2 py-0.5 rounded-md shadow">
-                        {prod.categoria}
-                      </span>
-                      {prod.destaque && (
-                        <span className="absolute top-2.5 right-2.5 text-[10px] font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md shadow">
-                          ★ Destaque
-                        </span>
-                      )}
-                      {obterLogoMarca(prod.marca) && prod.imagemUrl !== obterLogoMarca(prod.marca) && (
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setProdutoDetalhe(prod);
+                        setDetalheComInstalacao(incluirInstalacao);
+                      }}
+                    >
+                      {/* Imagem / Banner do Produto */}
+                      <div className="relative h-44 w-full rounded-xl bg-white p-3 flex items-center justify-center overflow-hidden shadow-sm">
                         <img
-                          src={obterLogoMarca(prod.marca)}
-                          alt={prod.marca ?? ""}
-                          className="absolute bottom-2 right-2 h-5 w-auto object-contain bg-slate-900/90 rounded px-1.5 py-0.5 shadow"
+                          src={prod.imagemUrl || "/intelbras.png"}
+                          alt={prod.nome}
+                          className="max-h-32 max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-105"
                         />
-                      )}
+                        <span className="absolute top-2.5 left-2.5 text-[10px] font-bold bg-slate-900/90 text-white px-2 py-0.5 rounded-md shadow">
+                          {prod.categoria}
+                        </span>
+                        {prod.destaque && (
+                          <span className="absolute top-2.5 right-2.5 text-[10px] font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md shadow">
+                            ★ Destaque
+                          </span>
+                        )}
+                        {obterLogoMarca(prod.marca) && prod.imagemUrl !== obterLogoMarca(prod.marca) && (
+                          <img
+                            src={obterLogoMarca(prod.marca)}
+                            alt={prod.marca ?? ""}
+                            className="absolute bottom-2 right-2 h-5 w-auto object-contain bg-slate-900/90 rounded px-1.5 py-0.5 shadow"
+                          />
+                        )}
+                      </div>
+
+                      <div className="mt-4 space-y-2">
+                        <h3 className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors leading-snug">
+                          {prod.nome}
+                        </h3>
+                        <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                          {prod.descricao}
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="mt-4 space-y-2">
-                      <h3 className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors leading-snug">
-                        {prod.nome}
-                      </h3>
-                      <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
-                        {prod.descricao}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                    <div>
-                      <p className="text-[10px] text-slate-500 font-medium">A partir de</p>
-                      <p className="text-sm sm:text-base font-extrabold text-emerald-400">
-                        R$ {prod.valor || "Sob consulta"}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setProdutoDetalhe(prod)}
-                        className="inline-flex items-center gap-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-2 text-xs font-semibold transition-colors cursor-pointer"
-                        title="Ver detalhes completos"
-                      >
-                        <Eye className="h-3.5 w-3.5 text-blue-400" />
-                        <span>Ver Mais</span>
-                      </button>
+                    {/* Opção de Instalação Especializada no Produto */}
+                    {instalacao.id !== "nenhuma" && (
+                      <div className="rounded-xl bg-slate-950/90 border border-blue-900/50 p-2.5 space-y-1.5 transition-all">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 text-xs text-slate-300 font-medium min-w-0">
+                            <Wrench className="h-3.5 w-3.5 text-blue-400 shrink-0" />
+                            <span className="truncate text-[11px] font-semibold">{instalacao.nome}</span>
+                          </div>
+                          <span className="text-[11px] font-black text-blue-400 shrink-0 bg-blue-950 px-2 py-0.5 rounded border border-blue-800">
+                            +{instalacao.valorFormatado}
+                          </span>
+                        </div>
 
-                      <a
-                        href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20comprar%20ou%20saber%20mais%20sobre%20o%20produto:%20${encodeURIComponent(prod.nome)}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-102"
-                      >
-                        <MessageCircle className="h-3.5 w-3.5" />
-                        <span>Pedir no Zap</span>
-                      </a>
+                        <label className="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer select-none hover:text-white pt-0.5">
+                          <input
+                            type="checkbox"
+                            checked={incluirInstalacao}
+                            onChange={(e) => {
+                              setInstalacoesSelecionadas((prev) => ({
+                                ...prev,
+                                [prod.id]: e.target.checked,
+                              }));
+                            }}
+                            className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500 h-4 w-4 cursor-pointer"
+                          />
+                          <span className={incluirInstalacao ? "font-bold text-emerald-400" : "text-slate-400"}>
+                            {incluirInstalacao ? "✓ Instalação Inclusa no Pedido" : "Adicionar Serviço de Instalação"}
+                          </span>
+                        </label>
+                      </div>
+                    )}
+
+                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                      <div>
+                        <p className="text-[10px] text-slate-400 font-medium">
+                          {incluirInstalacao && instalacao.id !== "nenhuma" ? "Total com Instalação:" : "Somente Equipamento:"}
+                        </p>
+                        <p className="text-sm sm:text-base font-extrabold text-emerald-400">
+                          R$ {incluirInstalacao && instalacao.id !== "nenhuma" && valorNum > 0 ? formatarMoeda(valorTotal) : (prod.valor || "Sob consulta")}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setProdutoDetalhe(prod);
+                            setDetalheComInstalacao(incluirInstalacao);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-2 text-xs font-semibold transition-colors cursor-pointer"
+                          title="Ver detalhes completos"
+                        >
+                          <Eye className="h-3.5 w-3.5 text-blue-400" />
+                          <span>Ver Mais</span>
+                        </button>
+
+                        <a
+                          href={linkZap}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-102"
+                        >
+                          <MessageCircle className="h-3.5 w-3.5" />
+                          <span>Pedir no Zap</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -834,24 +996,103 @@ function LandingPage({
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-slate-800">
-                  <div>
-                    <p className="text-xs text-slate-400">Investimento a partir de</p>
-                    <p className="text-2xl font-black text-emerald-400">
-                      R$ {produtoDetalhe.valor || "Sob consulta"}
-                    </p>
-                  </div>
+                {/* Bloco de Opção de Instalação no Detalhe */}
+                {(() => {
+                  const inst = obterInstalacaoDoProduto(produtoDetalhe);
+                  const valorNum = converterValorNumerico(produtoDetalhe.valor);
+                  const total = detalheComInstalacao && inst.id !== "nenhuma" ? valorNum + inst.valor : valorNum;
 
-                  <a
-                    href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento%20para%20o%20produto:%20${encodeURIComponent(produtoDetalhe.nome)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 text-sm font-bold transition-all shadow-lg shadow-emerald-950/50 cursor-pointer hover:scale-102"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    <span>Pedir no WhatsApp</span>
-                  </a>
-                </div>
+                  const linkZap = detalheComInstalacao && inst.id !== "nenhuma"
+                    ? `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(
+                        `Olá! Gostaria de solicitar o produto: *${produtoDetalhe.nome}* COM Instalação Profissional (*${inst.nome}* por +${inst.valorFormatado}).\nValor total: *R$ ${formatarMoeda(total)}*.`
+                      )}`
+                    : `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(
+                        `Olá! Gostaria de comprar o equipamento: *${produtoDetalhe.nome}* (somente equipamento). Valor: *R$ ${produtoDetalhe.valor || "Sob consulta"}*.`
+                      )}`;
+
+                  return (
+                    <>
+                      {inst.id !== "nenhuma" && (
+                        <div className="rounded-2xl border border-blue-500/40 bg-blue-950/20 p-4 space-y-3">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <Wrench className="h-4 w-4 text-blue-400 shrink-0" />
+                              <span className="text-xs font-bold text-white uppercase tracking-wider">
+                                Serviço de Instalação Especializada
+                              </span>
+                            </div>
+                            <span className="text-xs font-black text-blue-300 bg-blue-950 px-2 py-0.5 rounded border border-blue-700">
+                              +{inst.valorFormatado}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-slate-300 leading-relaxed">
+                            {inst.descricao}
+                          </p>
+
+                          <div className="grid grid-cols-2 gap-2 pt-1">
+                            <button
+                              type="button"
+                              onClick={() => setDetalheComInstalacao(true)}
+                              className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
+                                detalheComInstalacao
+                                  ? "border-emerald-500 bg-emerald-950/40 text-emerald-300 ring-1 ring-emerald-500"
+                                  : "border-slate-800 bg-slate-900/60 text-slate-400 hover:bg-slate-800"
+                              }`}
+                            >
+                              <p className="text-xs font-bold text-white flex items-center gap-1">
+                                {detalheComInstalacao && <Check className="h-3.5 w-3.5 text-emerald-400" />}
+                                Com Instalação
+                              </p>
+                              <p className="text-[11px] text-emerald-400 font-semibold mt-0.5">
+                                +{inst.valorFormatado}
+                              </p>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setDetalheComInstalacao(false)}
+                              className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
+                                !detalheComInstalacao
+                                  ? "border-blue-500 bg-blue-950/40 text-blue-300 ring-1 ring-blue-500"
+                                  : "border-slate-800 bg-slate-900/60 text-slate-400 hover:bg-slate-800"
+                              }`}
+                            >
+                              <p className="text-xs font-bold text-white flex items-center gap-1">
+                                {!detalheComInstalacao && <Check className="h-3.5 w-3.5 text-blue-400" />}
+                                Sem Instalação
+                              </p>
+                              <p className="text-[11px] text-slate-400 mt-0.5">
+                                Apenas equipamento
+                              </p>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-slate-800">
+                        <div>
+                          <p className="text-xs text-slate-400">
+                            {detalheComInstalacao && inst.id !== "nenhuma" ? "Total (Equipamento + Instalação)" : "Valor do Equipamento"}
+                          </p>
+                          <p className="text-2xl font-black text-emerald-400">
+                            R$ {detalheComInstalacao && inst.id !== "nenhuma" && valorNum > 0 ? formatarMoeda(total) : (produtoDetalhe.valor || "Sob consulta")}
+                          </p>
+                        </div>
+
+                        <a
+                          href={linkZap}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 text-sm font-bold transition-all shadow-lg shadow-emerald-950/50 cursor-pointer hover:scale-102"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                          <span>Pedir no WhatsApp</span>
+                        </a>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </div>
           )}
@@ -906,6 +1147,7 @@ function PainelAdministrativo({
   const [formProdImagem, setFormProdImagem] = useState("/intelbras.png");
   const [formProdDestaque, setFormProdDestaque] = useState(true);
   const [formProdMarca, setFormProdMarca] = useState(MARCAS_PRODUTO[0]);
+  const [formProdTipoInstalacao, setFormProdTipoInstalacao] = useState<TipoInstalacao>("central");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imgUploadRef = useRef<HTMLInputElement>(null);
@@ -1111,6 +1353,7 @@ function PainelAdministrativo({
     setFormProdDescricao("");
     setFormProdImagem(obterLogoMarca(MARCAS_PRODUTO[0]) || "/intelbras.png");
     setFormProdDestaque(true);
+    setFormProdTipoInstalacao("central");
     setModalProdutoAberto(true);
   }
 
@@ -1123,6 +1366,7 @@ function PainelAdministrativo({
     setFormProdDescricao(p.descricao);
     setFormProdImagem(p.imagemUrl);
     setFormProdDestaque(p.destaque ?? true);
+    setFormProdTipoInstalacao(p.tipoInstalacao || (obterInstalacaoDoProduto(p).id));
     setModalProdutoAberto(true);
   }
 
@@ -1162,6 +1406,7 @@ function PainelAdministrativo({
       descricao: formProdDescricao.trim(),
       imagemUrl: formProdImagem,
       destaque: formProdDestaque,
+      tipoInstalacao: formProdTipoInstalacao,
     };
 
     if (produtoEditando) {
@@ -1914,9 +2159,19 @@ function PainelAdministrativo({
                   <div className="mt-3 space-y-1">
                     <h3 className="text-sm font-bold text-white leading-snug">{prod.nome}</h3>
                     <p className="text-xs text-slate-400 line-clamp-2">{prod.descricao}</p>
-                    <p className="text-sm font-extrabold text-emerald-400 pt-1">
-                      R$ {prod.valor || "Sob consulta"}
-                    </p>
+                    <div className="flex items-center justify-between pt-1">
+                      <p className="text-sm font-extrabold text-emerald-400">
+                        R$ {prod.valor || "Sob consulta"}
+                      </p>
+                      {(() => {
+                        const inst = obterInstalacaoDoProduto(prod);
+                        return inst.id !== "nenhuma" ? (
+                          <span className="text-[10px] text-blue-400 bg-blue-950/80 px-2 py-0.5 rounded border border-blue-800/60 font-semibold truncate max-w-[140px]" title={inst.nome}>
+                            +{inst.valorFormatado} {inst.nome.split(" ")[1] || "inst."}
+                          </span>
+                        ) : null;
+                      })()}
+                    </div>
                   </div>
                 </div>
 
@@ -1998,19 +2253,39 @@ function PainelAdministrativo({
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300">
-                  Marca do Equipamento
-                </Label>
-                <select
-                  value={formProdMarca}
-                  onChange={(e) => handleMarcaChange(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-white cursor-pointer"
-                >
-                  {MARCAS_PRODUTO.map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="field-label text-xs text-slate-300">
+                    Marca do Equipamento
+                  </Label>
+                  <select
+                    value={formProdMarca}
+                    onChange={(e) => handleMarcaChange(e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-white cursor-pointer"
+                  >
+                    {MARCAS_PRODUTO.map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="field-label text-xs text-slate-300 flex items-center gap-1">
+                    <Wrench className="h-3.5 w-3.5 text-blue-400" />
+                    Opção de Instalação Vinculada
+                  </Label>
+                  <select
+                    value={formProdTipoInstalacao}
+                    onChange={(e) => setFormProdTipoInstalacao(e.target.value as TipoInstalacao)}
+                    className="flex h-9 w-full rounded-md border border-blue-500/50 bg-slate-800 px-2.5 py-1 text-xs text-blue-300 cursor-pointer font-medium"
+                  >
+                    <option value="camera">📹 Instalação câmera IP + config (+R$ 79,99)</option>
+                    <option value="sensor">🚨 Instalação sensores alarme (+R$ 29,99)</option>
+                    <option value="central">⚡ Instalação central + sirene + bat (+R$ 329,99)</option>
+                    <option value="smart">📱 Instalação dispositivos smart (+R$ 49,99)</option>
+                    <option value="nenhuma">🚫 Sem instalação (somente equipamento)</option>
+                  </select>
+                </div>
               </div>
 
               {/* Preview de Imagem */}
