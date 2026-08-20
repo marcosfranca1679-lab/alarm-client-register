@@ -1106,7 +1106,7 @@ function PainelAdministrativo({
   const [formProdDescricao, setFormProdDescricao] = useState("");
   const [formProdImagem, setFormProdImagem] = useState("/intelbras.png");
   const [formProdDestaque, setFormProdDestaque] = useState(true);
-  const [formProdMarca, setFormProdMarca] = useState(MARCAS_PRODUTO[0]);
+  const [formProdMarca, setFormProdMarca] = useState<string>(MARCAS_PRODUTO[0] ?? "");
   const [formProdTipoInstalacao, setFormProdTipoInstalacao] = useState<TipoInstalacao>("central");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
