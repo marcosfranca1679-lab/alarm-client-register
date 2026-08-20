@@ -359,7 +359,7 @@ function LandingPage({
             />
             <div>
               <span className="text-base font-extrabold tracking-tight text-white block leading-tight">
-                WS SEGURANÇA RESIDENCIAL
+                WS SEGURANÇA ELETRÔNICA
               </span>
               <span className="text-[11px] text-blue-400 font-medium tracking-wide">
                 Soluções Inteligentes em Alarmes & CFTV
@@ -857,7 +857,7 @@ function LandingPage({
                 className="h-12 w-12 rounded-xl object-cover border border-blue-500/30"
               />
               <div>
-                <h3 className="text-base font-extrabold text-white">WS SEGURANÇA RESIDENCIAL</h3>
+                <h3 className="text-base font-extrabold text-white">WS SEGURANÇA ELETRÔNICA</h3>
                 <p className="text-xs text-blue-400 font-medium">WhatsApp: {WHATSAPP_FORMATADO}</p>
               </div>
             </div>
@@ -890,7 +890,7 @@ function LandingPage({
               className="h-9 w-9 rounded-xl object-cover border border-slate-700"
             />
             <div>
-              <p className="text-xs font-bold text-white">WS SEGURANÇA RESIDENCIAL</p>
+              <p className="text-xs font-bold text-white">WS SEGURANÇA ELETRÔNICA</p>
               <p className="text-[11px] text-slate-500">
                 © {new Date().getFullYear()} Todos os direitos reservados. WhatsApp: {WHATSAPP_FORMATADO}
               </p>
