@@ -458,102 +458,6 @@ function LandingPage({
             </div>
           </div>
 
-          {/* ── Tabela Oficial de Serviços de Instalação & Configuração ── */}
-          <div className="rounded-3xl border border-blue-500/40 bg-gradient-to-b from-blue-950/40 via-slate-900/90 to-slate-950 p-6 sm:p-8 space-y-6 shadow-xl">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-              <div>
-                <div className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-blue-400 bg-blue-950 px-3 py-1 rounded-full border border-blue-800/80 mb-1.5">
-                  <Wrench className="h-3.5 w-3.5 text-blue-400" />
-                  <span>Tabela de Mão de Obra Especializada</span>
-                </div>
-                <h3 className="text-xl sm:text-2xl font-black text-white">Serviços de Instalação & Configuração</h3>
-                <p className="text-xs text-slate-400">Valores padronizados para instalação técnica com testes e garantia de funcionamento.</p>
-              </div>
-
-              <a
-                href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20agendar%20um%20serviço%20de%20instalação.`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 text-xs font-bold transition-all shadow-md shrink-0 cursor-pointer"
-              >
-                <MessageCircle className="h-4 w-4" />
-                <span>Agendar Instalação no WhatsApp</span>
-              </a>
-            </div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* 1. Câmera IP */}
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 flex flex-col justify-between space-y-3 hover:border-blue-500/50 transition-all shadow-sm group">
-                <div className="space-y-2">
-                  <div className="h-9 w-9 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform">
-                    <Camera className="h-4 w-4" />
-                  </div>
-                  <h4 className="text-sm font-bold text-white leading-tight">Instalação câmera IP + configuração</h4>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Fixação física, cabeamento/Wi-Fi, configuração no app do celular e teste de gravação.
-                  </p>
-                </div>
-                <div className="pt-2 border-t border-slate-800/80">
-                  <p className="text-[10px] text-slate-500 font-medium">Valor por câmera:</p>
-                  <p className="text-xl font-black text-emerald-400">R$ 79,99</p>
-                </div>
-              </div>
-
-              {/* 2. Sensores */}
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 flex flex-col justify-between space-y-3 hover:border-blue-500/50 transition-all shadow-sm group">
-                <div className="space-y-2">
-                  <div className="h-9 w-9 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-105 transition-transform">
-                    <Zap className="h-4 w-4" />
-                  </div>
-                  <h4 className="text-sm font-bold text-white leading-tight">Instalação sensores alarme</h4>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Fixação, alinhamento de feixes infravermelhos ou abertura, cadastro na central e teste de zona.
-                  </p>
-                </div>
-                <div className="pt-2 border-t border-slate-800/80">
-                  <p className="text-[10px] text-slate-500 font-medium">Valor por sensor:</p>
-                  <p className="text-xl font-black text-emerald-400">R$ 29,99</p>
-                </div>
-              </div>
-
-              {/* 3. Central + Sirene + Bateria */}
-              <div className="rounded-2xl border border-blue-500/60 bg-blue-950/30 p-4 flex flex-col justify-between space-y-3 hover:border-blue-400 transition-all shadow-md group relative">
-                <span className="absolute -top-2.5 right-3 text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider shadow">
-                  Completo
-                </span>
-                <div className="space-y-2">
-                  <div className="h-9 w-9 rounded-xl bg-blue-600/30 border border-blue-400/40 flex items-center justify-center text-blue-300 group-hover:scale-105 transition-transform">
-                    <Bell className="h-4 w-4" />
-                  </div>
-                  <h4 className="text-sm font-bold text-white leading-tight">Instalação central + sirene + bateria</h4>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Fixação da central e sirene, ligação da bateria estacionária, configuração da nuvem/Wi-Fi e app.
-                  </p>
-                </div>
-                <div className="pt-2 border-t border-slate-800/80">
-                  <p className="text-[10px] text-blue-300 font-medium">Kit Central completo:</p>
-                  <p className="text-xl font-black text-emerald-400">R$ 329,99</p>
-                </div>
-              </div>
-
-              {/* 4. Dispositivos Smart */}
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 flex flex-col justify-between space-y-3 hover:border-blue-500/50 transition-all shadow-sm group">
-                <div className="space-y-2">
-                  <div className="h-9 w-9 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
-                    <Sparkles className="h-4 w-4" />
-                  </div>
-                  <h4 className="text-sm font-bold text-white leading-tight">Instalação dispositivos smart</h4>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Montagem de lâmpadas, tomadas e interruptores inteligentes, pareamento no Wi-Fi e automação.
-                  </p>
-                </div>
-                <div className="pt-2 border-t border-slate-800/80">
-                  <p className="text-[10px] text-slate-500 font-medium">Valor por dispositivo:</p>
-                  <p className="text-xl font-black text-emerald-400">R$ 49,99</p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -1202,7 +1106,7 @@ function PainelAdministrativo({
   const [formProdDescricao, setFormProdDescricao] = useState("");
   const [formProdImagem, setFormProdImagem] = useState("/intelbras.png");
   const [formProdDestaque, setFormProdDestaque] = useState(true);
-  const [formProdMarca, setFormProdMarca] = useState(MARCAS_PRODUTO[0]);
+  const [formProdMarca, setFormProdMarca] = useState<string>(MARCAS_PRODUTO[0] ?? "");
   const [formProdTipoInstalacao, setFormProdTipoInstalacao] = useState<TipoInstalacao>("central");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
