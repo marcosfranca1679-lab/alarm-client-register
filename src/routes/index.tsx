@@ -143,26 +143,38 @@ function AppPrincipal() {
       setAutenticado(true);
     }
 
-    // Carrega do localStorage primeiro (instantâneo)
+    // Carrega do localStorage primeiro (instantâneo), se já houver algo salvo
     const locais = lerProdutosLocais();
-    setProdutos(locais);
+    if (locais && locais.length > 0) setProdutos(locais);
 
-    // E sincroniza com a nuvem do Supabase
+    // E sincroniza com a nuvem
     buscarProdutosSupabase().then((prodsSupa) => {
-      if (prodsSupa !== null) {
+      if (prodsSupa && prodsSupa.length > 0) {
+        // Nuvem é a fonte da verdade
         setProdutos(prodsSupa);
         salvarProdutosLocais(prodsSupa);
-      } else if (locais.length > 0) {
+      } else if (prodsSupa !== null && locais && locais.length > 0) {
+        // Nuvem vazia (nunca salva) e há dados locais reais → envia para a nuvem
         salvarProdutosSupabase(locais);
       }
+      // Se prodsSupa === null (falha de rede), NÃO sobrescreve a nuvem
     });
   }, []);
+
 
   function handleSalvarProdutos(novos: Produto[]) {
     setProdutos(novos);
     salvarProdutosLocais(novos);
-    salvarProdutosSupabase(novos).catch((err) => console.warn(err));
+    salvarProdutosSupabase(novos)
+      .then((ok) => {
+        if (!ok) toast.error("Não foi possível salvar os banners na nuvem. Verifique a internet e tente novamente.");
+      })
+      .catch((err) => {
+        console.warn(err);
+        toast.error("Falha ao salvar os banners na nuvem.");
+      });
   }
+
 
 
   function handleLogin(e: React.FormEvent) {
@@ -1131,18 +1143,14 @@ function PainelAdministrativo({
     "90 dias (CDC) + 3 meses estendida (Total: 6 meses)"
   );
   const [tipoCobrancaGarantia, setTipoCobrancaGarantia] = useState<TipoCobrancaGarantia>("mensal");
-  const [coberturasGarantia, setCoberturasGarantia] = useState<string[]>([
-    OPCOES_GARANTIA_PADRAO[0],
-    OPCOES_GARANTIA_PADRAO[1],
-    OPCOES_GARANTIA_PADRAO[2],
-  ]);
+  const [coberturasGarantia, setCoberturasGarantia] = useState<string[]>(OPCOES_GARANTIA_PADRAO.slice(0, 3));
 
   // Estados do Gerenciador de Produtos / Banners
   const [modalProdutoAberto, setModalProdutoAberto] = useState(false);
   const [produtoEditando, setProdutoEditando] = useState<Produto | null>(null);
   const [formProdNome, setFormProdNome] = useState("");
   const [formProdValor, setFormProdValor] = useState("");
-  const [formProdCategoria, setFormProdCategoria] = useState(CATEGORIAS_PRODUTO[0]);
+  const [formProdCategoria, setFormProdCategoria] = useState<string>(CATEGORIAS_PRODUTO[0] ?? "");
   const [formProdDescricao, setFormProdDescricao] = useState("");
   const [formProdImagem, setFormProdImagem] = useState("/intelbras.png");
   const [formProdDestaque, setFormProdDestaque] = useState(true);
@@ -1185,11 +1193,8 @@ function PainelAdministrativo({
       setForm(vazio);
       setValorServico("");
       setFormaPagamento("PIX");
-      setCoberturasGarantia([
-        OPCOES_GARANTIA_PADRAO[0],
-        OPCOES_GARANTIA_PADRAO[1],
-        OPCOES_GARANTIA_PADRAO[2],
-      ]);
+      setCoberturasGarantia(OPCOES_GARANTIA_PADRAO.slice(0, 3));
+
       setValidadeGarantia("90 dias (CDC) + 3 meses estendida (Total: 6 meses)");
       setTipoCobrancaGarantia("mensal");
       toast.success("Cliente cadastrado com sucesso no painel!");
@@ -1348,8 +1353,8 @@ function PainelAdministrativo({
     setProdutoEditando(null);
     setFormProdNome("");
     setFormProdValor("");
-    setFormProdCategoria(CATEGORIAS_PRODUTO[0]);
-    setFormProdMarca(MARCAS_PRODUTO[0]);
+    setFormProdCategoria(CATEGORIAS_PRODUTO[0] ?? "");
+    setFormProdMarca(MARCAS_PRODUTO[0] ?? "");
     setFormProdDescricao("");
     setFormProdImagem(obterLogoMarca(MARCAS_PRODUTO[0]) || "/intelbras.png");
     setFormProdDestaque(true);
@@ -1362,7 +1367,7 @@ function PainelAdministrativo({
     setFormProdNome(p.nome);
     setFormProdValor(p.valor);
     setFormProdCategoria(p.categoria);
-    setFormProdMarca(p.marca || MARCAS_PRODUTO[0]);
+    setFormProdMarca(p.marca || MARCAS_PRODUTO[0] || "");
     setFormProdDescricao(p.descricao);
     setFormProdImagem(p.imagemUrl);
     setFormProdDestaque(p.destaque ?? true);

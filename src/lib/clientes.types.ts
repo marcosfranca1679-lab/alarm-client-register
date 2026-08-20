@@ -256,18 +256,20 @@ export const PRODUTOS_PADRAO: Produto[] = [
   },
 ];
 
-export function lerProdutosLocais(): Produto[] {
-  if (typeof window === "undefined") return PRODUTOS_PADRAO;
+/**
+ * Lê os produtos salvos localmente.
+ * Retorna null quando NUNCA houve salvamento local (nunca grava os padrões aqui),
+ * para que os padrões jamais sobrescrevam o catálogo real da nuvem.
+ */
+export function lerProdutosLocais(): Produto[] | null {
+  if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem("ws_produtos");
-    if (raw === null) {
-      localStorage.setItem("ws_produtos", JSON.stringify(PRODUTOS_PADRAO));
-      return PRODUTOS_PADRAO;
-    }
+    if (raw === null) return null;
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? parsed : null;
   } catch {
-    return [];
+    return null;
   }
 }
 
@@ -277,6 +279,7 @@ export function salvarProdutosLocais(produtos: Produto[]) {
     localStorage.setItem("ws_produtos", JSON.stringify(produtos));
   } catch {}
 }
+
 
 export const MODELOS_CENTRAL = [
   "Intelbras AMT 8000",
