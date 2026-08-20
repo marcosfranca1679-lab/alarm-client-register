@@ -85,7 +85,14 @@ import {
   type Produto,
   type TipoCobrancaGarantia,
   type TipoInstalacao,
+  type ConfigValores,
+  obterConfigValores,
+  aplicarConfigValores,
 } from "@/lib/clientes.types";
+import {
+  buscarConfigValoresSupabase,
+  salvarConfigValoresSupabase,
+} from "@/lib/config.supabase";
 import {
   buscarClientesSupabase,
   salvarClienteSupabase,
