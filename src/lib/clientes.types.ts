@@ -330,9 +330,52 @@ export const PERIODOS_VALIDADE_GARANTIA = [
   "Conforme contrato de manutenção",
 ];
 
+/** Preços editáveis do painel admin (sincronizados com a nuvem) */
+export const PRECOS_GARANTIA = { curto: 12.6, longo: 9.99 };
+
+export type ConfigValores = {
+  instalacao: Record<Exclude<TipoInstalacao, "nenhuma">, number>;
+  garantiaCurto: number;
+  garantiaLongo: number;
+};
+
+export function formatarBRL(v: number): string {
+  return `R$ ${v.toFixed(2).replace(".", ",")}`;
+}
+
+export function obterConfigValores(): ConfigValores {
+  return {
+    instalacao: {
+      camera: OPCOES_INSTALACAO.camera.valor,
+      sensor: OPCOES_INSTALACAO.sensor.valor,
+      central: OPCOES_INSTALACAO.central.valor,
+      smart: OPCOES_INSTALACAO.smart.valor,
+    },
+    garantiaCurto: PRECOS_GARANTIA.curto,
+    garantiaLongo: PRECOS_GARANTIA.longo,
+  };
+}
+
+/** Aplica em memória os valores vindos da nuvem/painel */
+export function aplicarConfigValores(cfg: Partial<ConfigValores> | null | undefined): void {
+  if (!cfg) return;
+  if (cfg.instalacao) {
+    (Object.keys(cfg.instalacao) as Array<Exclude<TipoInstalacao, "nenhuma">>).forEach((k) => {
+      const valor = Number(cfg.instalacao?.[k]);
+      const opcao = OPCOES_INSTALACAO[k];
+      if (opcao && Number.isFinite(valor) && valor >= 0) {
+        opcao.valor = valor;
+        opcao.valorFormatado = formatarBRL(valor);
+      }
+    });
+  }
+  if (Number.isFinite(Number(cfg.garantiaCurto))) PRECOS_GARANTIA.curto = Number(cfg.garantiaCurto);
+  if (Number.isFinite(Number(cfg.garantiaLongo))) PRECOS_GARANTIA.longo = Number(cfg.garantiaLongo);
+}
+
 export function calcularPrecoItemGarantia(validade: string): number {
   if (validade.includes("+ 3 meses estendida") || validade.startsWith("3 meses")) {
-    return 12.6;
+    return PRECOS_GARANTIA.curto;
   }
   if (
     validade.includes("+ 6 meses estendida") ||
@@ -342,10 +385,11 @@ export function calcularPrecoItemGarantia(validade: string): number {
     validade.includes("9 meses estendida") ||
     validade.includes("1 ano estendida")
   ) {
-    return 9.99;
+    return PRECOS_GARANTIA.longo;
   }
-  return 12.6;
+  return PRECOS_GARANTIA.curto;
 }
+
 
 export function obterMesesEstendidos(validade: string): number {
   if (validade.includes("+ 1 ano estendida") || validade.includes("+ 12 meses")) return 12;

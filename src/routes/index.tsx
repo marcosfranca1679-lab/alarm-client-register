@@ -85,7 +85,14 @@ import {
   type Produto,
   type TipoCobrancaGarantia,
   type TipoInstalacao,
+  type ConfigValores,
+  obterConfigValores,
+  aplicarConfigValores,
 } from "@/lib/clientes.types";
+import {
+  buscarConfigValoresSupabase,
+  salvarConfigValoresSupabase,
+} from "@/lib/config.supabase";
 import {
   buscarClientesSupabase,
   salvarClienteSupabase,
@@ -136,9 +143,16 @@ function AppPrincipal() {
   const [loginErro, setLoginErro] = useState("");
   const [lembrarLogin, setLembrarLogin] = useState(true);
   const [produtos, setProdutos] = useState<Produto[]>(PRODUTOS_PADRAO);
+  const [, setConfigTick] = useState(0);
 
   useEffect(() => {
     setMounted(true);
+    buscarConfigValoresSupabase().then((cfg) => {
+      if (cfg) {
+        aplicarConfigValores(cfg);
+        setConfigTick((t) => t + 1);
+      }
+    });
     const salvo = localStorage.getItem("ws_auth");
     if (salvo === "true") {
       setAutenticado(true);
