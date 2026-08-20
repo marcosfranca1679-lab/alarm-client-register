@@ -157,7 +157,7 @@ export const MARCAS_PRODUTO = [
   "Intelbras",
   "JFL Alarmes",
   "Elgin",
-  "WS Segurança",
+  "WS Segurança Eletrônica",
   "Outra Marca",
 ];
 
@@ -259,7 +259,7 @@ export const PRODUTOS_PADRAO: Produto[] = [
       "Bateria selada de alta durabilidade para manter seu sistema de alarme funcionando mesmo durante quedas de energia.",
     valor: "140,00",
     categoria: "Baterias & Acessórios",
-    marca: "WS Segurança",
+    marca: "WS Segurança Eletrônica",
     imagemUrl: "/intelbras.png",
     destaque: false,
     tipoInstalacao: "central",

@@ -106,7 +106,7 @@ const WHATSAPP_FORMATADO = "(48) 99911-8524";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "WS Segurança Residencial — Alarmes, Câmeras & CFTV" },
+      { title: "WS Segurança Eletrônica — Alarmes, Câmeras & CFTV" },
       {
         name: "description",
         content:
@@ -354,7 +354,7 @@ function LandingPage({
           <div className="flex items-center gap-3.5">
             <img
               src="/logo.jpg"
-              alt="WS Segurança Residencial"
+              alt="WS Segurança Eletrônica"
               className="h-11 w-11 rounded-2xl object-cover border border-blue-500/30 shadow-md ring-2 ring-blue-500/20"
             />
             <div>
@@ -853,7 +853,7 @@ function LandingPage({
             <div className="flex items-center gap-3">
               <img
                 src="/logo.jpg"
-                alt="WS Segurança"
+                alt="WS Segurança Eletrônica"
                 className="h-12 w-12 rounded-xl object-cover border border-blue-500/30"
               />
               <div>
@@ -886,7 +886,7 @@ function LandingPage({
           <div className="flex items-center gap-3 text-center md:text-left">
             <img
               src="/logo.jpg"
-              alt="WS Segurança"
+              alt="WS Segurança Eletrônica"
               className="h-9 w-9 rounded-xl object-cover border border-slate-700"
             />
             <div>
@@ -1410,7 +1410,7 @@ function PainelAdministrativo({
           <div className="flex items-center gap-2.5 min-w-0">
             <img
               src="/logo.jpg"
-              alt="WS Segurança"
+              alt="WS Segurança Eletrônica"
               className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl object-cover border border-blue-400/30 shadow-sm shrink-0"
             />
             <div className="min-w-0">
@@ -1423,7 +1423,7 @@ function PainelAdministrativo({
                 </span>
               </div>
               <p className="text-[10px] text-slate-400 font-medium truncate hidden sm:block">
-                WS Segurança — Clientes, Garantias & Produtos
+                WS Segurança Eletrônica — Clientes, Garantias & Produtos
               </p>
             </div>
           </div>
