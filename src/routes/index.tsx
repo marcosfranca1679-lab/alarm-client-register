@@ -152,6 +152,12 @@ function AppPrincipal() {
 
   useEffect(() => {
     setMounted(true);
+    // Aplica imediatamente o último valor conhecido (offline-first)
+    const cfgLocal = lerConfigLocal();
+    if (cfgLocal) {
+      aplicarConfigValores(cfgLocal);
+      setConfigTick((t) => t + 1);
+    }
     buscarConfigValoresSupabase().then((cfg) => {
       if (cfg) {
         aplicarConfigValores(cfg);
