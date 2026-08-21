@@ -1096,16 +1096,122 @@ function LandingPage({
 // ⚙️ 2. PAINEL ADMINISTRATIVO (CADASTROS + GERENCIADOR DE BANNERS E PRODUTOS)
 // ══════════════════════════════════════════════════════════════════════════════
 
+type LinhaServico = { id: string; nome: string; valor: string; descricao: string; personalizado: boolean };
+
 function PainelAdministrativo({
   onLogout,
   produtos,
   onAtualizarProdutos,
+  onConfigAtualizada,
 }: {
   onLogout: () => void;
   produtos: Produto[];
   onAtualizarProdutos: (novos: Produto[]) => void;
+  onConfigAtualizada: () => void;
 }) {
-  const [abaAtiva, setAbaAtiva] = useState<"clientes" | "produtos">("clientes");
+  const [abaAtiva, setAbaAtiva] = useState<"clientes" | "produtos" | "valores">("clientes");
+
+  // ── Aba de Valores (preços de instalação e garantia) ──
+  const [linhasServico, setLinhasServico] = useState<LinhaServico[]>(() =>
+    listarServicosInstalacao().map((o) => ({
+      id: String(o.id),
+      nome: o.nome,
+      valor: o.valor.toFixed(2).replace(".", ","),
+      descricao: o.descricao,
+      personalizado: o.personalizado ?? false,
+    }))
+  );
+  const [precoGarantiaCurto, setPrecoGarantiaCurto] = useState(
+    PRECOS_GARANTIA.curto.toFixed(2).replace(".", ",")
+  );
+  const [precoGarantiaLongo, setPrecoGarantiaLongo] = useState(
+    PRECOS_GARANTIA.longo.toFixed(2).replace(".", ",")
+  );
+  const [salvandoValores, setSalvandoValores] = useState(false);
+
+  function recarregarLinhasServico() {
+    setLinhasServico(
+      listarServicosInstalacao().map((o) => ({
+        id: String(o.id),
+        nome: o.nome,
+        valor: o.valor.toFixed(2).replace(".", ","),
+        descricao: o.descricao,
+        personalizado: o.personalizado ?? false,
+      }))
+    );
+    setPrecoGarantiaCurto(PRECOS_GARANTIA.curto.toFixed(2).replace(".", ","));
+    setPrecoGarantiaLongo(PRECOS_GARANTIA.longo.toFixed(2).replace(".", ","));
+  }
+
+  // Sincroniza o formulário sempre que a aba de valores é aberta
+  useEffect(() => {
+    if (abaAtiva === "valores") recarregarLinhasServico();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [abaAtiva]);
+
+  function atualizarLinhaServico(id: string, campo: keyof LinhaServico, valor: string) {
+    setLinhasServico((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, [campo]: valor } : l))
+    );
+  }
+
+  function adicionarServico() {
+    setLinhasServico((prev) => [
+      ...prev,
+      {
+        id: `custom-${gerarId().slice(0, 8)}`,
+        nome: "",
+        valor: "0,00",
+        descricao: "",
+        personalizado: true,
+      },
+    ]);
+  }
+
+  function removerServico(id: string) {
+    setLinhasServico((prev) => prev.filter((l) => l.id !== id));
+  }
+
+  async function salvarValores() {
+    const instalacao: Record<string, ServicoInstalacaoConfig> = {};
+    for (const l of linhasServico) {
+      if (!l.nome.trim()) {
+        toast.error("Todos os serviços precisam de um nome.");
+        return;
+      }
+      const valorNum = converterValorNumerico(l.valor);
+      if (!Number.isFinite(valorNum) || valorNum < 0) {
+        toast.error(`Valor inválido em "${l.nome}".`);
+        return;
+      }
+      instalacao[l.id] = {
+        nome: l.nome.trim(),
+        valor: valorNum,
+        descricao: l.descricao.trim(),
+        personalizado: l.personalizado,
+      };
+    }
+
+    const cfg: ConfigValores = {
+      instalacao,
+      garantiaCurto: converterValorNumerico(precoGarantiaCurto),
+      garantiaLongo: converterValorNumerico(precoGarantiaLongo),
+    };
+
+    setSalvandoValores(true);
+    // Remove localmente os serviços personalizados excluídos
+    Object.keys(OPCOES_INSTALACAO).forEach((k) => {
+      const item = OPCOES_INSTALACAO[k];
+      if (item?.personalizado && !(k in instalacao)) delete OPCOES_INSTALACAO[k];
+    });
+    aplicarConfigValores(cfg);
+    onConfigAtualizada();
+    const res = await salvarConfigValoresSupabase(cfg);
+    setSalvandoValores(false);
+    recarregarLinhasServico();
+    if (res.ok) toast.success("Valores salvos na nuvem com sucesso!");
+    else toast.error(res.erro || "Não foi possível salvar na nuvem.");
+  }
 
   // Estados dos Clientes
   const [form, setForm] = useState(vazio);
