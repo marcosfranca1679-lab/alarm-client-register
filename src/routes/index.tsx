@@ -255,6 +255,7 @@ function AppPrincipal() {
           onLogout={handleLogout}
           produtos={produtos}
           onAtualizarProdutos={handleSalvarProdutos}
+          onConfigAtualizada={() => setConfigTick((t) => t + 1)}
         />
       ) : (
         <LandingPage
