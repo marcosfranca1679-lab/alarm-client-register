@@ -97,9 +97,8 @@ export const OPCOES_INSTALACAO: Record<TipoInstalacaoPadrao, OpcaoInstalacao> &
 
 export function obterInstalacaoDoProduto(prod?: Partial<Produto>): OpcaoInstalacao {
   if (!prod) return OPCOES_INSTALACAO.nenhuma;
-  if (prod.tipoInstalacao && OPCOES_INSTALACAO[prod.tipoInstalacao]) {
-    return OPCOES_INSTALACAO[prod.tipoInstalacao];
-  }
+  const escolhida = prod.tipoInstalacao ? OPCOES_INSTALACAO[prod.tipoInstalacao] : undefined;
+  if (escolhida) return escolhida;
 
   const nome = (prod.nome || "").toLowerCase();
   const cat = (prod.categoria || "").toLowerCase();
