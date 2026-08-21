@@ -907,11 +907,36 @@ function Documento() {
 
       y2 += 29;
 
-      // ── 6. CONSIDERAÇÕES FINAIS ──
+      // ── 6. CLÁUSULA DE CUMPRIMENTO E PAGAMENTO ──
       doc.setFontSize(7.5);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(15, 23, 42);
-      doc.text("6. CONSIDERAÇÕES FINAIS:", marg, y2);
+      doc.text("6. CLÁUSULA DE CUMPRIMENTO E PAGAMENTO:", marg, y2);
+      y2 += 3.8;
+
+      doc.setFontSize(6.2);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(71, 85, 105);
+      const txtCumprimento = [
+        "A CONTRATADA compromete-se a cumprir integralmente tudo o que foi acordado com o CONTRATANTE, incluindo serviços, valores, prazos, garantias e demais condições descritas neste contrato ou orçamento.",
+        "A CONTRATADA não poderá deixar de cumprir ou alterar o que foi acordado sem comunicação e justificativa ao CONTRATANTE.",
+        "O pagamento será realizado da seguinte forma: 50% do valor total como entrada, no início dos serviços, e os 50% restantes após a conclusão dos serviços contratados.",
+      ];
+      txtCumprimento.forEach((par) => {
+        const linhas = doc.splitTextToSize(par, wTotal - 6);
+        doc.setFillColor(37, 99, 235);
+        doc.circle(marg + 2, y2 - 0.9, 0.7, "F");
+        doc.text(linhas, marg + 6, y2);
+        y2 += linhas.length * 3.5 + 2.5;
+      });
+
+      y2 += 4;
+
+      // ── 7. CONSIDERAÇÕES FINAIS ──
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(15, 23, 42);
+      doc.text("7. CONSIDERAÇÕES FINAIS:", marg, y2);
       y2 += 3.8;
 
       doc.setFontSize(6.2);
@@ -1438,10 +1463,29 @@ function Documento() {
                 </div>
               </div>
 
-              {/* 6. Considerações Finais */}
+              {/* 6. Cláusula de Cumprimento e Pagamento */}
+              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase flex items-center gap-1.5">
+                  <span className="inline-block h-2 w-2 rounded-full bg-blue-500" />
+                  6. CLÁUSULA DE CUMPRIMENTO E PAGAMENTO:
+                </h3>
+                <ul className="text-[11px] leading-relaxed space-y-1 pl-4 list-disc marker:text-blue-500">
+                  <li>
+                    A <strong>CONTRATADA</strong> compromete-se a cumprir integralmente tudo o que foi acordado com o <strong>CONTRATANTE</strong>, incluindo serviços, valores, prazos, garantias e demais condições descritas neste contrato ou orçamento.
+                  </li>
+                  <li>
+                    A <strong>CONTRATADA</strong> não poderá deixar de cumprir ou alterar o que foi acordado sem comunicação e justificativa ao <strong>CONTRATANTE</strong>.
+                  </li>
+                  <li>
+                    O pagamento será realizado da seguinte forma: <strong>50% do valor total como entrada</strong>, no início dos serviços, e os <strong>50% restantes após a conclusão</strong> dos serviços contratados.
+                  </li>
+                </ul>
+              </div>
+
+              {/* 7. Considerações Finais */}
               <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
                 <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
-                  6. CONSIDERAÇÕES FINAIS:
+                  7. CONSIDERAÇÕES FINAIS:
                 </h3>
                 <p className="text-[11px] leading-relaxed">
                   A garantia cobre integralmente os serviços e itens descritos neste termo em conformidade com as normas vigentes de proteção ao consumidor, não se estendendo a danos por mau uso, intervenções de terceiros não autorizados ou causas externas não cobertas.
