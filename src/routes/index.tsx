@@ -1592,7 +1592,7 @@ function PainelAdministrativo({
 
         {/* Abas de Navegação Responsivas em Grid 2 Colunas */}
         <div className="mx-auto max-w-6xl px-3 sm:px-5 pb-2">
-          <div className="grid grid-cols-2 gap-2 bg-slate-950/60 p-1 rounded-xl border border-slate-800">
+          <div className="grid grid-cols-3 gap-2 bg-slate-950/60 p-1 rounded-xl border border-slate-800">
             <button
               type="button"
               onClick={() => setAbaAtiva("clientes")}
