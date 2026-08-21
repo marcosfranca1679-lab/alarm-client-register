@@ -337,8 +337,16 @@ export const PERIODOS_VALIDADE_GARANTIA = [
 /** Preços editáveis do painel admin (sincronizados com a nuvem) */
 export const PRECOS_GARANTIA = { curto: 12.6, longo: 9.99 };
 
+export type ServicoInstalacaoConfig = {
+  nome: string;
+  valor: number;
+  descricao: string;
+  personalizado?: boolean;
+};
+
 export type ConfigValores = {
-  instalacao: Record<Exclude<TipoInstalacao, "nenhuma">, number>;
+  /** Aceita o formato antigo (apenas número) e o novo (objeto completo) */
+  instalacao: Record<string, number | ServicoInstalacaoConfig>;
   garantiaCurto: number;
   garantiaLongo: number;
 };
@@ -347,14 +355,22 @@ export function formatarBRL(v: number): string {
   return `R$ ${v.toFixed(2).replace(".", ",")}`;
 }
 
+export function listarServicosInstalacao(): OpcaoInstalacao[] {
+  return Object.values(OPCOES_INSTALACAO).filter((o) => o.id !== "nenhuma");
+}
+
 export function obterConfigValores(): ConfigValores {
+  const instalacao: Record<string, ServicoInstalacaoConfig> = {};
+  listarServicosInstalacao().forEach((o) => {
+    instalacao[String(o.id)] = {
+      nome: o.nome,
+      valor: o.valor,
+      descricao: o.descricao,
+      personalizado: o.personalizado ?? false,
+    };
+  });
   return {
-    instalacao: {
-      camera: OPCOES_INSTALACAO.camera.valor,
-      sensor: OPCOES_INSTALACAO.sensor.valor,
-      central: OPCOES_INSTALACAO.central.valor,
-      smart: OPCOES_INSTALACAO.smart.valor,
-    },
+    instalacao,
     garantiaCurto: PRECOS_GARANTIA.curto,
     garantiaLongo: PRECOS_GARANTIA.longo,
   };
@@ -363,13 +379,36 @@ export function obterConfigValores(): ConfigValores {
 /** Aplica em memória os valores vindos da nuvem/painel */
 export function aplicarConfigValores(cfg: Partial<ConfigValores> | null | undefined): void {
   if (!cfg) return;
-  if (cfg.instalacao) {
-    (Object.keys(cfg.instalacao) as Array<Exclude<TipoInstalacao, "nenhuma">>).forEach((k) => {
-      const valor = Number(cfg.instalacao?.[k]);
-      const opcao = OPCOES_INSTALACAO[k];
-      if (opcao && Number.isFinite(valor) && valor >= 0) {
-        opcao.valor = valor;
-        opcao.valorFormatado = formatarBRL(valor);
+  if (cfg.instalacao && typeof cfg.instalacao === "object") {
+    // Remove serviços personalizados que foram excluídos na nuvem
+    Object.keys(OPCOES_INSTALACAO).forEach((k) => {
+      const item = OPCOES_INSTALACAO[k];
+      if (item?.personalizado && !(k in cfg.instalacao!)) delete OPCOES_INSTALACAO[k];
+    });
+
+    Object.entries(cfg.instalacao).forEach(([k, bruto]) => {
+      const dados: ServicoInstalacaoConfig =
+        typeof bruto === "number"
+          ? { nome: "", valor: bruto, descricao: "" }
+          : (bruto as ServicoInstalacaoConfig);
+      const valor = Number(dados?.valor);
+      if (!Number.isFinite(valor) || valor < 0) return;
+
+      const existente = OPCOES_INSTALACAO[k];
+      if (existente) {
+        existente.valor = valor;
+        existente.valorFormatado = formatarBRL(valor);
+        if (dados.nome) existente.nome = dados.nome;
+        if (dados.descricao) existente.descricao = dados.descricao;
+      } else {
+        OPCOES_INSTALACAO[k] = {
+          id: k,
+          nome: dados.nome || k,
+          valor,
+          valorFormatado: formatarBRL(valor),
+          descricao: dados.descricao || "",
+          personalizado: true,
+        };
       }
     });
   }
