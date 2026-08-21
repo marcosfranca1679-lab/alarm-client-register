@@ -56,7 +56,8 @@ export type OpcaoInstalacao = {
   personalizado?: boolean;
 };
 
-export const OPCOES_INSTALACAO: Record<string, OpcaoInstalacao> = {
+export const OPCOES_INSTALACAO: Record<TipoInstalacaoPadrao, OpcaoInstalacao> &
+  Record<string, OpcaoInstalacao> = {
   camera: {
     id: "camera",
     nome: "Instalação câmera IP + configuração",
