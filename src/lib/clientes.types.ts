@@ -37,12 +37,15 @@ export type Cliente = {
 
 export type NovoCliente = Omit<Cliente, "id" | "criadoEm" | "status" | "manutencoes" | "garantia">;
 
-export type TipoInstalacao =
+export type TipoInstalacaoPadrao =
   | "camera"
   | "sensor"
   | "central"
   | "smart"
   | "nenhuma";
+
+/** Aceita os tipos padrão e também tipos personalizados criados no painel */
+export type TipoInstalacao = TipoInstalacaoPadrao | (string & {});
 
 export type OpcaoInstalacao = {
   id: TipoInstalacao;
@@ -50,9 +53,10 @@ export type OpcaoInstalacao = {
   valor: number;
   valorFormatado: string;
   descricao: string;
+  personalizado?: boolean;
 };
 
-export const OPCOES_INSTALACAO: Record<TipoInstalacao, OpcaoInstalacao> = {
+export const OPCOES_INSTALACAO: Record<string, OpcaoInstalacao> = {
   camera: {
     id: "camera",
     nome: "Instalação câmera IP + configuração",
