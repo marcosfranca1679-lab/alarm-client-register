@@ -907,11 +907,36 @@ function Documento() {
 
       y2 += 29;
 
-      // ── 6. CONSIDERAÇÕES FINAIS ──
+      // ── 6. CLÁUSULA DE CUMPRIMENTO E PAGAMENTO ──
       doc.setFontSize(7.5);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(15, 23, 42);
-      doc.text("6. CONSIDERAÇÕES FINAIS:", marg, y2);
+      doc.text("6. CLÁUSULA DE CUMPRIMENTO E PAGAMENTO:", marg, y2);
+      y2 += 3.8;
+
+      doc.setFontSize(6.2);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(71, 85, 105);
+      const txtCumprimento = [
+        "A CONTRATADA compromete-se a cumprir integralmente tudo o que foi acordado com o CONTRATANTE, incluindo serviços, valores, prazos, garantias e demais condições descritas neste contrato ou orçamento.",
+        "A CONTRATADA não poderá deixar de cumprir ou alterar o que foi acordado sem comunicação e justificativa ao CONTRATANTE.",
+        "O pagamento será realizado da seguinte forma: 50% do valor total como entrada, no início dos serviços, e os 50% restantes após a conclusão dos serviços contratados.",
+      ];
+      txtCumprimento.forEach((par) => {
+        const linhas = doc.splitTextToSize(par, wTotal - 6);
+        doc.setFillColor(37, 99, 235);
+        doc.circle(marg + 2, y2 - 0.9, 0.7, "F");
+        doc.text(linhas, marg + 6, y2);
+        y2 += linhas.length * 3.5 + 2.5;
+      });
+
+      y2 += 4;
+
+      // ── 7. CONSIDERAÇÕES FINAIS ──
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(15, 23, 42);
+      doc.text("7. CONSIDERAÇÕES FINAIS:", marg, y2);
       y2 += 3.8;
 
       doc.setFontSize(6.2);
