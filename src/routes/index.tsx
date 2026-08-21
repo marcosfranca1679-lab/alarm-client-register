@@ -86,12 +86,17 @@ import {
   type TipoCobrancaGarantia,
   type TipoInstalacao,
   type ConfigValores,
+  type ServicoInstalacaoConfig,
   obterConfigValores,
   aplicarConfigValores,
+  listarServicosInstalacao,
+  formatarBRL,
+  PRECOS_GARANTIA,
 } from "@/lib/clientes.types";
 import {
   buscarConfigValoresSupabase,
   salvarConfigValoresSupabase,
+  lerConfigLocal,
 } from "@/lib/config.supabase";
 import {
   buscarClientesSupabase,
