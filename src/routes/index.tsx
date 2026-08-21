@@ -1618,6 +1618,19 @@ function PainelAdministrativo({
               <Package className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">Banners ({produtos.length})</span>
             </button>
+
+            <button
+              type="button"
+              onClick={() => setAbaAtiva("valores")}
+              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer truncate ${
+                abaAtiva === "valores"
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              }`}
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">Valores</span>
+            </button>
           </div>
         </div>
       </header>
