@@ -1463,10 +1463,29 @@ function Documento() {
                 </div>
               </div>
 
-              {/* 6. Considerações Finais */}
+              {/* 6. Cláusula de Cumprimento e Pagamento */}
+              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase flex items-center gap-1.5">
+                  <span className="inline-block h-2 w-2 rounded-full bg-blue-500" />
+                  6. CLÁUSULA DE CUMPRIMENTO E PAGAMENTO:
+                </h3>
+                <ul className="text-[11px] leading-relaxed space-y-1 pl-4 list-disc marker:text-blue-500">
+                  <li>
+                    A <strong>CONTRATADA</strong> compromete-se a cumprir integralmente tudo o que foi acordado com o <strong>CONTRATANTE</strong>, incluindo serviços, valores, prazos, garantias e demais condições descritas neste contrato ou orçamento.
+                  </li>
+                  <li>
+                    A <strong>CONTRATADA</strong> não poderá deixar de cumprir ou alterar o que foi acordado sem comunicação e justificativa ao <strong>CONTRATANTE</strong>.
+                  </li>
+                  <li>
+                    O pagamento será realizado da seguinte forma: <strong>50% do valor total como entrada</strong>, no início dos serviços, e os <strong>50% restantes após a conclusão</strong> dos serviços contratados.
+                  </li>
+                </ul>
+              </div>
+
+              {/* 7. Considerações Finais */}
               <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
                 <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
-                  6. CONSIDERAÇÕES FINAIS:
+                  7. CONSIDERAÇÕES FINAIS:
                 </h3>
                 <p className="text-[11px] leading-relaxed">
                   A garantia cobre integralmente os serviços e itens descritos neste termo em conformidade com as normas vigentes de proteção ao consumidor, não se estendendo a danos por mau uso, intervenções de terceiros não autorizados ou causas externas não cobertas.
