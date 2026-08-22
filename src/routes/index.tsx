@@ -378,11 +378,13 @@ function LandingPage({
       <header className="sticky top-0 z-40 bg-slate-950/85 backdrop-blur-md border-b border-slate-800/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3.5">
-            <img
-              src="/logo.jpg"
-              alt="SeguraAlarm"
-              className="h-11 w-11 rounded-2xl object-cover border border-red-500/30 shadow-md ring-2 ring-red-500/20"
-            />
+            <div className="bg-black rounded-2xl p-1">
+              <img
+                src="/logo.jpg"
+                alt="SeguraAlarm"
+                className="h-9 w-9 rounded-xl object-cover border border-red-500/30 shadow-md"
+              />
+            </div>
             <div>
               <span className="text-base font-extrabold tracking-tight text-white block leading-tight">
                 SeguraAlarm
@@ -877,11 +879,13 @@ function LandingPage({
 
           <div id="contato" className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-8 space-y-6 shadow-xl">
             <div className="flex items-center gap-3">
-              <img
-                src="/logo.jpg"
-                alt="SeguraAlarm"
-                className="h-12 w-12 rounded-xl object-cover border border-red-500/30"
-              />
+              <div className="bg-black rounded-xl p-1">
+                <img
+                  src="/logo.jpg"
+                  alt="SeguraAlarm"
+                  className="h-10 w-10 rounded-lg object-cover border border-red-500/30"
+                />
+              </div>
               <div>
                 <h3 className="text-base font-extrabold text-white">SeguraAlarm</h3>
                 <p className="text-xs text-red-400 font-medium">WhatsApp: {WHATSAPP_FORMATADO}</p>
@@ -910,11 +914,13 @@ function LandingPage({
       <footer className="py-12 bg-slate-950 border-t border-slate-800/80">
         <div className="mx-auto max-w-6xl px-5 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3 text-center md:text-left">
-            <img
-              src="/logo.jpg"
-              alt="SeguraAlarm"
-              className="h-9 w-9 rounded-xl object-cover border border-slate-700"
-            />
+            <div className="bg-black rounded-xl p-1">
+              <img
+                src="/logo.jpg"
+                alt="SeguraAlarm"
+                className="h-7 w-7 rounded-lg object-cover border border-slate-700"
+              />
+            </div>
             <div>
               <p className="text-xs font-bold text-white">SeguraAlarm</p>
               <p className="text-[11px] text-slate-500">
@@ -1540,11 +1546,13 @@ function PainelAdministrativo({
       <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 sm:px-5 py-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <img
-              src="/logo.jpg"
-              alt="SeguraAlarm"
-              className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl object-cover border border-red-400/30 shadow-sm shrink-0"
-            />
+            <div className="bg-black rounded-xl p-1 shrink-0">
+              <img
+                src="/logo.jpg"
+                alt="SeguraAlarm"
+                className="h-7 w-7 sm:h-9 sm:w-9 rounded-lg object-cover border border-red-400/30 shadow-sm"
+              />
+            </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <h1 className="text-xs sm:text-sm font-black text-white tracking-tight truncate">
