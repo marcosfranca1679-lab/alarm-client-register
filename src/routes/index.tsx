@@ -397,9 +397,6 @@ function LandingPage({
             <a href="#produtos" className="hover:text-red-400 transition-colors flex items-center gap-1">
               <Package className="h-3.5 w-3.5 text-red-400" /> Produtos & Banners
             </a>
-            <a href="#servicos" className="hover:text-red-400 transition-colors">
-              Serviços
-            </a>
             <a href="#marcas" className="hover:text-red-400 transition-colors">
               Marcas
             </a>
@@ -723,90 +720,6 @@ function LandingPage({
               <h3 className="text-sm font-bold text-white">Dispositivos & Automação Elgin</h3>
               <p className="mt-1 text-xs text-slate-400 text-center leading-relaxed">
                 Fechaduras digitais, câmeras inteligentes, lâmpadas smart, tomadas e automação residencial.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Serviços & Produtos ── */}
-      <section id="servicos" className="py-20 border-b border-slate-800/80">
-        <div className="mx-auto max-w-6xl px-5 space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <span className="text-xs font-bold uppercase tracking-wider text-red-400 bg-red-950/60 border border-red-800/60 px-3 py-1 rounded-full">
-              O que oferecemos
-            </span>
-            <h2 className="text-3xl font-black text-white">Serviços e Instalações Especializadas</h2>
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Soluções completas desde o projeto inicial até a manutenção periódica com emissão de
-              ficha de garantia.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
-              <div className="h-10 w-10 rounded-xl bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-400">
-                <Bell className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">Instalação de Centrais de Alarme</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Centrais com e sem fio, comunicação por nuvem, IP, Wi-Fi e chip 4G. Ativação e
-                desarme direto pelo smartphone.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
-              <div className="h-10 w-10 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                <Camera className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">Câmeras de Segurança (CFTV)</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Câmeras de alta definição com visão noturna infravermelha, gravação contínua e
-                visualização remota em tempo real.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
-              <div className="h-10 w-10 rounded-xl bg-amber-600/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                <Wrench className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">Manutenção Preventiva & Corretiva</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Troca de baterias estacionárias e pilhas de sensores, alinhamento de zonas, ajuste de
-                sirenes e diagnósticos completos.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
-              <div className="h-10 w-10 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
-                <Zap className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">Proteção Perimetral & Sensores</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Sensores de barreira infravermelha ativa (feixes), sensores de abertura magnética e
-                sensores de presença pet inteligentes.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
-              <div className="h-10 w-10 rounded-xl bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-400">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">Termo de Garantia por Escrito</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Garantia legal de 90 dias (CDC) + planos de garantia estendida com reposição de
-                peças e cobertura contra surtos elétricos.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 space-y-3 hover:border-slate-700 transition-all">
-              <div className="h-10 w-10 rounded-xl bg-rose-600/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
-                <Building2 className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">Residências, Comércios & Galpões</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Projetos sob medida para residências familiares, empresas, lojas e condomínios com
-                visitas técnicas sem compromisso.
               </p>
             </div>
           </div>
