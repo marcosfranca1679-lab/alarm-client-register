@@ -573,8 +573,8 @@ function Documento() {
 
       // Card Direita: Garantia Estendida
       const card2X = marg + boxW + 4;
-      doc.setFillColor(239, 246, 255);
-      doc.setDrawColor(191, 219, 254);
+      doc.setFillColor(254, 242, 242);
+      doc.setDrawColor(254, 202, 202);
       doc.roundedRect(card2X, y, boxW, boxH, 2, 2, "FD");
 
       doc.setFontSize(6.5);
@@ -585,7 +585,7 @@ function Documento() {
       if (garantia.coberturas.length > 0) {
         doc.setFontSize(9);
         doc.setFont("helvetica", "bold");
-        doc.setTextColor(29, 78, 216);
+        doc.setTextColor(185, 28, 28);
         const txtValor = garantia.tipoCobrancaGarantia === "total" && garantia.valorTotalGarantia
           ? `R$ ${garantia.valorTotalGarantia.toFixed(2).replace(".", ",")} Total à Vista`
           : garantia.valorMensalGarantia
@@ -615,13 +615,13 @@ function Documento() {
       // Box principal do termo na página 1
       const termoH1 = 82;
       doc.setFillColor(248, 250, 252);
-      doc.setDrawColor(191, 219, 254);
+      doc.setDrawColor(254, 202, 202);
       doc.roundedRect(marg, y, wTotal, termoH1, 2, 2, "FD");
 
       // Cabeçalho do Termo
       doc.setFontSize(8.5);
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(30, 58, 138);
+      doc.setTextColor(127, 29, 29);
       doc.text("TERMO DE GARANTIA DA MANUTENÇÃO", marg + 4, y + 6);
 
       // Badge Validade com largura dinâmica para nunca vazar
@@ -632,7 +632,7 @@ function Documento() {
       const badgeW = txtValidadeW + 6;
       const badgeX = 210 - marg - badgeW - 3;
 
-      doc.setFillColor(37, 99, 235);
+      doc.setFillColor(220, 38, 38);
       doc.roundedRect(badgeX, y + 2, badgeW, 6, 1.5, 1.5, "F");
       doc.setTextColor(255, 255, 255);
       doc.text(txtValidade, badgeX + badgeW / 2, y + 6.2, { align: "center" });
@@ -838,7 +838,7 @@ function Documento() {
       y2 += 4;
 
       // Bullets legais
-      doc.setFillColor(37, 99, 235);
+      doc.setFillColor(220, 38, 38);
       doc.circle(marg + 2, y2 - 0.9, 0.8, "F");
       doc.setFont("helvetica", "bold");
       doc.text("Garantia Legal Obrigatória (90 dias):", marg + 5, y2);
@@ -858,12 +858,12 @@ function Documento() {
       y2 += Math.max(linhasEstend.length * 3.8, 4.5) + 3;
 
       // Box Destaque de Validade Total Acordada
-      doc.setFillColor(239, 246, 255);
-      doc.setDrawColor(191, 219, 254);
+      doc.setFillColor(254, 242, 242);
+      doc.setDrawColor(254, 202, 202);
       doc.roundedRect(marg, y2, wTotal, 8, 1.5, 1.5, "FD");
       doc.setFontSize(6.8);
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(30, 58, 138);
+      doc.setTextColor(127, 29, 29);
       doc.text(`Validade Total Acordada: ${garantia.validade} (a contar de ${formatarData(cliente.criadoEm)}).`, marg + 4, y2 + 5.2);
       y2 += 11.5;
 
@@ -924,7 +924,7 @@ function Documento() {
       ];
       txtCumprimento.forEach((par) => {
         const linhas = doc.splitTextToSize(par, wTotal - 6);
-        doc.setFillColor(37, 99, 235);
+        doc.setFillColor(220, 38, 38);
         doc.circle(marg + 2, y2 - 0.9, 0.7, "F");
         doc.text(linhas, marg + 6, y2);
         y2 += linhas.length * 3.5 + 2.5;
@@ -969,7 +969,7 @@ function Documento() {
 
       // Fundo papel de segurança cartorial
       doc.setFillColor(240, 249, 255);
-      doc.setDrawColor(37, 99, 235);
+      doc.setDrawColor(220, 38, 38);
       doc.setLineWidth(0.4);
       doc.roundedRect(seloX, seloY, seloW, seloH, 1.5, 1.5, "FD");
 
@@ -992,7 +992,7 @@ function Documento() {
       doc.text("WS", seloX + 4.15, seloY + 10.3, { align: "center" });
 
       // Faixa Superior "SELO DE AUTENTICIDADE"
-      doc.setFillColor(29, 78, 216); // Azul cartório
+      doc.setFillColor(185, 28, 28); // Azul cartório
       doc.roundedRect(seloX + 8.8, seloY + 0.8, seloW - 9.6, 4, 0.8, 0.8, "F");
 
       doc.setFont("helvetica", "bold");
@@ -1001,7 +1001,7 @@ function Documento() {
       doc.text("SELO DE AUTENTICIDADE", seloX + 8.8 + (seloW - 9.6) / 2, seloY + 3.6, { align: "center" });
 
       // Curvas Guilloché de Segurança no fundo direito
-      doc.setDrawColor(191, 219, 254);
+      doc.setDrawColor(254, 202, 202);
       doc.setLineWidth(0.15);
       doc.ellipse(seloX + seloW - 8, seloY + 11, 12, 6);
       doc.ellipse(seloX + seloW - 8, seloY + 11, 8, 4);
@@ -1017,7 +1017,7 @@ function Documento() {
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(4.5);
-      doc.setTextColor(37, 99, 235);
+      doc.setTextColor(220, 38, 38);
       doc.text("Sistemas Eletrônicos de Segurança", seloX + 17, seloY + 10.5);
 
       // Linha separadora
@@ -1028,7 +1028,7 @@ function Documento() {
       // Serial e Data de Validação
       doc.setFont("courier", "bold");
       doc.setFontSize(4.8);
-      doc.setTextColor(30, 58, 138);
+      doc.setTextColor(127, 29, 29);
       doc.text(`SELO Nº: WS-${cliente.id.slice(0, 8).toUpperCase()}`, seloX + 9.5, seloY + 15.2);
 
       doc.setFont("helvetica", "bold");
