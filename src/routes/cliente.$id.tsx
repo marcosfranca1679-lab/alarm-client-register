@@ -77,7 +77,7 @@ async function obterLogoBase64(): Promise<string | null> {
 export const Route = createFileRoute("/cliente/$id")({
   head: () => ({
     meta: [
-      { title: "Documento de Cadastro & Termo de Garantia — WS Segurança Eletrônica" },
+      { title: "Documento de Cadastro & Termo de Garantia — SeguraAlarm" },
       {
         name: "description",
         content: "Ficha de cadastro, valores e termo de garantia de manutenção de alarme.",
@@ -318,7 +318,7 @@ function SeloAutenticidadeCartorio({
             <img src="/logo.jpg" alt="WS" className="h-6 w-6 rounded-full object-cover border border-blue-400/80 shadow-xs shrink-0" />
             <div className="min-w-0 flex-1">
               <p className="text-[9.5px] font-extrabold text-blue-950 dark:text-blue-100 uppercase leading-none truncate">
-                WS SEGURANÇA ELETRÔNICA
+                SEGURAALARM
               </p>
               <p className="text-[7.5px] text-blue-700 dark:text-blue-400 leading-tight">
                 Sistemas Eletrônicos de Segurança
@@ -443,7 +443,7 @@ function Documento() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
       doc.setTextColor(15, 23, 42);
-      doc.text("WS SEGURANÇA ELETRÔNICA", textX, y + 4.5);
+      doc.text("SEGURAALARM", textX, y + 4.5);
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(7.5);
@@ -643,7 +643,7 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(71, 85, 105);
-      doc.text("A WS Segurança Eletrônica oferece garantia sobre os serviços de manutenção realizados, conforme as condições abaixo:", marg + 4, termoY);
+      doc.text("A SeguraAlarm oferece garantia sobre os serviços de manutenção realizados, conforme as condições abaixo:", marg + 4, termoY);
       termoY += 4.5;
 
       // Box Modalidade CDC / Estendida
@@ -749,7 +749,7 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 116, 139);
-      doc.text("WS Segurança Eletrônica • (48) 99911-8524 • Documento Oficial", marg, rodapeY1);
+      doc.text("SeguraAlarm • (48) 99911-8524 • Documento Oficial", marg, rodapeY1);
       doc.text("Página 1 de 2 (Continua...)", 210 - marg, rodapeY1, { align: "right" });
 
       // ==========================================
@@ -765,7 +765,7 @@ function Documento() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
       doc.setTextColor(15, 23, 42);
-      doc.text("WS SEGURANÇA ELETRÔNICA", marg + 13, y2 + 4);
+      doc.text("SEGURAALARM", marg + 13, y2 + 4);
 
       doc.setFontSize(6.8);
       doc.setTextColor(71, 85, 105);
@@ -793,7 +793,7 @@ function Documento() {
         "Mau uso ou utilização inadequada do equipamento;",
         "Quedas, impactos ou danos físicos causados pelo cliente ou terceiros;",
         "Alterações, desmontagem ou tentativa de reparo por pessoas não autorizadas;",
-        "Modificações na instalação sem autorização da WS Segurança Eletrônica;",
+        "Modificações na instalação sem autorização da SeguraAlarm;",
         "Danos provocados intencionalmente;",
         "Problemas decorrentes de equipamentos ou instalações que não fazem parte do serviço contratado.",
       ];
@@ -819,7 +819,7 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(51, 65, 85);
-      const txtAvaliacao = "Em caso de falha, a WS Segurança Eletrônica realizará uma avaliação técnica para identificar a causa do problema e verificar se o atendimento está dentro das condições de garantia. Caso seja constatado que o problema está coberto, o reparo ou substituição será realizado sem custos adicionais ao cliente.";
+      const txtAvaliacao = "Em caso de falha, a SeguraAlarm realizará uma avaliação técnica para identificar a causa do problema e verificar se o atendimento está dentro das condições de garantia. Caso seja constatado que o problema está coberto, o reparo ou substituição será realizado sem custos adicionais ao cliente.";
       const linhasAval = doc.splitTextToSize(txtAvaliacao, wTotal);
       doc.text(linhasAval, marg, y2);
       y2 += linhasAval.length * 3.8 + 4;
@@ -834,7 +834,7 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(51, 65, 85);
-      doc.text("A garantia total fornecida pela WS Segurança Eletrônica é estruturada cumulativamente:", marg, y2);
+      doc.text("A garantia total fornecida pela SeguraAlarm é estruturada cumulativamente:", marg, y2);
       y2 += 4;
 
       // Bullets legais
@@ -961,7 +961,7 @@ function Documento() {
         }
       }
 
-      // Selo de Autenticidade Cartorial Oficial da WS Segurança Eletrônica
+      // Selo de Autenticidade Cartorial Oficial da SeguraAlarm
       const seloW = 74;
       const seloH = 19;
       const seloX = sign2X + (signW - seloW) / 2;
@@ -1006,14 +1006,14 @@ function Documento() {
       doc.ellipse(seloX + seloW - 8, seloY + 11, 12, 6);
       doc.ellipse(seloX + seloW - 8, seloY + 11, 8, 4);
 
-      // Logo thumbnail e Dados da WS Segurança Eletrônica
+      // Logo thumbnail e Dados da SeguraAlarm
       if (logoBase64) {
         try { doc.addImage(logoBase64, "JPEG", seloX + 9.5, seloY + 5.5, 6.5, 6.5); } catch {}
       }
       doc.setFont("helvetica", "bold");
       doc.setFontSize(6.2);
       doc.setTextColor(15, 23, 42);
-      doc.text("WS SEGURANÇA ELETRÔNICA", seloX + 17, seloY + 7.8);
+      doc.text("SEGURAALARM", seloX + 17, seloY + 7.8);
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(4.5);
@@ -1066,7 +1066,7 @@ function Documento() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
       doc.setTextColor(15, 23, 42);
-      doc.text("WS SEGURANÇA ELETRÔNICA", sign2X + signW / 2, y2, { align: "center" });
+      doc.text("SEGURAALARM", sign2X + signW / 2, y2, { align: "center" });
 
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
@@ -1082,7 +1082,7 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 116, 139);
-      doc.text(`Documento oficial emitido por WS Segurança Eletrônica • (48) 99911-8524 • Emissão: ${formatarData(new Date().toISOString())}`, marg, rodapeY2);
+      doc.text(`Documento oficial emitido por SeguraAlarm • (48) 99911-8524 • Emissão: ${formatarData(new Date().toISOString())}`, marg, rodapeY2);
       doc.text("Página 2 de 2", 210 - marg, rodapeY2, { align: "right" });
 
       // ── GERAÇÃO E DOWNLOAD ──
@@ -1175,12 +1175,12 @@ function Documento() {
             <header className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
               <img
                 src="/logo.jpg"
-                alt="WS Segurança Eletrônica"
+                alt="SeguraAlarm"
                 className="h-16 w-16 rounded-2xl object-cover border border-slate-200 shadow-sm ring-2 ring-blue-500/10"
               />
               <div>
                 <h1 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-                  WS SEGURANÇA ELETRÔNICA
+                  SEGURAALARM
                 </h1>
                 <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">
                   Ficha de Cadastro, Valores & Termo de Garantia da Manutenção
@@ -1315,7 +1315,7 @@ function Documento() {
                     TERMO DE GARANTIA DA MANUTENÇÃO
                   </h2>
                   <p className="text-[11px] font-semibold text-blue-800 dark:text-blue-300">
-                    WS SEGURANÇA ELETRÔNICA
+                    SEGURAALARM
                   </p>
                 </div>
                 <div className="text-right">
@@ -1326,7 +1326,7 @@ function Documento() {
               </div>
 
               <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                A <strong>WS Segurança Eletrônica</strong> oferece garantia sobre os serviços de manutenção realizados, conforme as condições descritas abaixo.
+                A <strong>SeguraAlarm</strong> oferece garantia sobre os serviços de manutenção realizados, conforme as condições descritas abaixo.
               </p>
 
               {/* Destaque da Modalidade de Garantia */}
@@ -1407,7 +1407,7 @@ function Documento() {
                   <li>Mau uso ou utilização inadequada do equipamento;</li>
                   <li>Quedas, impactos ou danos físicos causados pelo cliente ou terceiros;</li>
                   <li>Alterações, desmontagem ou tentativa de reparo por pessoas não autorizadas;</li>
-                  <li>Modificações na instalação sem autorização da WS Segurança Eletrônica;</li>
+                  <li>Modificações na instalação sem autorização da SeguraAlarm;</li>
                   <li>Danos provocados intencionalmente;</li>
                   <li>Problemas decorrentes de equipamentos ou instalações que não fazem parte do serviço contratado.</li>
                 </ul>
@@ -1419,7 +1419,7 @@ function Documento() {
                   3. AVALIAÇÃO TÉCNICA:
                 </h3>
                 <p className="text-[11px] leading-relaxed">
-                  Em caso de falha, a WS Segurança Eletrônica realizará uma avaliação técnica para identificar a causa do problema e verificar se o atendimento está dentro das condições de garantia. Caso seja constatado que o problema está coberto, o reparo ou substituição será realizado <strong>sem custos adicionais ao cliente</strong>.
+                  Em caso de falha, a SeguraAlarm realizará uma avaliação técnica para identificar a causa do problema e verificar se o atendimento está dentro das condições de garantia. Caso seja constatado que o problema está coberto, o reparo ou substituição será realizado <strong>sem custos adicionais ao cliente</strong>.
                 </p>
               </div>
 
@@ -1429,7 +1429,7 @@ function Documento() {
                   4. COMPOSIÇÃO DO PRAZO (90 DIAS LEGAIS + PRAZO ESTENDIDO):
                 </h3>
                 <p className="text-[11px] leading-relaxed">
-                  A garantia total fornecida pela <strong>WS Segurança Eletrônica</strong> é estruturada cumulativamente:
+                  A garantia total fornecida pela <strong>SeguraAlarm</strong> é estruturada cumulativamente:
                 </p>
                 <ul className="list-disc list-inside space-y-1 text-[11px] pl-1 text-slate-700 dark:text-slate-300">
                   <li>
@@ -1560,7 +1560,7 @@ function Documento() {
                   dataHora={`${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`}
                 />
 
-                <p className="font-bold text-slate-900 dark:text-slate-100">WS SEGURANÇA ELETRÔNICA</p>
+                <p className="font-bold text-slate-900 dark:text-slate-100">SEGURAALARM</p>
                 <p className="text-[11px] text-muted-foreground">Responsável Técnico / Emissor</p>
                 <p className="text-[10px] text-muted-foreground font-mono mt-0.5">Sistema de Alarme e Segurança</p>
               </div>
@@ -1568,7 +1568,7 @@ function Documento() {
 
             {/* ── Rodapé ── */}
             <footer className="border-t border-slate-200 dark:border-slate-800 pt-4 text-center text-[11px] text-muted-foreground">
-              <p>Documento oficial emitido por WS Segurança Eletrônica.</p>
+              <p>Documento oficial emitido por SeguraAlarm.</p>
               <p className="mt-0.5">Data de emissão: {formatarData(new Date().toISOString())}</p>
             </footer>
           </article>

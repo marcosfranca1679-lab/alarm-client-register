@@ -1,4 +1,4 @@
-# 📱 Aplicativo Android WebView — WS Segurança Eletrônica
+# 📱 Aplicativo Android WebView — SeguraAlarm
 
 Aplicativo nativo Android desenvolvido em **Kotlin** com suporte completo a **WebView moderna**, integração com **WhatsApp nativo**, suporte a **Puxar para Atualizar (Pull to Refresh)**, barra de carregamento e navegação fluida.
 
@@ -30,8 +30,8 @@ companion object {
 ---
 
 ## ✨ Recursos Inclusos:
-- 🚀 **Navegação Rápida**: Carrega o site da WS Segurança Eletrônica com aceleração de hardware e DOM Storage ativado.
+- 🚀 **Navegação Rápida**: Carrega o site da SeguraAlarm com aceleração de hardware e DOM Storage ativado.
 - 💬 **Abertura Direta do WhatsApp**: Ao clicar em qualquer botão de orçamento ou produto, abre o aplicativo nativo do WhatsApp no celular.
 - 🔄 **Puxar para Atualizar (SwipeRefresh)**: Arraste para baixo para recarregar os dados do Supabase.
 - 📄 **Upload & Download de Documentos**: Suporte a envio de backups JSON e download de termos em PDF.
-- 🎨 **Tema Dark Moderno**: Barra de status integrada com o layout da WS Segurança Eletrônica.
+- 🎨 **Tema Dark Moderno**: Barra de status integrada com o layout da SeguraAlarm.

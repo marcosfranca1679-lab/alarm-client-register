@@ -118,7 +118,7 @@ const WHATSAPP_FORMATADO = "(48) 99911-8524";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "WS Segurança Eletrônica — Alarmes, Câmeras & CFTV" },
+      { title: "SeguraAlarm — Alarmes, Câmeras & CFTV" },
       {
         name: "description",
         content:
@@ -380,12 +380,12 @@ function LandingPage({
           <div className="flex items-center gap-3.5">
             <img
               src="/logo.jpg"
-              alt="WS Segurança Eletrônica"
+              alt="SeguraAlarm"
               className="h-11 w-11 rounded-2xl object-cover border border-blue-500/30 shadow-md ring-2 ring-blue-500/20"
             />
             <div>
               <span className="text-base font-extrabold tracking-tight text-white block leading-tight">
-                WS SEGURANÇA ELETRÔNICA
+                SEGURAALARM
               </span>
               <span className="text-[11px] text-blue-400 font-medium tracking-wide">
                 Soluções Inteligentes em Alarmes & CFTV
@@ -879,11 +879,11 @@ function LandingPage({
             <div className="flex items-center gap-3">
               <img
                 src="/logo.jpg"
-                alt="WS Segurança Eletrônica"
+                alt="SeguraAlarm"
                 className="h-12 w-12 rounded-xl object-cover border border-blue-500/30"
               />
               <div>
-                <h3 className="text-base font-extrabold text-white">WS SEGURANÇA ELETRÔNICA</h3>
+                <h3 className="text-base font-extrabold text-white">SEGURAALARM</h3>
                 <p className="text-xs text-blue-400 font-medium">WhatsApp: {WHATSAPP_FORMATADO}</p>
               </div>
             </div>
@@ -912,11 +912,11 @@ function LandingPage({
           <div className="flex items-center gap-3 text-center md:text-left">
             <img
               src="/logo.jpg"
-              alt="WS Segurança Eletrônica"
+              alt="SeguraAlarm"
               className="h-9 w-9 rounded-xl object-cover border border-slate-700"
             />
             <div>
-              <p className="text-xs font-bold text-white">WS SEGURANÇA ELETRÔNICA</p>
+              <p className="text-xs font-bold text-white">SEGURAALARM</p>
               <p className="text-[11px] text-slate-500">
                 © {new Date().getFullYear()} Todos os direitos reservados. WhatsApp: {WHATSAPP_FORMATADO}
               </p>
@@ -1542,7 +1542,7 @@ function PainelAdministrativo({
           <div className="flex items-center gap-2.5 min-w-0">
             <img
               src="/logo.jpg"
-              alt="WS Segurança Eletrônica"
+              alt="SeguraAlarm"
               className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl object-cover border border-blue-400/30 shadow-sm shrink-0"
             />
             <div className="min-w-0">
@@ -1555,7 +1555,7 @@ function PainelAdministrativo({
                 </span>
               </div>
               <p className="text-[10px] text-slate-400 font-medium truncate hidden sm:block">
-                WS Segurança Eletrônica — Clientes, Garantias & Produtos
+                SeguraAlarm — Clientes, Garantias & Produtos
               </p>
             </div>
           </div>
