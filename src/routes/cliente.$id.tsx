@@ -437,7 +437,7 @@ function Documento() {
       // ── CABEÇALHO OFICIAL ──
       if (logoBase64) {
         try {
-          doc.addImage(logoBase64, "JPEG", marg, y, 16, 16);
+          doc.addImage(logoBase64, "PNG", marg, y, 16, 16);
         } catch {}
       }
 
@@ -762,7 +762,7 @@ function Documento() {
 
       // Mini-Cabeçalho da Página 2
       if (logoBase64) {
-        try { doc.addImage(logoBase64, "JPEG", marg, y2, 10, 10); } catch {}
+        try { doc.addImage(logoBase64, "PNG", marg, y2, 10, 10); } catch {}
       }
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
@@ -1010,7 +1010,7 @@ function Documento() {
 
       // Logo thumbnail e Dados da SeguraAlarm
       if (logoBase64) {
-        try { doc.addImage(logoBase64, "JPEG", seloX + 9.5, seloY + 5.5, 6.5, 6.5); } catch {}
+        try { doc.addImage(logoBase64, "PNG", seloX + 9.5, seloY + 5.5, 6.5, 6.5); } catch {}
       }
       doc.setFont("helvetica", "bold");
       doc.setFontSize(6.2);
