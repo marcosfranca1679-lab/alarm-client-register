@@ -118,11 +118,11 @@ const WHATSAPP_FORMATADO = "(48) 99911-8524";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SeguraAlarm â€” Alarmes, CÃ¢meras & CFTV" },
+      { title: "SeguraAlarm — Alarmes, Câmeras & CFTV" },
       {
         name: "description",
         content:
-          "SoluÃ§Ãµes completas em seguranÃ§a eletrÃ´nica, centrais de alarme Intelbras e JFL, CFTV, garantia tÃ©cnica e manutenÃ§Ã£o.",
+          "Soluções completas em segurança eletrônica, centrais de alarme Intelbras e JFL, CFTV, garantia técnica e manutenção.",
       },
     ],
   }),
@@ -152,7 +152,7 @@ function AppPrincipal() {
 
   useEffect(() => {
     setMounted(true);
-    // Aplica imediatamente o Ãºltimo valor conhecido (offline-first)
+    // Aplica imediatamente o último valor conhecido (offline-first)
     const cfgLocal = lerConfigLocal();
     if (cfgLocal) {
       aplicarConfigValores(cfgLocal);
@@ -169,7 +169,7 @@ function AppPrincipal() {
       setAutenticado(true);
     }
 
-    // Carrega credenciais salvas para nÃ£o precisar digitar sempre
+    // Carrega credenciais salvas para não precisar digitar sempre
     const userSalvo = localStorage.getItem("ws_saved_user");
     const passSalva = localStorage.getItem("ws_saved_pass");
     const lembrarSalvo = localStorage.getItem("ws_lembrar_login");
@@ -177,21 +177,21 @@ function AppPrincipal() {
     if (passSalva) setLoginPass(passSalva);
     if (lembrarSalvo === "false") setLembrarLogin(false);
 
-    // Carrega do localStorage primeiro (instantÃ¢neo), se jÃ¡ houver algo salvo
+    // Carrega do localStorage primeiro (instantâneo), se já houver algo salvo
     const locais = lerProdutosLocais();
     if (locais && locais.length > 0) setProdutos(locais);
 
     // E sincroniza com a nuvem
     buscarProdutosSupabase().then((prodsSupa) => {
       if (prodsSupa && prodsSupa.length > 0) {
-        // Nuvem Ã© a fonte da verdade
+        // Nuvem é a fonte da verdade
         setProdutos(prodsSupa);
         salvarProdutosLocais(prodsSupa);
       } else if (prodsSupa !== null && locais && locais.length > 0) {
-        // Nuvem vazia (nunca salva) e hÃ¡ dados locais reais â†’ envia para a nuvem
+        // Nuvem vazia (nunca salva) e há dados locais reais → envia para a nuvem
         salvarProdutosSupabase(locais);
       }
-      // Se prodsSupa === null (falha de rede), NÃƒO sobrescreve a nuvem
+      // Se prodsSupa === null (falha de rede), NÃO sobrescreve a nuvem
     });
   }, []);
 
@@ -201,7 +201,7 @@ function AppPrincipal() {
     salvarProdutosLocais(novos);
     salvarProdutosSupabase(novos)
       .then((ok) => {
-        if (!ok) toast.error("NÃ£o foi possÃ­vel salvar os banners na nuvem. Verifique a internet e tente novamente.");
+        if (!ok) toast.error("Não foi possível salvar os banners na nuvem. Verifique a internet e tente novamente.");
       })
       .catch((err) => {
         console.warn(err);
@@ -222,7 +222,7 @@ function AppPrincipal() {
       setAutenticado(true);
       localStorage.setItem("ws_auth", "true");
 
-      // Salva as credenciais se a opÃ§Ã£o estiver marcada
+      // Salva as credenciais se a opção estiver marcada
       if (lembrarLogin) {
         localStorage.setItem("ws_saved_user", loginUser.trim());
         localStorage.setItem("ws_saved_pass", loginPass);
@@ -237,15 +237,15 @@ function AppPrincipal() {
       setLoginErro("");
       toast.success("Login realizado com sucesso! Bem-vindo ao Painel.");
     } else {
-      setLoginErro("UsuÃ¡rio ou senha incorretos.");
-      toast.error("Credenciais invÃ¡lidas.");
+      setLoginErro("Usuário ou senha incorretos.");
+      toast.error("Credenciais inválidas.");
     }
   }
 
   function handleLogout() {
     setAutenticado(false);
     localStorage.removeItem("ws_auth");
-    toast.info("VocÃª saiu do painel.");
+    toast.info("Você saiu do painel.");
   }
 
   return (
@@ -270,7 +270,7 @@ function AppPrincipal() {
         />
       )}
 
-      {/* â”€â”€ Modal de Login do TÃ©cnico / Administrador â”€â”€ */}
+      {/* ── Modal de Login do Técnico / Administrador ── */}
       <Dialog open={modalLoginAberto} onOpenChange={setModalLoginAberto}>
         <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-slate-100">
           <DialogHeader>
@@ -278,7 +278,7 @@ function AppPrincipal() {
               <Lock className="h-6 w-6" />
             </div>
             <DialogTitle className="text-center text-lg font-bold text-white">
-              Acesso Restrito â€” Painel do TÃ©cnico
+              Acesso Restrito — Painel do Técnico
             </DialogTitle>
             <p className="text-center text-xs text-slate-400">
               Digite suas credenciais de administrador para gerenciar clientes, termos e produtos.
@@ -288,13 +288,13 @@ function AppPrincipal() {
           <form onSubmit={handleLogin} className="space-y-4 py-2">
             <div className="space-y-1.5">
               <Label className="field-label text-xs text-slate-300" htmlFor="user">
-                UsuÃ¡rio
+                Usuário
               </Label>
               <Input
                 id="user"
                 value={loginUser}
                 onChange={(e) => setLoginUser(e.target.value)}
-                placeholder="Digite seu usuÃ¡rio"
+                placeholder="Digite seu usuário"
                 className="bg-slate-800 border-slate-700 text-white focus:border-red-500"
                 autoComplete="username"
               />
@@ -309,7 +309,7 @@ function AppPrincipal() {
                 type="password"
                 value={loginPass}
                 onChange={(e) => setLoginPass(e.target.value)}
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="••••••••"
                 className="bg-slate-800 border-slate-700 text-white focus:border-red-500"
                 autoComplete="current-password"
               />
@@ -349,9 +349,9 @@ function AppPrincipal() {
   );
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// ðŸŒŸ 1. LANDING PAGE PÃšBLICA (MODERNA, CATÃLOGO DE PRODUTOS & WHATSAPP)
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════════════════════
+// 🌟 1. LANDING PAGE PÚBLICA (MODERNA, CATÁLOGO DE PRODUTOS & WHATSAPP)
+// ══════════════════════════════════════════════════════════════════════════════
 
 function LandingPage({
   produtos,
@@ -374,7 +374,7 @@ function LandingPage({
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      {/* â”€â”€ Top Bar / Header â”€â”€ */}
+      {/* ── Top Bar / Header ── */}
       <header className="sticky top-0 z-40 bg-slate-950/85 backdrop-blur-md border-b border-slate-800/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3.5">
@@ -388,7 +388,7 @@ function LandingPage({
                 SeguraAlarm
               </span>
               <span className="text-[11px] text-red-400 font-medium tracking-wide">
-                SoluÃ§Ãµes Inteligentes em Alarmes & CFTV
+                Soluções Inteligentes em Alarmes & CFTV
               </span>
             </div>
           </div>
@@ -398,7 +398,7 @@ function LandingPage({
               <Package className="h-3.5 w-3.5 text-red-400" /> Produtos & Banners
             </a>
             <a href="#servicos" className="hover:text-red-400 transition-colors">
-              ServiÃ§os
+              Serviços
             </a>
             <a href="#marcas" className="hover:text-red-400 transition-colors">
               Marcas
@@ -413,7 +413,7 @@ function LandingPage({
 
           <div className="flex items-center gap-3">
             <a
-              href={`https://wa.me/${WHATSAPP_NUMERO}?text=OlÃ¡!%20Gostaria%20de%20solicitar%20um%20orÃ§amento%20com%20a%20WS%20SeguranÃ§a.`}
+              href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento%20com%20a%20WS%20Segurança.`}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-md shadow-emerald-950/40 hover:scale-102 cursor-pointer"
@@ -425,37 +425,37 @@ function LandingPage({
         </div>
       </header>
 
-      {/* â”€â”€ Hero Section â”€â”€ */}
+      {/* ── Hero Section ── */}
       <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28 border-b border-slate-800/80">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-900/20 via-slate-950 to-slate-950 pointer-events-none" />
         <div className="mx-auto max-w-6xl px-5 relative z-10">
           <div className="max-w-3xl space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-3.5 py-1 text-xs font-semibold text-red-300">
               <ShieldCheck className="h-4 w-4 text-red-400" />
-              <span>ProteÃ§Ã£o Patrimonial e Residencial de Alto PadrÃ£o</span>
+              <span>Proteção Patrimonial e Residencial de Alto Padrão</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
-              A tranquilidade que a sua famÃ­lia merece, com a{" "}
+              A tranquilidade que a sua família merece, com a{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-300">
-                tecnologia mais confiÃ¡vel.
+                tecnologia mais confiável.
               </span>
             </h1>
 
             <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl">
-              InstalaÃ§Ã£o, manutenÃ§Ã£o preventiva e suporte especializado para centrais de alarme,
-              cÃ¢meras de monitoramento CFTV e barreiras perimetrais. Atendimento com agilidade,
+              Instalação, manutenção preventiva e suporte especializado para centrais de alarme,
+              câmeras de monitoramento CFTV e barreiras perimetrais. Atendimento com agilidade,
               equipamentos homologados e garantia por escrito.
             </p>
 
             <div className="flex flex-wrap items-center gap-3.5 pt-2">
               <a
-                href={`https://wa.me/${WHATSAPP_NUMERO}?text=OlÃ¡!%20Gostaria%20de%20agendar%20uma%20visita%20tÃ©cnica.`}
+                href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20agendar%20uma%20visita%20técnica.`}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-500 text-white px-5 py-3 text-sm font-bold transition-all shadow-lg shadow-red-950/50 hover:scale-102 cursor-pointer"
               >
-                <span>Solicitar Visita TÃ©cnica</span>
+                <span>Solicitar Visita Técnica</span>
                 <ArrowRight className="h-4 w-4" />
               </a>
 
@@ -471,7 +471,7 @@ function LandingPage({
             <div className="grid grid-cols-3 gap-4 pt-8 border-t border-slate-800/80 max-w-lg">
               <div>
                 <p className="text-xl font-extrabold text-white">+500</p>
-                <p className="text-[11px] text-slate-400 font-medium">InstalaÃ§Ãµes Realizadas</p>
+                <p className="text-[11px] text-slate-400 font-medium">Instalações Realizadas</p>
               </div>
               <div>
                 <p className="text-xl font-extrabold text-red-400">100%</p>
@@ -479,7 +479,7 @@ function LandingPage({
               </div>
               <div>
                 <p className="text-xl font-extrabold text-emerald-400">24/7</p>
-                <p className="text-[11px] text-slate-400 font-medium">Suporte TÃ©cnico</p>
+                <p className="text-[11px] text-slate-400 font-medium">Suporte Técnico</p>
               </div>
             </div>
           </div>
@@ -487,7 +487,7 @@ function LandingPage({
         </div>
       </section>
 
-      {/* â”€â”€ Vitrine / CatÃ¡logo de Produtos e Banners â”€â”€ */}
+      {/* ── Vitrine / Catálogo de Produtos e Banners ── */}
       <section id="produtos" className="py-20 bg-slate-950 border-b border-slate-800/80">
         <div className="mx-auto max-w-6xl px-5 space-y-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -496,21 +496,21 @@ function LandingPage({
                 <Sparkles className="h-3.5 w-3.5 text-red-400" />
                 <span>Nossos Produtos & Equipamentos</span>
               </div>
-              <h2 className="text-3xl font-black text-white">CatÃ¡logo de Equipamentos</h2>
+              <h2 className="text-3xl font-black text-white">Catálogo de Equipamentos</h2>
               <p className="text-xs sm:text-sm text-slate-400">
-                Centrais de alarme, cÃ¢meras, sensores e acessÃ³rios com os melhores preÃ§os e pronta
-                instalaÃ§Ã£o.
+                Centrais de alarme, câmeras, sensores e acessórios com os melhores preços e pronta
+                instalação.
               </p>
             </div>
 
             <a
-              href={`https://wa.me/${WHATSAPP_NUMERO}?text=OlÃ¡!%20Gostaria%20de%20consultar%20um%20produto%20especÃ­fico.`}
+              href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20consultar%20um%20produto%20específico.`}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 border border-emerald-800/60 px-4 py-2 rounded-xl transition-colors"
             >
               <MessageCircle className="h-4 w-4" />
-              <span>Pedir orÃ§amento personalizado no WhatsApp</span>
+              <span>Pedir orçamento personalizado no WhatsApp</span>
             </a>
           </div>
 
@@ -555,10 +555,10 @@ function LandingPage({
 
                 const linkZap = incluirInstalacao && instalacao.id !== "nenhuma"
                   ? `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(
-                      `OlÃ¡! Gostaria de encomendar o produto: *${prod.nome}* COM InstalaÃ§Ã£o Profissional (*${instalacao.nome}* por +${instalacao.valorFormatado}).\nValor total: *R$ ${formatarMoeda(valorTotal)}*.`
+                      `Olá! Gostaria de encomendar o produto: *${prod.nome}* COM Instalação Profissional (*${instalacao.nome}* por +${instalacao.valorFormatado}).\nValor total: *R$ ${formatarMoeda(valorTotal)}*.`
                     )}`
                   : `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(
-                      `OlÃ¡! Gostaria de comprar o equipamento: *${prod.nome}* (somente equipamento). Valor: *R$ ${prod.valor || "Sob consulta"}*.`
+                      `Olá! Gostaria de comprar o equipamento: *${prod.nome}* (somente equipamento). Valor: *R$ ${prod.valor || "Sob consulta"}*.`
                     )}`;
 
                 return (
@@ -585,7 +585,7 @@ function LandingPage({
                         </span>
                         {prod.destaque && (
                           <span className="absolute top-2.5 right-2.5 text-[10px] font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md shadow">
-                            â˜… Destaque
+                            ★ Destaque
                           </span>
                         )}
                         {obterLogoMarca(prod.marca) && prod.imagemUrl !== obterLogoMarca(prod.marca) && (
@@ -607,7 +607,7 @@ function LandingPage({
                       </div>
                     </div>
 
-                    {/* OpÃ§Ã£o de InstalaÃ§Ã£o Especializada no Produto */}
+                    {/* Opção de Instalação Especializada no Produto */}
                     {instalacao.id !== "nenhuma" && (
                       <div className="rounded-xl bg-slate-950/90 border border-red-900/50 p-2.5 space-y-1.5 transition-all">
                         <div className="flex items-center justify-between gap-2">
@@ -633,7 +633,7 @@ function LandingPage({
                             className="rounded border-slate-700 bg-slate-800 text-red-600 focus:ring-red-500 h-4 w-4 cursor-pointer"
                           />
                           <span className={incluirInstalacao ? "font-bold text-emerald-400" : "text-slate-400"}>
-                            {incluirInstalacao ? "âœ“ InstalaÃ§Ã£o Inclusa no Pedido" : "Adicionar ServiÃ§o de InstalaÃ§Ã£o"}
+                            {incluirInstalacao ? "✓ Instalação Inclusa no Pedido" : "Adicionar Serviço de Instalação"}
                           </span>
                         </label>
                       </div>
@@ -676,17 +676,17 @@ function LandingPage({
         </div>
       </section>
 
-{/* â”€â”€ Marcas Parceiras / Homologadas â”€â”€ */}
+{/* ── Marcas Parceiras / Homologadas ── */}
 <section id="marcas" className="py-16 bg-slate-900/50 border-b border-slate-800/80">
         <div className="mx-auto max-w-6xl px-5 text-center space-y-6">
           <p className="text-xs font-bold uppercase tracking-widest text-red-400">
             Equipamentos Homologados & Linhas Oficiais
           </p>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-            Trabalhamos com as marcas lÃ­deres do mercado
+            Trabalhamos com as marcas líderes do mercado
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-            Utilizamos exclusivamente componentes originais com garantia de fÃ¡brica, alta
+            Utilizamos exclusivamente componentes originais com garantia de fábrica, alta
             durabilidade e compatibilidade com aplicativos no celular.
           </p>
 
@@ -702,7 +702,7 @@ function LandingPage({
               </div>
               <h3 className="text-sm font-bold text-white">Centrais de Alarme & CFTV Intelbras</h3>
               <p className="mt-1 text-xs text-slate-400 text-center leading-relaxed">
-                Linhas AMT 8000, AMT 4010, cÃ¢meras IP, DVRs e sensores inteligentes com controle por
+                Linhas AMT 8000, AMT 4010, câmeras IP, DVRs e sensores inteligentes com controle por
                 app.
               </p>
             </div>
@@ -719,7 +719,7 @@ function LandingPage({
               <h3 className="text-sm font-bold text-white">Sistemas de Alarme JFL</h3>
               <p className="mt-1 text-xs text-slate-400 text-center leading-relaxed">
                 Centrais Active 20, SmartCloud 18, eletrificadores perimetrais e sensores de alta
-                precisÃ£o.
+                precisão.
               </p>
             </div>
 
@@ -732,25 +732,25 @@ function LandingPage({
                   className="max-h-12 w-auto object-contain rounded-lg transition-transform group-hover:scale-105"
                 />
               </div>
-              <h3 className="text-sm font-bold text-white">Dispositivos & AutomaÃ§Ã£o Elgin</h3>
+              <h3 className="text-sm font-bold text-white">Dispositivos & Automação Elgin</h3>
               <p className="mt-1 text-xs text-slate-400 text-center leading-relaxed">
-                Fechaduras digitais, cÃ¢meras inteligentes, lÃ¢mpadas smart, tomadas e automaÃ§Ã£o residencial.
+                Fechaduras digitais, câmeras inteligentes, lâmpadas smart, tomadas e automação residencial.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* â”€â”€ ServiÃ§os & Produtos â”€â”€ */}
+      {/* ── Serviços & Produtos ── */}
       <section id="servicos" className="py-20 border-b border-slate-800/80">
         <div className="mx-auto max-w-6xl px-5 space-y-12">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
             <span className="text-xs font-bold uppercase tracking-wider text-red-400 bg-red-950/60 border border-red-800/60 px-3 py-1 rounded-full">
               O que oferecemos
             </span>
-            <h2 className="text-3xl font-black text-white">ServiÃ§os e InstalaÃ§Ãµes Especializadas</h2>
+            <h2 className="text-3xl font-black text-white">Serviços e Instalações Especializadas</h2>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              SoluÃ§Ãµes completas desde o projeto inicial atÃ© a manutenÃ§Ã£o periÃ³dica com emissÃ£o de
+              Soluções completas desde o projeto inicial até a manutenção periódica com emissão de
               ficha de garantia.
             </p>
           </div>
@@ -760,9 +760,9 @@ function LandingPage({
               <div className="h-10 w-10 rounded-xl bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-400">
                 <Bell className="h-5 w-5" />
               </div>
-              <h3 className="text-base font-bold text-white">InstalaÃ§Ã£o de Centrais de Alarme</h3>
+              <h3 className="text-base font-bold text-white">Instalação de Centrais de Alarme</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Centrais com e sem fio, comunicaÃ§Ã£o por nuvem, IP, Wi-Fi e chip 4G. AtivaÃ§Ã£o e
+                Centrais com e sem fio, comunicação por nuvem, IP, Wi-Fi e chip 4G. Ativação e
                 desarme direto pelo smartphone.
               </p>
             </div>
@@ -771,10 +771,10 @@ function LandingPage({
               <div className="h-10 w-10 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
                 <Camera className="h-5 w-5" />
               </div>
-              <h3 className="text-base font-bold text-white">CÃ¢meras de SeguranÃ§a (CFTV)</h3>
+              <h3 className="text-base font-bold text-white">Câmeras de Segurança (CFTV)</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                CÃ¢meras de alta definiÃ§Ã£o com visÃ£o noturna infravermelha, gravaÃ§Ã£o contÃ­nua e
-                visualizaÃ§Ã£o remota em tempo real.
+                Câmeras de alta definição com visão noturna infravermelha, gravação contínua e
+                visualização remota em tempo real.
               </p>
             </div>
 
@@ -782,10 +782,10 @@ function LandingPage({
               <div className="h-10 w-10 rounded-xl bg-amber-600/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
                 <Wrench className="h-5 w-5" />
               </div>
-              <h3 className="text-base font-bold text-white">ManutenÃ§Ã£o Preventiva & Corretiva</h3>
+              <h3 className="text-base font-bold text-white">Manutenção Preventiva & Corretiva</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Troca de baterias estacionÃ¡rias e pilhas de sensores, alinhamento de zonas, ajuste de
-                sirenes e diagnÃ³sticos completos.
+                Troca de baterias estacionárias e pilhas de sensores, alinhamento de zonas, ajuste de
+                sirenes e diagnósticos completos.
               </p>
             </div>
 
@@ -793,10 +793,10 @@ function LandingPage({
               <div className="h-10 w-10 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
                 <Zap className="h-5 w-5" />
               </div>
-              <h3 className="text-base font-bold text-white">ProteÃ§Ã£o Perimetral & Sensores</h3>
+              <h3 className="text-base font-bold text-white">Proteção Perimetral & Sensores</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Sensores de barreira infravermelha ativa (feixes), sensores de abertura magnÃ©tica e
-                sensores de presenÃ§a pet inteligentes.
+                Sensores de barreira infravermelha ativa (feixes), sensores de abertura magnética e
+                sensores de presença pet inteligentes.
               </p>
             </div>
 
@@ -806,8 +806,8 @@ function LandingPage({
               </div>
               <h3 className="text-base font-bold text-white">Termo de Garantia por Escrito</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Garantia legal de 90 dias (CDC) + planos de garantia estendida com reposiÃ§Ã£o de
-                peÃ§as e cobertura contra surtos elÃ©tricos.
+                Garantia legal de 90 dias (CDC) + planos de garantia estendida com reposição de
+                peças e cobertura contra surtos elétricos.
               </p>
             </div>
 
@@ -815,30 +815,30 @@ function LandingPage({
               <div className="h-10 w-10 rounded-xl bg-rose-600/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
                 <Building2 className="h-5 w-5" />
               </div>
-              <h3 className="text-base font-bold text-white">ResidÃªncias, ComÃ©rcios & GalpÃµes</h3>
+              <h3 className="text-base font-bold text-white">Residências, Comércios & Galpões</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Projetos sob medida para residÃªncias familiares, empresas, lojas e condomÃ­nios com
-                visitas tÃ©cnicas sem compromisso.
+                Projetos sob medida para residências familiares, empresas, lojas e condomínios com
+                visitas técnicas sem compromisso.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* â”€â”€ SeÃ§Ã£o de Garantia & Diferenciais â”€â”€ */}
+      {/* ── Seção de Garantia & Diferenciais ── */}
       <section id="garantia" className="py-20 bg-slate-900/40 border-b border-slate-800/80">
         <div className="mx-auto max-w-6xl px-5 grid md:grid-cols-2 gap-10 items-center">
           <div className="space-y-5">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-3 py-1 rounded-full">
-              Garantia & ConfianÃ§a
+              Garantia & Confiança
             </span>
             <h2 className="text-3xl font-black text-white leading-tight">
               Garantia Legal de 90 Dias (CDC) + Planos Estendidos
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Todos os nossos serviÃ§os contam com garantia legal obrigatÃ³ria de 90 dias conforme o
-              CÃ³digo de Defesa do Consumidor, com opÃ§Ã£o de garantia estendida por apenas R$ 12,60 ou
-              R$ 9,99/mÃªs por item.
+              Todos os nossos serviços contam com garantia legal obrigatória de 90 dias conforme o
+              Código de Defesa do Consumidor, com opção de garantia estendida por apenas R$ 12,60 ou
+              R$ 9,99/mês por item.
             </p>
 
             <div className="space-y-3 pt-2">
@@ -849,7 +849,7 @@ function LandingPage({
                 <div>
                   <h4 className="text-xs font-bold text-white">Protocolo e Ficha de Cadastro</h4>
                   <p className="text-[11px] text-slate-400">
-                    Cada cliente recebe protocolo de atendimento e documento oficial com histÃ³rico.
+                    Cada cliente recebe protocolo de atendimento e documento oficial com histórico.
                   </p>
                 </div>
               </div>
@@ -861,7 +861,7 @@ function LandingPage({
                 <div>
                   <h4 className="text-xs font-bold text-white">Cobertura contra Raios e Surtos</h4>
                   <p className="text-[11px] text-slate-400">
-                    OpÃ§Ã£o de garantia tÃ©cnica com reposiÃ§Ã£o de componentes danificados por descargas.
+                    Opção de garantia técnica com reposição de componentes danificados por descargas.
                   </p>
                 </div>
               </div>
@@ -873,7 +873,7 @@ function LandingPage({
                 <div>
                   <h4 className="text-xs font-bold text-white">Troca de Baterias Inclusa</h4>
                   <p className="text-[11px] text-slate-400">
-                    Planos com manutenÃ§Ã£o e reposiÃ§Ã£o periÃ³dica de pilhas e baterias.
+                    Planos com manutenção e reposição periódica de pilhas e baterias.
                   </p>
                 </div>
               </div>
@@ -894,12 +894,12 @@ function LandingPage({
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              Precisa de uma avaliaÃ§Ã£o no seu imÃ³vel, orÃ§amento para alarmes ou manutenÃ§Ã£o na sua
-              central? Clique no botÃ£o abaixo e fale direto no WhatsApp.
+              Precisa de uma avaliação no seu imóvel, orçamento para alarmes ou manutenção na sua
+              central? Clique no botão abaixo e fale direto no WhatsApp.
             </p>
 
             <a
-              href={`https://wa.me/${WHATSAPP_NUMERO}?text=OlÃ¡!%20Gostaria%20de%20um%20orÃ§amento%20para%20minha%20casa.`}
+              href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20um%20orçamento%20para%20minha%20casa.`}
               target="_blank"
               rel="noreferrer"
               className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 text-xs font-bold transition-all shadow-md cursor-pointer hover:scale-102"
@@ -911,7 +911,7 @@ function LandingPage({
         </div>
       </section>
 
-      {/* â”€â”€ Footer â”€â”€ */}
+      {/* ── Footer ── */}
       <footer className="py-12 bg-slate-950 border-t border-slate-800/80">
         <div className="mx-auto max-w-6xl px-5 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3 text-center md:text-left">
@@ -923,25 +923,25 @@ function LandingPage({
             <div>
               <p className="text-xs font-bold text-white">SeguraAlarm</p>
               <p className="text-[11px] text-slate-500">
-                Â© {new Date().getFullYear()} Todos os direitos reservados. WhatsApp: {WHATSAPP_FORMATADO}
+                © {new Date().getFullYear()} Todos os direitos reservados. WhatsApp: {WHATSAPP_FORMATADO}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 text-xs">
-            {/* BotÃ£o de Acesso ao Painel */}
+            {/* Botão de Acesso ao Painel */}
             <button
               onClick={onAbrirLogin}
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/90 hover:bg-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 px-3.5 py-1.5 text-xs font-medium transition-colors cursor-pointer"
             >
               <Lock className="h-3.5 w-3.5 text-red-400" />
-              <span>Acesso ao Painel do TÃ©cnico</span>
+              <span>Acesso ao Painel do Técnico</span>
             </button>
           </div>
         </div>
       </footer>
 
-      {/* â”€â”€ Modal Ver Mais Detalhes do Produto â”€â”€ */}
+      {/* ── Modal Ver Mais Detalhes do Produto ── */}
       <Dialog open={!!produtoDetalhe} onOpenChange={(open) => { if (!open) setProdutoDetalhe(null); }}>
         <DialogContent className="sm:max-w-lg max-h-[85vh] bg-slate-900 border-slate-800 text-slate-100 p-0 overflow-hidden flex flex-col">
           {produtoDetalhe && (
@@ -975,7 +975,7 @@ function LandingPage({
                     )}
                     {produtoDetalhe.destaque && (
                       <span className="text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md">
-                        â˜… Destaque Oficial
+                        ★ Destaque Oficial
                       </span>
                     )}
                   </div>
@@ -984,14 +984,14 @@ function LandingPage({
 
                 <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-4 space-y-1.5">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    DescriÃ§Ã£o & FunÃ§Ãµes
+                    Descrição & Funções
                   </p>
                   <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
-                    {produtoDetalhe.descricao || "Equipamento de alta tecnologia e confiabilidade homologado para seguranÃ§a residencial e comercial."}
+                    {produtoDetalhe.descricao || "Equipamento de alta tecnologia e confiabilidade homologado para segurança residencial e comercial."}
                   </p>
                 </div>
 
-                {/* Bloco de OpÃ§Ã£o de InstalaÃ§Ã£o no Detalhe */}
+                {/* Bloco de Opção de Instalação no Detalhe */}
                 {(() => {
                   const inst = obterInstalacaoDoProduto(produtoDetalhe);
                   const valorNum = converterValorNumerico(produtoDetalhe.valor);
@@ -999,10 +999,10 @@ function LandingPage({
 
                   const linkZap = detalheComInstalacao && inst.id !== "nenhuma"
                     ? `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(
-                        `OlÃ¡! Gostaria de solicitar o produto: *${produtoDetalhe.nome}* COM InstalaÃ§Ã£o Profissional (*${inst.nome}* por +${inst.valorFormatado}).\nValor total: *R$ ${formatarMoeda(total)}*.`
+                        `Olá! Gostaria de solicitar o produto: *${produtoDetalhe.nome}* COM Instalação Profissional (*${inst.nome}* por +${inst.valorFormatado}).\nValor total: *R$ ${formatarMoeda(total)}*.`
                       )}`
                     : `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(
-                        `OlÃ¡! Gostaria de comprar o equipamento: *${produtoDetalhe.nome}* (somente equipamento). Valor: *R$ ${produtoDetalhe.valor || "Sob consulta"}*.`
+                        `Olá! Gostaria de comprar o equipamento: *${produtoDetalhe.nome}* (somente equipamento). Valor: *R$ ${produtoDetalhe.valor || "Sob consulta"}*.`
                       )}`;
 
                   return (
@@ -1013,7 +1013,7 @@ function LandingPage({
                             <div className="flex items-center gap-2">
                               <Wrench className="h-4 w-4 text-red-400 shrink-0" />
                               <span className="text-xs font-bold text-white uppercase tracking-wider">
-                                ServiÃ§o de InstalaÃ§Ã£o Especializada
+                                Serviço de Instalação Especializada
                               </span>
                             </div>
                             <span className="text-xs font-black text-red-300 bg-red-950 px-2 py-0.5 rounded border border-red-700">
@@ -1037,7 +1037,7 @@ function LandingPage({
                             >
                               <p className="text-xs font-bold text-white flex items-center gap-1">
                                 {detalheComInstalacao && <Check className="h-3.5 w-3.5 text-emerald-400" />}
-                                Com InstalaÃ§Ã£o
+                                Com Instalação
                               </p>
                               <p className="text-[11px] text-emerald-400 font-semibold mt-0.5">
                                 +{inst.valorFormatado}
@@ -1055,7 +1055,7 @@ function LandingPage({
                             >
                               <p className="text-xs font-bold text-white flex items-center gap-1">
                                 {!detalheComInstalacao && <Check className="h-3.5 w-3.5 text-red-400" />}
-                                Sem InstalaÃ§Ã£o
+                                Sem Instalação
                               </p>
                               <p className="text-[11px] text-slate-400 mt-0.5">
                                 Apenas equipamento
@@ -1068,7 +1068,7 @@ function LandingPage({
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-slate-800">
                         <div>
                           <p className="text-xs text-slate-400">
-                            {detalheComInstalacao && inst.id !== "nenhuma" ? "Total (Equipamento + InstalaÃ§Ã£o)" : "Valor do Equipamento"}
+                            {detalheComInstalacao && inst.id !== "nenhuma" ? "Total (Equipamento + Instalação)" : "Valor do Equipamento"}
                           </p>
                           <p className="text-2xl font-black text-emerald-400">
                             R$ {detalheComInstalacao && inst.id !== "nenhuma" && valorNum > 0 ? formatarMoeda(total) : (produtoDetalhe.valor || "Sob consulta")}
@@ -1097,9 +1097,9 @@ function LandingPage({
   );
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// âš™ï¸ 2. PAINEL ADMINISTRATIVO (CADASTROS + GERENCIADOR DE BANNERS E PRODUTOS)
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════════════════════
+// ⚙️ 2. PAINEL ADMINISTRATIVO (CADASTROS + GERENCIADOR DE BANNERS E PRODUTOS)
+// ══════════════════════════════════════════════════════════════════════════════
 
 type LinhaServico = { id: string; nome: string; valor: string; descricao: string; personalizado: boolean };
 
@@ -1116,7 +1116,7 @@ function PainelAdministrativo({
 }) {
   const [abaAtiva, setAbaAtiva] = useState<"clientes" | "produtos" | "valores">("clientes");
 
-  // â”€â”€ Aba de Valores (preÃ§os de instalaÃ§Ã£o e garantia) â”€â”€
+  // ── Aba de Valores (preços de instalação e garantia) ──
   const [linhasServico, setLinhasServico] = useState<LinhaServico[]>(() =>
     listarServicosInstalacao().map((o) => ({
       id: String(o.id),
@@ -1148,7 +1148,7 @@ function PainelAdministrativo({
     setPrecoGarantiaLongo(PRECOS_GARANTIA.longo.toFixed(2).replace(".", ","));
   }
 
-  // Sincroniza o formulÃ¡rio sempre que a aba de valores Ã© aberta
+  // Sincroniza o formulário sempre que a aba de valores é aberta
   useEffect(() => {
     if (abaAtiva === "valores") recarregarLinhasServico();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1183,12 +1183,12 @@ function PainelAdministrativo({
     const instalacao: Record<string, ServicoInstalacaoConfig> = {};
     for (const l of linhasServico) {
       if (!l.nome.trim()) {
-        toast.error("Todos os serviÃ§os precisam de um nome.");
+        toast.error("Todos os serviços precisam de um nome.");
         return;
       }
       const valorNum = converterValorNumerico(l.valor);
       if (!Number.isFinite(valorNum) || valorNum < 0) {
-        toast.error(`Valor invÃ¡lido em "${l.nome}".`);
+        toast.error(`Valor inválido em "${l.nome}".`);
         return;
       }
       instalacao[l.id] = {
@@ -1206,7 +1206,7 @@ function PainelAdministrativo({
     };
 
     setSalvandoValores(true);
-    // Remove localmente os serviÃ§os personalizados excluÃ­dos
+    // Remove localmente os serviços personalizados excluídos
     Object.keys(OPCOES_INSTALACAO).forEach((k) => {
       const item = OPCOES_INSTALACAO[k];
       if (item?.personalizado && !(k in instalacao)) delete OPCOES_INSTALACAO[k];
@@ -1217,7 +1217,7 @@ function PainelAdministrativo({
     setSalvandoValores(false);
     recarregarLinhasServico();
     if (res.ok) toast.success("Valores salvos na nuvem com sucesso!");
-    else toast.error(res.erro || "NÃ£o foi possÃ­vel salvar na nuvem.");
+    else toast.error(res.erro || "Não foi possível salvar na nuvem.");
   }
 
   // Estados dos Clientes
@@ -1253,14 +1253,14 @@ function PainelAdministrativo({
   const qc = useQueryClient();
 
 
-  // CÃ¡lculos da Garantia Estendida
+  // Cálculos da Garantia Estendida
   const precoItem = calcularPrecoItemGarantia(validadeGarantia);
   const mesesEstendidos = obterMesesEstendidos(validadeGarantia);
   const qtdItens = coberturasGarantia.length;
   const valorMensalGarantia = qtdItens * precoItem;
   const valorTotalGarantia = valorMensalGarantia * mesesEstendidos;
 
-  // â”€â”€ Busca clientes direto do Supabase â”€â”€
+  // ── Busca clientes direto do Supabase ──
   const { data: clientes = [], isLoading } = useQuery({
     queryKey: ["clientes"],
     queryFn: async () => {
@@ -1276,7 +1276,7 @@ function PainelAdministrativo({
     retry: 1,
   });
 
-  // â”€â”€ Cadastrar cliente â”€â”€
+  // ── Cadastrar cliente ──
   const criar = useMutation({
     mutationFn: (dados: typeof vazio) => salvarClienteSupabase(dados),
     onSuccess: (novoCliente) => {
@@ -1296,13 +1296,13 @@ function PainelAdministrativo({
     },
   });
 
-  // â”€â”€ Salvar manutenÃ§Ã£o â”€â”€
+  // ── Salvar manutenção ──
   const salvarManutencaoMut = useMutation({
     mutationFn: async ({ cliente, desc }: { cliente: Cliente; desc: string }) => {
       const nova: Manutencao = {
         id: gerarId(),
         dataHora: new Date().toISOString(),
-        descricao: desc.trim() || "ManutenÃ§Ã£o periÃ³dica de rotina",
+        descricao: desc.trim() || "Manutenção periódica de rotina",
       };
       const atualizadas = [nova, ...(cliente.manutencoes || [])];
       await atualizarManutencoesSupabase(cliente.id, atualizadas);
@@ -1314,14 +1314,14 @@ function PainelAdministrativo({
       );
       setClienteManutencao(null);
       setDescricaoManutencao("");
-      toast.success(`ManutenÃ§Ã£o salva! ${formatarData(dataHora)}`);
+      toast.success(`Manutenção salva! ${formatarData(dataHora)}`);
     },
-    onError: () => toast.error("Falha ao salvar manutenÃ§Ã£o."),
+    onError: () => toast.error("Falha ao salvar manutenção."),
   });
 
   const [downloadTemp, setDownloadTemp] = useState<{ id: string; nomeArquivo: string; segundos: number } | null>(null);
 
-  // Contador regressivo de 60 segundos para auto-exclusÃ£o do arquivo temporÃ¡rio
+  // Contador regressivo de 60 segundos para auto-exclusão do arquivo temporário
   useEffect(() => {
     if (!downloadTemp) return;
     if (downloadTemp.segundos <= 0) {
@@ -1336,7 +1336,7 @@ function PainelAdministrativo({
     return () => clearInterval(timer);
   }, [downloadTemp]);
 
-  // â”€â”€ Excluir cliente â”€â”€
+  // ── Excluir cliente ──
   const excluir = useMutation({
     mutationFn: (id: string) => removerClienteSupabase(id),
     onSuccess: (_, id) => {
@@ -1348,7 +1348,7 @@ function PainelAdministrativo({
     onError: () => toast.error("Erro ao remover cadastro."),
   });
 
-  // â”€â”€ Exportar JSON com link temporÃ¡rio no Supabase (Auto-apaga em 1 minuto) â”€â”€
+  // ── Exportar JSON com link temporário no Supabase (Auto-apaga em 1 minuto) ──
   async function exportarJson() {
     const nomeArquivo = `backup_clientes_${new Date().toISOString().slice(0, 10)}.json`;
     const jsonStr = JSON.stringify(clientes, null, 2);
@@ -1369,7 +1369,7 @@ function PainelAdministrativo({
 
 
 
-  // â”€â”€ Importar JSON â”€â”€
+  // ── Importar JSON ──
   function importarJson(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1378,7 +1378,7 @@ function PainelAdministrativo({
       try {
         const parsed = JSON.parse(evt.target?.result as string);
         if (!Array.isArray(parsed)) {
-          toast.error("Arquivo JSON invÃ¡lido.");
+          toast.error("Arquivo JSON inválido.");
           return;
         }
         for (const item of parsed) {
@@ -1403,16 +1403,16 @@ function PainelAdministrativo({
     reader.readAsText(file);
   }
 
-  // â”€â”€ Validar e enviar formulÃ¡rio de cliente â”€â”€
+  // ── Validar e enviar formulário de cliente ──
   function onSubmitCliente(e: React.FormEvent) {
     e.preventDefault();
     const erro =
       form.nome.trim().length < 3
         ? "Informe o nome completo."
         : !cpfValido(form.cpf)
-          ? "CPF invÃ¡lido."
+          ? "CPF inválido."
           : form.endereco.trim().length < 5
-            ? "Informe o endereÃ§o completo."
+            ? "Informe o endereço completo."
             : apenasDigitos(form.telefone).length < 10
               ? "Telefone incompleto."
               : form.macCentral.replace(/[^0-9A-F]/gi, "").length !== 12
@@ -1439,7 +1439,7 @@ function PainelAdministrativo({
     criar.mutate({ ...form, observacoes: obsFinal });
   }
 
-  // â”€â”€ Gerenciador de Produtos / Banners â”€â”€
+  // ── Gerenciador de Produtos / Banners ──
   function abrirModalCriarProduto() {
     setProdutoEditando(null);
     setFormProdNome("");
@@ -1476,7 +1476,7 @@ function PainelAdministrativo({
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      toast.error("Imagem muito grande. MÃ¡ximo 2MB.");
+      toast.error("Imagem muito grande. Máximo 2MB.");
       return;
     }
     const reader = new FileReader();
@@ -1513,7 +1513,7 @@ function PainelAdministrativo({
       toast.success("Produto atualizado com sucesso!");
     } else {
       onAtualizarProdutos([{ id: gerarId(), ...dadosProd }, ...produtos]);
-      toast.success("Novo produto adicionado Ã  vitrine!");
+      toast.success("Novo produto adicionado à vitrine!");
     }
     setModalProdutoAberto(false);
   }
@@ -1526,7 +1526,7 @@ function PainelAdministrativo({
 
   function restaurarCatalogoPadrao() {
     onAtualizarProdutos(PRODUTOS_PADRAO);
-    toast.success("CatÃ¡logo padrÃ£o restaurado!");
+    toast.success("Catálogo padrão restaurado!");
   }
 
 
@@ -1543,7 +1543,7 @@ function PainelAdministrativo({
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      {/* â”€â”€ Header do Painel â”€â”€ */}
+      {/* ── Header do Painel ── */}
       <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 sm:px-5 py-3">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -1562,7 +1562,7 @@ function PainelAdministrativo({
                 </span>
               </div>
               <p className="text-[10px] text-slate-400 font-medium truncate hidden sm:block">
-                SeguraAlarm â€” Clientes, Garantias & Produtos
+                SeguraAlarm — Clientes, Garantias & Produtos
               </p>
             </div>
           </div>
@@ -1597,7 +1597,7 @@ function PainelAdministrativo({
           </div>
         </div>
 
-        {/* Abas de NavegaÃ§Ã£o Responsivas em Grid 2 Colunas */}
+        {/* Abas de Navegação Responsivas em Grid 2 Colunas */}
         <div className="mx-auto max-w-6xl px-3 sm:px-5 pb-2">
           <div className="grid grid-cols-3 gap-2 bg-slate-950/60 p-1 rounded-xl border border-slate-800">
             <button
@@ -1643,10 +1643,10 @@ function PainelAdministrativo({
       </header>
 
 
-      {/* â”€â”€ CONTEÃšDO 1: GERENCIADOR DE CLIENTES â”€â”€ */}
+      {/* ── CONTEÚDO 1: GERENCIADOR DE CLIENTES ── */}
       {abaAtiva === "clientes" && (
         <main className="mx-auto grid max-w-6xl gap-4 sm:gap-6 px-3 sm:px-5 py-4 sm:py-8 lg:grid-cols-[minmax(0,450px)_1fr] w-full max-w-full overflow-hidden">
-          {/* FormulÃ¡rio de Cadastro */}
+          {/* Formulário de Cadastro */}
           <section className="card-elevated h-fit p-4 sm:p-6 bg-slate-900 border-slate-800 text-slate-100 rounded-2xl border shadow-md w-full max-w-full overflow-hidden">
             <h2 className="text-base font-bold text-white">Novo cadastro de cliente</h2>
             <p className="mt-1 text-xs text-slate-400">
@@ -1700,14 +1700,14 @@ function PainelAdministrativo({
 
               <div className="space-y-1.5">
                 <Label className="field-label text-xs text-slate-300" htmlFor="endereco">
-                  EndereÃ§o da instalaÃ§Ã£o
+                  Endereço da instalação
                 </Label>
                 <Input
                   id="endereco"
                   value={form.endereco}
                   maxLength={200}
                   onChange={(e) => setForm({ ...form, endereco: e.target.value })}
-                  placeholder="Rua, nÃºmero, bairro, cidade/UF"
+                  placeholder="Rua, número, bairro, cidade/UF"
                   className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
                 />
               </div>
@@ -1747,17 +1747,17 @@ function PainelAdministrativo({
                 </div>
               </div>
 
-              {/* SeÃ§Ã£o de Valores e Pagamento */}
+              {/* Seção de Valores e Pagamento */}
               <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 space-y-3">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
                   <DollarSign className="h-4 w-4" />
-                  <span>Valores do ServiÃ§o & Forma de Pagamento</span>
+                  <span>Valores do Serviço & Forma de Pagamento</span>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-1">
                     <Label className="field-label text-xs text-slate-300" htmlFor="valorServico">
-                      Valor do ServiÃ§o (R$)
+                      Valor do Serviço (R$)
                     </Label>
                     <div className="relative">
                       <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-semibold">
@@ -1793,12 +1793,12 @@ function PainelAdministrativo({
                 </div>
               </div>
 
-              {/* SeÃ§Ã£o do Termo de Garantia */}
+              {/* Seção do Termo de Garantia */}
               <div className="rounded-xl border border-red-900/60 bg-red-950/20 p-4 space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-red-300">
                     <ShieldCheck className="h-4 w-4 text-red-400" />
-                    <span>Termo de Garantia da ManutenÃ§Ã£o</span>
+                    <span>Termo de Garantia da Manutenção</span>
                   </div>
                   <span
                     className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
@@ -1807,20 +1807,20 @@ function PainelAdministrativo({
                         : "text-emerald-300 bg-emerald-900/60"
                     }`}
                   >
-                    {coberturasGarantia.length === 0 ? "PadrÃ£o CDC 90 dias" : "Personalizada"}
+                    {coberturasGarantia.length === 0 ? "Padrão CDC 90 dias" : "Personalizada"}
                   </span>
                 </div>
 
                 {coberturasGarantia.length === 0 ? (
                   <div className="rounded-md bg-amber-950/40 p-2.5 border border-amber-800/80 text-[11px] text-amber-200 leading-tight">
-                    âš–ï¸ <strong>Garantia Legal de 90 dias (CDC)</strong>: Ativa automaticamente. Cobrindo
-                    todos os serviÃ§os executados conforme a lei do consumidor.
+                    ⚖️ <strong>Garantia Legal de 90 dias (CDC)</strong>: Ativa automaticamente. Cobrindo
+                    todos os serviços executados conforme a lei do consumidor.
                   </div>
                 ) : (
                   <div className="rounded-md bg-emerald-950/40 p-2.5 border border-emerald-800/80 text-[11px] text-emerald-200 leading-tight">
-                    ðŸ›¡ï¸ <strong>90 Dias Legais (CDC) + Garantia Estendida</strong>: O prazo adicional
-                    selecionado abaixo se <u>soma aos 90 dias obrigatÃ³rios da lei</u> com{" "}
-                    {coberturasGarantia.length} cobertura(s) incluÃ­da(s).
+                    🛡️ <strong>90 Dias Legais (CDC) + Garantia Estendida</strong>: O prazo adicional
+                    selecionado abaixo se <u>soma aos 90 dias obrigatórios da lei</u> com{" "}
+                    {coberturasGarantia.length} cobertura(s) incluída(s).
                   </div>
                 )}
 
@@ -1839,7 +1839,7 @@ function PainelAdministrativo({
                         : ""
                     }`}
                   >
-                    âš–ï¸ Apenas 90 Dias (CDC)
+                    ⚖️ Apenas 90 Dias (CDC)
                   </Button>
                   <Button
                     type="button"
@@ -1855,13 +1855,13 @@ function PainelAdministrativo({
                         : ""
                     }`}
                   >
-                    âž• Marcar Todas
+                    ➕ Marcar Todas
                   </Button>
                 </div>
 
                 <div className="space-y-1">
                   <Label className="field-label text-xs text-slate-300">
-                    PerÃ­odo da Garantia Estendida
+                    Período da Garantia Estendida
                   </Label>
                   <select
                     value={validadeGarantia}
@@ -1880,13 +1880,13 @@ function PainelAdministrativo({
                   <div className="flex justify-between items-center font-semibold text-red-200">
                     <span>Valor por item adicional:</span>
                     <span className="text-emerald-400 font-bold">
-                      R$ {precoItem.toFixed(2).replace(".", ",")} / item / mÃªs
+                      R$ {precoItem.toFixed(2).replace(".", ",")} / item / mês
                     </span>
                   </div>
                   <p className="text-[11px] text-red-300">
                     {precoItem === 12.6
-                      ? "ðŸ“Œ Plano de 3 meses estendida: R$ 12,60/mÃªs por item."
-                      : "ðŸŽ‰ Plano acima de 6 meses (desconto): R$ 9,99/mÃªs por item!"}
+                      ? "📌 Plano de 3 meses estendida: R$ 12,60/mês por item."
+                      : "🎉 Plano acima de 6 meses (desconto): R$ 9,99/mês por item!"}
                   </p>
                 </div>
 
@@ -1942,11 +1942,11 @@ function PainelAdministrativo({
                       >
                         <p className="flex items-center gap-1">
                           <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
-                          <span>Por MÃªs</span>
+                          <span>Por Mês</span>
                         </p>
                         <p className="mt-1 text-sm font-extrabold text-emerald-300">
                           R$ {valorMensalGarantia.toFixed(2).replace(".", ",")}
-                          <span className="text-[10px] font-normal text-slate-400">/mÃªs</span>
+                          <span className="text-[10px] font-normal text-slate-400">/mês</span>
                         </p>
                       </button>
 
@@ -1961,7 +1961,7 @@ function PainelAdministrativo({
                       >
                         <p className="flex items-center gap-1">
                           <Calculator className="h-3.5 w-3.5 text-red-400" />
-                          <span>Valor Total JÃ¡</span>
+                          <span>Valor Total Já</span>
                         </p>
                         <p className="mt-1 text-sm font-extrabold text-red-300">
                           R$ {valorTotalGarantia.toFixed(2).replace(".", ",")}
@@ -1978,7 +1978,7 @@ function PainelAdministrativo({
 
               <div className="space-y-1.5">
                 <Label className="field-label text-xs text-slate-300" htmlFor="obs">
-                  ObservaÃ§Ãµes adicionais (opcional)
+                  Observações adicionais (opcional)
                 </Label>
                 <Textarea
                   id="obs"
@@ -1986,7 +1986,7 @@ function PainelAdministrativo({
                   maxLength={500}
                   value={form.observacoes}
                   onChange={(e) => setForm({ ...form, observacoes: e.target.value })}
-                  placeholder="Zonas, sensores instalados, senha de coaÃ§Ã£o, etc."
+                  placeholder="Zonas, sensores instalados, senha de coação, etc."
                   className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500 text-xs"
                 />
               </div>
@@ -2043,7 +2043,7 @@ function PainelAdministrativo({
                       <div className="space-y-0.5 min-w-0 flex-1">
                         <h3 className="text-sm font-bold text-white leading-tight break-words">{c.nome}</h3>
                         <p className="text-xs text-slate-400 break-words">
-                          <span>{c.cpf}</span> Â· <span>{c.telefone}</span>
+                          <span>{c.cpf}</span> · <span>{c.telefone}</span>
                         </p>
                         <p className="text-xs text-slate-500 break-words">{c.endereco}</p>
                       </div>
@@ -2062,7 +2062,7 @@ function PainelAdministrativo({
                       </div>
                     </div>
 
-                    {/* BotÃµes de AÃ§Ã£o do Cliente */}
+                    {/* Botões de Ação do Cliente */}
                     <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                       <Button
                         variant="outline"
@@ -2073,7 +2073,7 @@ function PainelAdministrativo({
                         }}
                         className="text-xs h-8 flex-1 sm:flex-initial border-amber-700/50 text-amber-300 bg-amber-950/30 hover:bg-amber-900/50 font-semibold cursor-pointer"
                       >
-                        <Wrench className="h-3.5 w-3.5 mr-1 text-amber-400" /> ManutenÃ§Ã£o
+                        <Wrench className="h-3.5 w-3.5 mr-1 text-amber-400" /> Manutenção
                       </Button>
 
                       <Button asChild variant="secondary" size="sm" className="text-xs h-8 flex-1 sm:flex-initial cursor-pointer bg-slate-800 hover:bg-slate-700 text-white font-semibold shadow-sm">
@@ -2093,12 +2093,12 @@ function PainelAdministrativo({
                       </Button>
                     </div>
 
-                    {/* InformaÃ§Ãµes Financeiras e Badge de Garantia */}
+                    {/* Informações Financeiras e Badge de Garantia */}
                     <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/80">
                       {garantia.valorServico && (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-emerald-950/60 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-md">
                           <DollarSign className="h-3 w-3 text-emerald-400" />
-                          <span>ServiÃ§o: R$ {garantia.valorServico}</span>
+                          <span>Serviço: R$ {garantia.valorServico}</span>
                           {garantia.formaPagamento && (
                             <span className="text-emerald-400 font-normal">
                               ({garantia.formaPagamento})
@@ -2120,7 +2120,7 @@ function PainelAdministrativo({
                             {garantia.tipoCobrancaGarantia === "total" && garantia.valorTotalGarantia
                               ? `R$ ${garantia.valorTotalGarantia.toFixed(2).replace(".", ",")} Total`
                               : garantia.valorMensalGarantia
-                                ? `R$ ${garantia.valorMensalGarantia.toFixed(2).replace(".", ",")}/mÃªs`
+                                ? `R$ ${garantia.valorMensalGarantia.toFixed(2).replace(".", ",")}/mês`
                                 : ""}
                           </span>
                           <span className="text-red-400 font-normal">
@@ -2137,14 +2137,14 @@ function PainelAdministrativo({
                     </div>
 
 
-                    {/* HistÃ³rico de ManutenÃ§Ãµes */}
+                    {/* Histórico de Manutenções */}
                     {manuts.length > 0 ? (
                       <div className="mt-2 border-t border-slate-800/80 pt-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5 text-xs text-amber-300 font-medium">
                             <Clock className="h-3.5 w-3.5 text-amber-400" />
                             <span>
-                              <span>Ãšltima manutenÃ§Ã£o: </span>
+                              <span>Última manutenção: </span>
                               <strong>{formatarData(ultima?.dataHora || "")}</strong>
                             </span>
                             {ultima?.descricao && (
@@ -2164,15 +2164,15 @@ function PainelAdministrativo({
                               className="text-xs text-slate-400 hover:text-white underline font-medium cursor-pointer"
                             >
                               {historicoExpandido === c.id
-                                ? "Ocultar histÃ³rico"
-                                : `Ver histÃ³rico (${manuts.length})`}
+                                ? "Ocultar histórico"
+                                : `Ver histórico (${manuts.length})`}
                             </button>
                           )}
                         </div>
                         {historicoExpandido === c.id && (
                           <div className="mt-2 space-y-1.5 rounded-md bg-slate-900 p-2.5 border border-slate-800 text-xs">
                             <p className="font-semibold text-slate-200 mb-1 flex items-center gap-1">
-                              <History className="h-3.5 w-3.5" /> HistÃ³rico completo:
+                              <History className="h-3.5 w-3.5" /> Histórico completo:
                             </p>
                             {manuts.map((m) => (
                               <div
@@ -2180,7 +2180,7 @@ function PainelAdministrativo({
                                 className="flex justify-between border-b border-slate-800 pb-1 last:border-0 last:pb-0"
                               >
                                 <span className="font-mono text-slate-200 font-medium">
-                                  ðŸ“… {formatarData(m.dataHora)}
+                                  📅 {formatarData(m.dataHora)}
                                 </span>
                                 <span className="text-slate-400">{m.descricao}</span>
                               </div>
@@ -2190,7 +2190,7 @@ function PainelAdministrativo({
                       </div>
                     ) : (
                       <div className="mt-1 border-t border-slate-800/60 pt-1.5 text-[11px] text-slate-500 flex items-center gap-1">
-                        <Clock className="h-3 w-3 opacity-60" /> Nenhuma manutenÃ§Ã£o registrada ainda.
+                        <Clock className="h-3 w-3 opacity-60" /> Nenhuma manutenção registrada ainda.
                       </div>
                     )}
                   </article>
@@ -2201,7 +2201,7 @@ function PainelAdministrativo({
         </main>
       )}
 
-      {/* â”€â”€ CONTEÃšDO 2: GERENCIADOR DE BANNERS & PRODUTOS DA TELA PRINCIPAL â”€â”€ */}
+      {/* ── CONTEÚDO 2: GERENCIADOR DE BANNERS & PRODUTOS DA TELA PRINCIPAL ── */}
       {abaAtiva === "produtos" && (
         <main className="mx-auto max-w-6xl px-3 sm:px-5 py-5 sm:py-8 space-y-4 sm:space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-800 shadow-md">
@@ -2211,7 +2211,7 @@ function PainelAdministrativo({
                 Gerenciador de Banners & Produtos
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Edite valores, troque fotos e adicione novos itens Ã  tela principal.
+                Edite valores, troque fotos e adicione novos itens à tela principal.
               </p>
             </div>
 
@@ -2252,7 +2252,7 @@ function PainelAdministrativo({
                     </span>
                     {prod.destaque && (
                       <span className="absolute top-2 right-2 text-[10px] font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md shadow">
-                        â˜… Destaque
+                        ★ Destaque
                       </span>
                     )}
                     {obterLogoMarca(prod.marca) && prod.imagemUrl !== obterLogoMarca(prod.marca) && (
@@ -2522,7 +2522,7 @@ function PainelAdministrativo({
                 <Input
                   value={formProdNome}
                   onChange={(e) => setFormProdNome(e.target.value)}
-                  placeholder="Ex.: CÃ¢mera Wi-Fi Intelbras Full HD"
+                  placeholder="Ex.: Câmera Wi-Fi Intelbras Full HD"
                   className="bg-slate-800 border-slate-700 text-white"
                 />
               </div>
@@ -2573,7 +2573,7 @@ function PainelAdministrativo({
                 <div className="space-y-1.5">
                   <Label className="field-label text-xs text-slate-300 flex items-center gap-1">
                     <Wrench className="h-3.5 w-3.5 text-red-400" />
-                    OpÃ§Ã£o de InstalaÃ§Ã£o Vinculada
+                    Opção de Instalação Vinculada
                   </Label>
                   <select
                     value={formProdTipoInstalacao}
@@ -2657,12 +2657,12 @@ function PainelAdministrativo({
               </div>
 
               <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300">DescriÃ§Ã£o do Produto</Label>
+                <Label className="field-label text-xs text-slate-300">Descrição do Produto</Label>
                 <Textarea
                   rows={3}
                   value={formProdDescricao}
                   onChange={(e) => setFormProdDescricao(e.target.value)}
-                  placeholder="Principais funÃ§Ãµes, zonas, alcance, resoluÃ§Ã£o..."
+                  placeholder="Principais funções, zonas, alcance, resolução..."
                   className="bg-slate-800 border-slate-700 text-white text-xs"
                 />
               </div>
@@ -2674,7 +2674,7 @@ function PainelAdministrativo({
                   onChange={(e) => setFormProdDestaque(e.target.checked)}
                   className="rounded border-slate-700 text-red-600 focus:ring-red-500"
                 />
-                <span>Destacar este produto na tela principal pÃºblica</span>
+                <span>Destacar este produto na tela principal pública</span>
               </label>
             </div>
 
@@ -2698,7 +2698,7 @@ function PainelAdministrativo({
         </DialogContent>
       </Dialog>
 
-      {/* â”€â”€ Modal Salvar ManutenÃ§Ã£o â”€â”€ */}
+      {/* ── Modal Salvar Manutenção ── */}
       <Dialog
         open={!!clienteManutencao}
         onOpenChange={(open) => {
@@ -2708,7 +2708,7 @@ function PainelAdministrativo({
         <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-slate-100">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-amber-400">
-              <Wrench className="h-5 w-5 text-amber-400" /> Salvar Nova ManutenÃ§Ã£o
+              <Wrench className="h-5 w-5 text-amber-400" /> Salvar Nova Manutenção
             </DialogTitle>
           </DialogHeader>
           {clienteManutencao && (
@@ -2729,7 +2729,7 @@ function PainelAdministrativo({
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="descManut" className="field-label text-xs text-slate-300">
-                  DescriÃ§Ã£o dos serviÃ§os executados:
+                  Descrição dos serviços executados:
                 </Label>
                 <Textarea
                   id="descManut"
@@ -2770,7 +2770,7 @@ function PainelAdministrativo({
         </DialogContent>
       </Dialog>
 
-      {/* NotificaÃ§Ã£o Flutuante de Download TemporÃ¡rio no Supabase */}
+      {/* Notificação Flutuante de Download Temporário no Supabase */}
       {downloadTemp && (
         <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-2xl border border-emerald-500/50 bg-slate-900/95 p-4 shadow-2xl backdrop-blur-md text-slate-100 space-y-2 animate-in fade-in slide-in-from-bottom-3">
           <div className="flex items-center justify-between gap-2">
@@ -2783,13 +2783,11 @@ function PainelAdministrativo({
             </span>
           </div>
           <p className="text-[11px] text-slate-400 leading-snug">
-            Arquivo enviado ao Supabase para download no WebView. SerÃ¡ <strong>auto-excluÃ­do da nuvem em {downloadTemp.segundos}s</strong> por seguranÃ§a.
+            Arquivo enviado ao Supabase para download no WebView. Será <strong>auto-excluído da nuvem em {downloadTemp.segundos}s</strong> por segurança.
           </p>
         </div>
       )}
     </div>
   );
 }
-
-
 
