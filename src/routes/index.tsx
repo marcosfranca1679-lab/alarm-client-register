@@ -1161,16 +1161,18 @@ function PainelAdministrativo({
   }
 
   function adicionarServico() {
+    const novoId = `custom-${gerarId().slice(0, 8)}`;
     setLinhasServico((prev) => [
       ...prev,
       {
-        id: `custom-${gerarId().slice(0, 8)}`,
-        nome: "",
-        valor: "0,00",
-        descricao: "",
+        id: novoId,
+        nome: "Novo Serviço de Instalação",
+        valor: "49,90",
+        descricao: "Descrição do serviço e testes técnicos",
         personalizado: true,
       },
     ]);
+    toast.success("Novo serviço adicionado ao final da lista! Ajuste o nome/valor e clique em 'Salvar na Nuvem'.");
   }
 
   function removerServico(id: string) {
@@ -2578,11 +2580,12 @@ function PainelAdministrativo({
                     onChange={(e) => setFormProdTipoInstalacao(e.target.value as TipoInstalacao)}
                     className="flex h-9 w-full rounded-md border border-red-500/50 bg-slate-800 px-2.5 py-1 text-xs text-red-300 cursor-pointer font-medium"
                   >
-                    <option value="camera">ðŸ“¹ InstalaÃ§Ã£o cÃ¢mera IP + config (+R$ 79,99)</option>
-                    <option value="sensor">ðŸš¨ InstalaÃ§Ã£o sensores alarme (+R$ 29,99)</option>
-                    <option value="central">âš¡ InstalaÃ§Ã£o central + sirene + bat (+R$ 329,99)</option>
-                    <option value="smart">ðŸ“± InstalaÃ§Ã£o dispositivos smart (+R$ 49,99)</option>
-                    <option value="nenhuma">ðŸš« Sem instalaÃ§Ã£o (somente equipamento)</option>
+                    {listarServicosInstalacao().map((op) => (
+                      <option key={op.id} value={op.id}>
+                        {op.nome} (+{op.valorFormatado})
+                      </option>
+                    ))}
+                    <option value="nenhuma">🚫 Sem instalação (somente equipamento)</option>
                   </select>
                 </div>
               </div>
