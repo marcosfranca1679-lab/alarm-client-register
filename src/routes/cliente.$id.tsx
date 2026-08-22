@@ -315,7 +315,9 @@ function SeloAutenticidadeCartorio({
 
           {/* Logo e Nome da Empresa */}
           <div className="flex items-center gap-1.5 pt-0.5">
-            <img src="/logo.jpg" alt="WS" className="h-6 w-6 rounded-full object-cover border border-red-400/80 shadow-xs shrink-0" />
+            <div className="bg-black rounded-full p-0.5 shrink-0">
+              <img src="/logo.jpg" alt="WS" className="h-5 w-5 rounded-full object-cover border border-red-400/80 shadow-xs" />
+            </div>
             <div className="min-w-0 flex-1">
               <p className="text-[9.5px] font-extrabold text-red-950 dark:text-red-100 uppercase leading-none truncate">
                 SeguraAlarm
@@ -1173,11 +1175,13 @@ function Documento() {
           >
             {/* ── Cabeçalho Oficial ── */}
             <header className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
-              <img
-                src="/logo.jpg"
-                alt="SeguraAlarm"
-                className="h-16 w-16 rounded-2xl object-cover border border-slate-200 shadow-sm ring-2 ring-red-500/10"
-              />
+              <div className="bg-black rounded-2xl p-1.5">
+                <img
+                  src="/logo.jpg"
+                  alt="SeguraAlarm"
+                  className="h-13 w-13 rounded-xl object-cover border border-slate-200 shadow-sm ring-2 ring-red-500/10"
+                />
+              </div>
               <div>
                 <h1 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
                   SeguraAlarm
