@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
                     val request = DownloadManager.Request(Uri.parse(url)).apply {
                         setMimeType(mimetype)
                         addRequestHeader("User-Agent", userAgent)
-                        setDescription("Baixando arquivo da WS Segurança Eletrônica...")
+                        setDescription("Baixando arquivo da SeguraAlarm...")
                         setTitle(URLUtil.guessFileName(url, contentDisposition, mimetype))
                         setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                         setDestinationInExternalPublicDir(

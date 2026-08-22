@@ -77,7 +77,7 @@ async function obterLogoBase64(): Promise<string | null> {
 export const Route = createFileRoute("/cliente/$id")({
   head: () => ({
     meta: [
-      { title: "Documento de Cadastro & Termo de Garantia — WS Segurança Eletrônica" },
+      { title: "Documento de Cadastro & Termo de Garantia — SeguraAlarm" },
       {
         name: "description",
         content: "Ficha de cadastro, valores e termo de garantia de manutenção de alarme.",
@@ -200,7 +200,7 @@ function ModalAssinaturaDigital({
       <DialogContent className="sm:max-w-md p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-slate-100">
-            <PenTool className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <PenTool className="h-5 w-5 text-red-600 dark:text-red-400" />
             Assinatura na Tela
           </DialogTitle>
           <p className="text-xs text-muted-foreground">
@@ -209,7 +209,7 @@ function ModalAssinaturaDigital({
         </DialogHeader>
 
         <div className="space-y-3 py-1">
-          <div className="rounded-xl border-2 border-dashed border-blue-400/80 bg-slate-50 dark:bg-slate-950 p-1 relative shadow-inner">
+          <div className="rounded-xl border-2 border-dashed border-red-400/80 bg-slate-50 dark:bg-slate-950 p-1 relative shadow-inner">
             <canvas
               ref={canvasRef}
               width={460}
@@ -254,7 +254,7 @@ function ModalAssinaturaDigital({
             type="button"
             size="sm"
             onClick={confirmar}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold cursor-pointer shadow-xs"
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold cursor-pointer shadow-xs"
           >
             <Check className="h-4 w-4 mr-1.5" />
             Salvar Assinatura
@@ -274,10 +274,10 @@ function SeloAutenticidadeCartorio({
 }) {
   const serial = `WS-${clienteId.slice(0, 8).toUpperCase()}`;
   return (
-    <div className="relative mb-2 w-full max-w-[270px] overflow-hidden rounded-xl border-2 border-blue-500/70 bg-gradient-to-br from-blue-50/90 via-sky-50/80 to-indigo-50/90 p-0 shadow-lg ring-1 ring-blue-400/30 dark:from-slate-900 dark:via-blue-950/50 dark:to-slate-900 select-none">
+    <div className="relative mb-2 w-full max-w-[270px] overflow-hidden rounded-xl border-2 border-red-500/70 bg-gradient-to-br from-red-50/90 via-red-50/80 to-red-50/90 p-0 shadow-lg ring-1 ring-red-400/30 dark:from-slate-900 dark:via-red-950/50 dark:to-slate-900 select-none">
       {/* Padrão Guilloché decorativo em SVG (ondas de segurança de cartório) */}
       <svg
-        className="pointer-events-none absolute right-0 top-0 h-full w-32 opacity-30 text-blue-600 dark:text-blue-400"
+        className="pointer-events-none absolute right-0 top-0 h-full w-32 opacity-30 text-red-600 dark:text-red-400"
         viewBox="0 0 120 100"
         fill="none"
         stroke="currentColor"
@@ -291,7 +291,7 @@ function SeloAutenticidadeCartorio({
 
       <div className="flex">
         {/* Faixa Holográfica Esquerda (Efeito Holograma de Segurança) */}
-        <div className="relative w-8 shrink-0 bg-gradient-to-b from-amber-400 via-emerald-400 via-cyan-400 to-purple-500 p-1 flex flex-col items-center justify-between overflow-hidden shadow-inner border-r border-amber-300/60">
+        <div className="relative w-8 shrink-0 bg-gradient-to-b from-amber-400 via-emerald-400 via-red-400 to-purple-500 p-1 flex flex-col items-center justify-between overflow-hidden shadow-inner border-r border-amber-300/60">
           <div className="absolute inset-0 bg-white/20 backdrop-blur-[0.5px]" />
           <div className="relative text-[6.5px] font-black uppercase text-slate-950 tracking-tight [writing-mode:vertical-rl] rotate-180 drop-shadow-xs">
             ★ WS ORIGIN ★
@@ -307,7 +307,7 @@ function SeloAutenticidadeCartorio({
         {/* Corpo do Selo Cartorial */}
         <div className="flex-1 p-2 space-y-1 relative z-10">
           {/* Faixa Superior: SELO DE AUTENTICIDADE */}
-          <div className="rounded bg-gradient-to-r from-blue-700 via-blue-800 to-blue-900 px-2 py-0.5 text-center shadow-xs">
+          <div className="rounded bg-gradient-to-r from-red-700 via-red-800 to-red-900 px-2 py-0.5 text-center shadow-xs">
             <p className="text-[8.5px] font-black tracking-widest text-white uppercase font-sans drop-shadow-xs">
               SELO DE AUTENTICIDADE
             </p>
@@ -315,22 +315,22 @@ function SeloAutenticidadeCartorio({
 
           {/* Logo e Nome da Empresa */}
           <div className="flex items-center gap-1.5 pt-0.5">
-            <img src="/logo.jpg" alt="WS" className="h-6 w-6 rounded-full object-cover border border-blue-400/80 shadow-xs shrink-0" />
+            <img src="/logo.jpg" alt="WS" className="h-6 w-6 rounded-full object-cover border border-red-400/80 shadow-xs shrink-0" />
             <div className="min-w-0 flex-1">
-              <p className="text-[9.5px] font-extrabold text-blue-950 dark:text-blue-100 uppercase leading-none truncate">
-                WS SEGURANÇA ELETRÔNICA
+              <p className="text-[9.5px] font-extrabold text-red-950 dark:text-red-100 uppercase leading-none truncate">
+                SeguraAlarm
               </p>
-              <p className="text-[7.5px] text-blue-700 dark:text-blue-400 leading-tight">
+              <p className="text-[7.5px] text-red-700 dark:text-red-400 leading-tight">
                 Sistemas Eletrônicos de Segurança
               </p>
             </div>
           </div>
 
           {/* Dados de Validação e Segurança */}
-          <div className="border-t border-blue-200/80 dark:border-blue-800/80 pt-1 space-y-0.5 text-[7.5px] font-mono text-slate-700 dark:text-slate-300">
+          <div className="border-t border-red-200/80 dark:border-red-800/80 pt-1 space-y-0.5 text-[7.5px] font-mono text-slate-700 dark:text-slate-300">
             <div className="flex justify-between items-center">
-              <span className="font-bold text-blue-900 dark:text-blue-300">SELO Nº:</span>
-              <span className="font-bold text-blue-950 dark:text-white bg-blue-100/90 dark:bg-blue-900/80 px-1 rounded border border-blue-200 dark:border-blue-700">{serial}</span>
+              <span className="font-bold text-red-900 dark:text-red-300">SELO Nº:</span>
+              <span className="font-bold text-red-950 dark:text-white bg-red-100/90 dark:bg-red-900/80 px-1 rounded border border-red-200 dark:border-red-700">{serial}</span>
             </div>
             <div className="flex justify-between items-center text-[7px] text-slate-500 dark:text-slate-400 pt-0.5">
               <span>DATA: {dataHora}</span>
@@ -443,7 +443,7 @@ function Documento() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
       doc.setTextColor(15, 23, 42);
-      doc.text("WS SEGURANÇA ELETRÔNICA", textX, y + 4.5);
+      doc.text("SeguraAlarm", textX, y + 4.5);
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(7.5);
@@ -573,8 +573,8 @@ function Documento() {
 
       // Card Direita: Garantia Estendida
       const card2X = marg + boxW + 4;
-      doc.setFillColor(239, 246, 255);
-      doc.setDrawColor(191, 219, 254);
+      doc.setFillColor(254, 242, 242);
+      doc.setDrawColor(254, 202, 202);
       doc.roundedRect(card2X, y, boxW, boxH, 2, 2, "FD");
 
       doc.setFontSize(6.5);
@@ -585,7 +585,7 @@ function Documento() {
       if (garantia.coberturas.length > 0) {
         doc.setFontSize(9);
         doc.setFont("helvetica", "bold");
-        doc.setTextColor(29, 78, 216);
+        doc.setTextColor(185, 28, 28);
         const txtValor = garantia.tipoCobrancaGarantia === "total" && garantia.valorTotalGarantia
           ? `R$ ${garantia.valorTotalGarantia.toFixed(2).replace(".", ",")} Total à Vista`
           : garantia.valorMensalGarantia
@@ -615,13 +615,13 @@ function Documento() {
       // Box principal do termo na página 1
       const termoH1 = 82;
       doc.setFillColor(248, 250, 252);
-      doc.setDrawColor(191, 219, 254);
+      doc.setDrawColor(254, 202, 202);
       doc.roundedRect(marg, y, wTotal, termoH1, 2, 2, "FD");
 
       // Cabeçalho do Termo
       doc.setFontSize(8.5);
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(30, 58, 138);
+      doc.setTextColor(127, 29, 29);
       doc.text("TERMO DE GARANTIA DA MANUTENÇÃO", marg + 4, y + 6);
 
       // Badge Validade com largura dinâmica para nunca vazar
@@ -632,7 +632,7 @@ function Documento() {
       const badgeW = txtValidadeW + 6;
       const badgeX = 210 - marg - badgeW - 3;
 
-      doc.setFillColor(37, 99, 235);
+      doc.setFillColor(220, 38, 38);
       doc.roundedRect(badgeX, y + 2, badgeW, 6, 1.5, 1.5, "F");
       doc.setTextColor(255, 255, 255);
       doc.text(txtValidade, badgeX + badgeW / 2, y + 6.2, { align: "center" });
@@ -643,7 +643,7 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(71, 85, 105);
-      doc.text("A WS Segurança Eletrônica oferece garantia sobre os serviços de manutenção realizados, conforme as condições abaixo:", marg + 4, termoY);
+      doc.text("A SeguraAlarm oferece garantia sobre os serviços de manutenção realizados, conforme as condições abaixo:", marg + 4, termoY);
       termoY += 4.5;
 
       // Box Modalidade CDC / Estendida
@@ -749,7 +749,7 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 116, 139);
-      doc.text("WS Segurança Eletrônica • (48) 99911-8524 • Documento Oficial", marg, rodapeY1);
+      doc.text("SeguraAlarm • (48) 99911-8524 • Documento Oficial", marg, rodapeY1);
       doc.text("Página 1 de 2 (Continua...)", 210 - marg, rodapeY1, { align: "right" });
 
       // ==========================================
@@ -765,7 +765,7 @@ function Documento() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
       doc.setTextColor(15, 23, 42);
-      doc.text("WS SEGURANÇA ELETRÔNICA", marg + 13, y2 + 4);
+      doc.text("SeguraAlarm", marg + 13, y2 + 4);
 
       doc.setFontSize(6.8);
       doc.setTextColor(71, 85, 105);
@@ -793,7 +793,7 @@ function Documento() {
         "Mau uso ou utilização inadequada do equipamento;",
         "Quedas, impactos ou danos físicos causados pelo cliente ou terceiros;",
         "Alterações, desmontagem ou tentativa de reparo por pessoas não autorizadas;",
-        "Modificações na instalação sem autorização da WS Segurança Eletrônica;",
+        "Modificações na instalação sem autorização da SeguraAlarm;",
         "Danos provocados intencionalmente;",
         "Problemas decorrentes de equipamentos ou instalações que não fazem parte do serviço contratado.",
       ];
@@ -819,7 +819,7 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(51, 65, 85);
-      const txtAvaliacao = "Em caso de falha, a WS Segurança Eletrônica realizará uma avaliação técnica para identificar a causa do problema e verificar se o atendimento está dentro das condições de garantia. Caso seja constatado que o problema está coberto, o reparo ou substituição será realizado sem custos adicionais ao cliente.";
+      const txtAvaliacao = "Em caso de falha, a SeguraAlarm realizará uma avaliação técnica para identificar a causa do problema e verificar se o atendimento está dentro das condições de garantia. Caso seja constatado que o problema está coberto, o reparo ou substituição será realizado sem custos adicionais ao cliente.";
       const linhasAval = doc.splitTextToSize(txtAvaliacao, wTotal);
       doc.text(linhasAval, marg, y2);
       y2 += linhasAval.length * 3.8 + 4;
@@ -834,11 +834,11 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(51, 65, 85);
-      doc.text("A garantia total fornecida pela WS Segurança Eletrônica é estruturada cumulativamente:", marg, y2);
+      doc.text("A garantia total fornecida pela SeguraAlarm é estruturada cumulativamente:", marg, y2);
       y2 += 4;
 
       // Bullets legais
-      doc.setFillColor(37, 99, 235);
+      doc.setFillColor(220, 38, 38);
       doc.circle(marg + 2, y2 - 0.9, 0.8, "F");
       doc.setFont("helvetica", "bold");
       doc.text("Garantia Legal Obrigatória (90 dias):", marg + 5, y2);
@@ -858,12 +858,12 @@ function Documento() {
       y2 += Math.max(linhasEstend.length * 3.8, 4.5) + 3;
 
       // Box Destaque de Validade Total Acordada
-      doc.setFillColor(239, 246, 255);
-      doc.setDrawColor(191, 219, 254);
+      doc.setFillColor(254, 242, 242);
+      doc.setDrawColor(254, 202, 202);
       doc.roundedRect(marg, y2, wTotal, 8, 1.5, 1.5, "FD");
       doc.setFontSize(6.8);
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(30, 58, 138);
+      doc.setTextColor(127, 29, 29);
       doc.text(`Validade Total Acordada: ${garantia.validade} (a contar de ${formatarData(cliente.criadoEm)}).`, marg + 4, y2 + 5.2);
       y2 += 11.5;
 
@@ -924,7 +924,7 @@ function Documento() {
       ];
       txtCumprimento.forEach((par) => {
         const linhas = doc.splitTextToSize(par, wTotal - 6);
-        doc.setFillColor(37, 99, 235);
+        doc.setFillColor(220, 38, 38);
         doc.circle(marg + 2, y2 - 0.9, 0.7, "F");
         doc.text(linhas, marg + 6, y2);
         y2 += linhas.length * 3.5 + 2.5;
@@ -961,7 +961,7 @@ function Documento() {
         }
       }
 
-      // Selo de Autenticidade Cartorial Oficial da WS Segurança Eletrônica
+      // Selo de Autenticidade Cartorial Oficial da SeguraAlarm
       const seloW = 74;
       const seloH = 19;
       const seloX = sign2X + (signW - seloW) / 2;
@@ -969,7 +969,7 @@ function Documento() {
 
       // Fundo papel de segurança cartorial
       doc.setFillColor(240, 249, 255);
-      doc.setDrawColor(37, 99, 235);
+      doc.setDrawColor(220, 38, 38);
       doc.setLineWidth(0.4);
       doc.roundedRect(seloX, seloY, seloW, seloH, 1.5, 1.5, "FD");
 
@@ -992,7 +992,7 @@ function Documento() {
       doc.text("WS", seloX + 4.15, seloY + 10.3, { align: "center" });
 
       // Faixa Superior "SELO DE AUTENTICIDADE"
-      doc.setFillColor(29, 78, 216); // Azul cartório
+      doc.setFillColor(185, 28, 28); // Azul cartório
       doc.roundedRect(seloX + 8.8, seloY + 0.8, seloW - 9.6, 4, 0.8, 0.8, "F");
 
       doc.setFont("helvetica", "bold");
@@ -1001,23 +1001,23 @@ function Documento() {
       doc.text("SELO DE AUTENTICIDADE", seloX + 8.8 + (seloW - 9.6) / 2, seloY + 3.6, { align: "center" });
 
       // Curvas Guilloché de Segurança no fundo direito
-      doc.setDrawColor(191, 219, 254);
+      doc.setDrawColor(254, 202, 202);
       doc.setLineWidth(0.15);
       doc.ellipse(seloX + seloW - 8, seloY + 11, 12, 6);
       doc.ellipse(seloX + seloW - 8, seloY + 11, 8, 4);
 
-      // Logo thumbnail e Dados da WS Segurança Eletrônica
+      // Logo thumbnail e Dados da SeguraAlarm
       if (logoBase64) {
         try { doc.addImage(logoBase64, "JPEG", seloX + 9.5, seloY + 5.5, 6.5, 6.5); } catch {}
       }
       doc.setFont("helvetica", "bold");
       doc.setFontSize(6.2);
       doc.setTextColor(15, 23, 42);
-      doc.text("WS SEGURANÇA ELETRÔNICA", seloX + 17, seloY + 7.8);
+      doc.text("SeguraAlarm", seloX + 17, seloY + 7.8);
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(4.5);
-      doc.setTextColor(37, 99, 235);
+      doc.setTextColor(220, 38, 38);
       doc.text("Sistemas Eletrônicos de Segurança", seloX + 17, seloY + 10.5);
 
       // Linha separadora
@@ -1028,7 +1028,7 @@ function Documento() {
       // Serial e Data de Validação
       doc.setFont("courier", "bold");
       doc.setFontSize(4.8);
-      doc.setTextColor(30, 58, 138);
+      doc.setTextColor(127, 29, 29);
       doc.text(`SELO Nº: WS-${cliente.id.slice(0, 8).toUpperCase()}`, seloX + 9.5, seloY + 15.2);
 
       doc.setFont("helvetica", "bold");
@@ -1066,7 +1066,7 @@ function Documento() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
       doc.setTextColor(15, 23, 42);
-      doc.text("WS SEGURANÇA ELETRÔNICA", sign2X + signW / 2, y2, { align: "center" });
+      doc.text("SeguraAlarm", sign2X + signW / 2, y2, { align: "center" });
 
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
@@ -1082,7 +1082,7 @@ function Documento() {
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 116, 139);
-      doc.text(`Documento oficial emitido por WS Segurança Eletrônica • (48) 99911-8524 • Emissão: ${formatarData(new Date().toISOString())}`, marg, rodapeY2);
+      doc.text(`Documento oficial emitido por SeguraAlarm • (48) 99911-8524 • Emissão: ${formatarData(new Date().toISOString())}`, marg, rodapeY2);
       doc.text("Página 2 de 2", 210 - marg, rodapeY2, { align: "right" });
 
       // ── GERAÇÃO E DOWNLOAD ──
@@ -1137,9 +1137,9 @@ function Documento() {
               variant="outline"
               size="sm"
               onClick={gerarEBaixarPDF}
-              className="border-blue-400 text-blue-600 dark:border-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950 cursor-pointer shadow-sm text-xs font-semibold"
+              className="border-red-400 text-red-600 dark:border-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 cursor-pointer shadow-sm text-xs font-semibold"
             >
-              <Download className="h-4 w-4 mr-1.5 text-blue-500" />
+              <Download className="h-4 w-4 mr-1.5 text-red-500" />
               Baixar Termo PDF
             </Button>
             <Button
@@ -1175,12 +1175,12 @@ function Documento() {
             <header className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
               <img
                 src="/logo.jpg"
-                alt="WS Segurança Eletrônica"
-                className="h-16 w-16 rounded-2xl object-cover border border-slate-200 shadow-sm ring-2 ring-blue-500/10"
+                alt="SeguraAlarm"
+                className="h-16 w-16 rounded-2xl object-cover border border-slate-200 shadow-sm ring-2 ring-red-500/10"
               />
               <div>
                 <h1 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-                  WS SEGURANÇA ELETRÔNICA
+                  SeguraAlarm
                 </h1>
                 <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">
                   Ficha de Cadastro, Valores & Termo de Garantia da Manutenção
@@ -1200,7 +1200,7 @@ function Documento() {
             {/* ── Seção 1: Dados do Cliente ── */}
             <section>
               <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
-                <FileCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <FileCheck className="h-4 w-4 text-red-600 dark:text-red-400" />
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                   1. Dados do Cliente e Instalação
                 </h2>
@@ -1217,7 +1217,7 @@ function Documento() {
             {/* ── Seção 2: Dados da Central de Alarme ── */}
             <section>
               <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
-                <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <ShieldCheck className="h-4 w-4 text-red-600 dark:text-red-400" />
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                   2. Dados do Equipamento / Central
                 </h2>
@@ -1258,7 +1258,7 @@ function Documento() {
                   </p>
                   {garantia.coberturas.length > 0 ? (
                     <div>
-                      <p className="text-base font-extrabold text-blue-700 dark:text-blue-300 mt-0.5">
+                      <p className="text-base font-extrabold text-red-700 dark:text-red-300 mt-0.5">
                         {garantia.tipoCobrancaGarantia === "total" && garantia.valorTotalGarantia
                           ? `R$ ${garantia.valorTotalGarantia.toFixed(2).replace(".", ",")} Total à Vista`
                           : garantia.valorMensalGarantia
@@ -1307,26 +1307,26 @@ function Documento() {
             )}
 
             {/* ── Seção Oficial: Termo de Garantia da Manutenção ── */}
-            <section className="rounded-xl border border-blue-200/80 bg-blue-50/40 dark:bg-blue-950/20 dark:border-blue-900/60 p-5 space-y-4">
-              <div className="flex items-center justify-between border-b border-blue-200/70 dark:border-blue-900/50 pb-3">
+            <section className="rounded-xl border border-red-200/80 bg-red-50/40 dark:bg-red-950/20 dark:border-red-900/60 p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-red-200/70 dark:border-red-900/50 pb-3">
                 <div>
-                  <h2 className="text-sm font-extrabold text-blue-950 dark:text-blue-200 uppercase tracking-wide flex items-center gap-1.5">
-                    <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <h2 className="text-sm font-extrabold text-red-950 dark:text-red-200 uppercase tracking-wide flex items-center gap-1.5">
+                    <ShieldCheck className="h-4 w-4 text-red-600 dark:text-red-400" />
                     TERMO DE GARANTIA DA MANUTENÇÃO
                   </h2>
-                  <p className="text-[11px] font-semibold text-blue-800 dark:text-blue-300">
-                    WS SEGURANÇA ELETRÔNICA
+                  <p className="text-[11px] font-semibold text-red-800 dark:text-red-300">
+                    SeguraAlarm
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="inline-block text-[11px] font-bold bg-blue-600 text-white px-2.5 py-1 rounded-md shadow-xs">
+                  <span className="inline-block text-[11px] font-bold bg-red-600 text-white px-2.5 py-1 rounded-md shadow-xs">
                     Validade: {garantia.validade}
                   </span>
                 </div>
               </div>
 
               <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                A <strong>WS Segurança Eletrônica</strong> oferece garantia sobre os serviços de manutenção realizados, conforme as condições descritas abaixo.
+                A <strong>SeguraAlarm</strong> oferece garantia sobre os serviços de manutenção realizados, conforme as condições descritas abaixo.
               </p>
 
               {/* Destaque da Modalidade de Garantia */}
@@ -1372,7 +1372,7 @@ function Documento() {
                         key={item}
                         className={`flex items-start gap-2 rounded-md p-2 text-xs transition-colors ${
                           incluso
-                            ? "bg-white dark:bg-slate-900 font-semibold text-blue-950 dark:text-blue-200 border border-blue-200 dark:border-blue-800 shadow-2xs"
+                            ? "bg-white dark:bg-slate-900 font-semibold text-red-950 dark:text-red-200 border border-red-200 dark:border-red-800 shadow-2xs"
                             : "bg-slate-100/50 dark:bg-slate-800/30 text-muted-foreground line-through opacity-60 border border-dashed border-slate-200"
                         }`}
                       >
@@ -1407,7 +1407,7 @@ function Documento() {
                   <li>Mau uso ou utilização inadequada do equipamento;</li>
                   <li>Quedas, impactos ou danos físicos causados pelo cliente ou terceiros;</li>
                   <li>Alterações, desmontagem ou tentativa de reparo por pessoas não autorizadas;</li>
-                  <li>Modificações na instalação sem autorização da WS Segurança Eletrônica;</li>
+                  <li>Modificações na instalação sem autorização da SeguraAlarm;</li>
                   <li>Danos provocados intencionalmente;</li>
                   <li>Problemas decorrentes de equipamentos ou instalações que não fazem parte do serviço contratado.</li>
                 </ul>
@@ -1419,7 +1419,7 @@ function Documento() {
                   3. AVALIAÇÃO TÉCNICA:
                 </h3>
                 <p className="text-[11px] leading-relaxed">
-                  Em caso de falha, a WS Segurança Eletrônica realizará uma avaliação técnica para identificar a causa do problema e verificar se o atendimento está dentro das condições de garantia. Caso seja constatado que o problema está coberto, o reparo ou substituição será realizado <strong>sem custos adicionais ao cliente</strong>.
+                  Em caso de falha, a SeguraAlarm realizará uma avaliação técnica para identificar a causa do problema e verificar se o atendimento está dentro das condições de garantia. Caso seja constatado que o problema está coberto, o reparo ou substituição será realizado <strong>sem custos adicionais ao cliente</strong>.
                 </p>
               </div>
 
@@ -1429,7 +1429,7 @@ function Documento() {
                   4. COMPOSIÇÃO DO PRAZO (90 DIAS LEGAIS + PRAZO ESTENDIDO):
                 </h3>
                 <p className="text-[11px] leading-relaxed">
-                  A garantia total fornecida pela <strong>WS Segurança Eletrônica</strong> é estruturada cumulativamente:
+                  A garantia total fornecida pela <strong>SeguraAlarm</strong> é estruturada cumulativamente:
                 </p>
                 <ul className="list-disc list-inside space-y-1 text-[11px] pl-1 text-slate-700 dark:text-slate-300">
                   <li>
@@ -1439,7 +1439,7 @@ function Documento() {
                     <strong>Garantia Estendida / Contratual Adicional</strong>: Prazo adicional contratado pelo cliente que se <u>soma aos 90 dias da lei</u>, assegurando cobertura contínua e reposição dos componentes selecionados no presente termo.
                   </li>
                 </ul>
-                <p className="text-[11px] font-bold text-blue-950 dark:text-blue-200 mt-1 bg-blue-100/60 dark:bg-blue-900/40 p-2 rounded border border-blue-200 dark:border-blue-800">
+                <p className="text-[11px] font-bold text-red-950 dark:text-red-200 mt-1 bg-red-100/60 dark:bg-red-900/40 p-2 rounded border border-red-200 dark:border-red-800">
                   Validade Total Acordada: {garantia.validade} (a contar de {formatarData(cliente.criadoEm)}).
                 </p>
               </div>
@@ -1466,10 +1466,10 @@ function Documento() {
               {/* 6. Cláusula de Cumprimento e Pagamento */}
               <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
                 <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase flex items-center gap-1.5">
-                  <span className="inline-block h-2 w-2 rounded-full bg-blue-500" />
+                  <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
                   6. CLÁUSULA DE CUMPRIMENTO E PAGAMENTO:
                 </h3>
-                <ul className="text-[11px] leading-relaxed space-y-1 pl-4 list-disc marker:text-blue-500">
+                <ul className="text-[11px] leading-relaxed space-y-1 pl-4 list-disc marker:text-red-500">
                   <li>
                     A <strong>CONTRATADA</strong> compromete-se a cumprir integralmente tudo o que foi acordado com o <strong>CONTRATANTE</strong>, incluindo serviços, valores, prazos, garantias e demais condições descritas neste contrato ou orçamento.
                   </li>
@@ -1510,7 +1510,7 @@ function Documento() {
                         variant="outline"
                         size="sm"
                         onClick={() => setModalAssinaturaAberto(true)}
-                        className="text-[10px] h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 cursor-pointer"
+                        className="text-[10px] h-6 px-2 text-red-600 border-red-200 hover:bg-red-50 dark:border-red-800 dark:text-red-400 cursor-pointer"
                       >
                         <PenTool className="h-2.5 w-2.5 mr-1" />
                         Refazer
@@ -1538,9 +1538,9 @@ function Documento() {
                       variant="outline"
                       size="sm"
                       onClick={() => setModalAssinaturaAberto(true)}
-                      className="border-dashed border-blue-400/90 bg-blue-50/70 hover:bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/60 text-xs font-semibold shadow-xs cursor-pointer"
+                      className="border-dashed border-red-400/90 bg-red-50/70 hover:bg-red-100 text-red-700 dark:bg-red-950/40 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-900/60 text-xs font-semibold shadow-xs cursor-pointer"
                     >
-                      <PenTool className="h-3.5 w-3.5 mr-1.5 text-blue-600 dark:text-blue-400" />
+                      <PenTool className="h-3.5 w-3.5 mr-1.5 text-red-600 dark:text-red-400" />
                       ✍️ Assinar na Tela
                     </Button>
                   </div>
@@ -1560,7 +1560,7 @@ function Documento() {
                   dataHora={`${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`}
                 />
 
-                <p className="font-bold text-slate-900 dark:text-slate-100">WS SEGURANÇA ELETRÔNICA</p>
+                <p className="font-bold text-slate-900 dark:text-slate-100">SeguraAlarm</p>
                 <p className="text-[11px] text-muted-foreground">Responsável Técnico / Emissor</p>
                 <p className="text-[10px] text-muted-foreground font-mono mt-0.5">Sistema de Alarme e Segurança</p>
               </div>
@@ -1568,7 +1568,7 @@ function Documento() {
 
             {/* ── Rodapé ── */}
             <footer className="border-t border-slate-200 dark:border-slate-800 pt-4 text-center text-[11px] text-muted-foreground">
-              <p>Documento oficial emitido por WS Segurança Eletrônica.</p>
+              <p>Documento oficial emitido por SeguraAlarm.</p>
               <p className="mt-0.5">Data de emissão: {formatarData(new Date().toISOString())}</p>
             </footer>
           </article>
