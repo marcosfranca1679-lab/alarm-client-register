@@ -51,7 +51,7 @@ async function carregarJsPDF(): Promise<any> {
 /** Obtém o logo como base64 para incluir no PDF */
 async function obterLogoBase64(): Promise<string | null> {
   try {
-    const res = await fetch("/logo.jpg");
+    const res = await fetch("/logo.png");
     if (!res.ok) return null;
     const blob = await res.blob();
     return new Promise((resolve) => {
@@ -316,7 +316,7 @@ function SeloAutenticidadeCartorio({
           {/* Logo e Nome da Empresa */}
           <div className="flex items-center gap-1.5 pt-0.5">
             <div className="bg-black rounded-full p-0.5 shrink-0">
-              <img src="/logo.jpg" alt="WS" className="h-5 w-5 rounded-full object-cover border border-red-400/80 shadow-xs" />
+              <img src="/logo.png" alt="WS" className="h-5 w-5 rounded-full object-cover border border-red-400/80 shadow-xs" />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-[9.5px] font-extrabold text-red-950 dark:text-red-100 uppercase leading-none truncate">
@@ -1177,7 +1177,7 @@ function Documento() {
             <header className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
               <div className="bg-black rounded-2xl p-1.5">
                 <img
-                  src="/logo.jpg"
+                  src="/logo.png"
                   alt="SeguraAlarm"
                   className="h-13 w-13 rounded-xl object-cover border border-slate-200 shadow-sm ring-2 ring-red-500/10"
                 />
