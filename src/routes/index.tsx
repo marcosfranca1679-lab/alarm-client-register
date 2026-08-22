@@ -410,18 +410,6 @@ function LandingPage({
               Contato
             </a>
           </nav>
-
-          <div className="flex items-center gap-3">
-            <a
-              href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento%20com%20a%20WS%20Segurança.`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold transition-all shadow-md shadow-emerald-950/40 hover:scale-102 cursor-pointer"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span>WhatsApp: {WHATSAPP_FORMATADO}</span>
-            </a>
-          </div>
         </div>
       </header>
 
