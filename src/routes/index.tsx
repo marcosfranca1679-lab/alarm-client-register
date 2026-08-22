@@ -642,11 +642,16 @@ function LandingPage({
                     <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
                       <div>
                         <p className="text-[10px] text-slate-400 font-medium">
-                          {incluirInstalacao && instalacao.id !== "nenhuma" ? "Total com InstalaÃ§Ã£o:" : "Somente Equipamento:"}
+                          {incluirInstalacao && instalacao.id !== "nenhuma" ? "Total com Instalação:" : "Somente Equipamento:"}
                         </p>
                         <p className="text-sm sm:text-base font-extrabold text-emerald-400">
                           R$ {incluirInstalacao && instalacao.id !== "nenhuma" && valorNum > 0 ? formatarMoeda(valorTotal) : (prod.valor || "Sob consulta")}
                         </p>
+                        {incluirInstalacao && instalacao.id !== "nenhuma" && valorNum > 0 && (
+                          <p className="text-[10px] text-slate-400">
+                            Equipamento: R$ {prod.valor}
+                          </p>
+                        )}
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button
@@ -2306,7 +2311,199 @@ function PainelAdministrativo({
         </main>
       )}
 
-      {/* â”€â”€ Modal Adicionar / Editar Produto â”€â”€ */}
+      {/* ── CONTEÚDO 3: GERENCIADOR DE VALORES (INSTALAÇÃO & GARANTIA) ── */}
+      {abaAtiva === "valores" && (
+        <main className="mx-auto max-w-5xl px-3 sm:px-5 py-5 sm:py-8 space-y-6">
+          {/* Cabeçalho */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-md">
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <SlidersHorizontal className="h-5 w-5 text-red-400" />
+                Configuração de Valores & Serviços de Instalação
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Altere os preços da mão de obra de cada produto, adicione novos serviços e configure a garantia estendida.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={recarregarLinhasServico}
+                className="text-xs h-9 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 cursor-pointer"
+              >
+                <RotateCcw className="h-3.5 w-3.5 mr-1" /> Descartar
+              </Button>
+              <Button
+                size="sm"
+                onClick={salvarValores}
+                disabled={salvandoValores}
+                className="text-xs h-9 bg-red-600 hover:bg-red-500 text-white font-bold cursor-pointer shadow-md"
+              >
+                <CheckCircle2 className="h-4 w-4 mr-1.5" />
+                {salvandoValores ? "Salvando..." : "Salvar na Nuvem"}
+              </Button>
+            </div>
+          </div>
+
+          {/* Seção 1: Serviços de Instalação & Mão de Obra */}
+          <section className="bg-slate-900 rounded-2xl border border-slate-800 p-5 sm:p-6 space-y-5 shadow-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+              <div>
+                <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                  <Wrench className="h-4 w-4 text-red-400" />
+                  Tabela de Serviços de Instalação Técnica
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Estes valores são vinculados automaticamente aos produtos do catálogo e calculados no pedido do cliente.
+                </p>
+              </div>
+
+              <Button
+                type="button"
+                size="sm"
+                onClick={adicionarServico}
+                className="text-xs bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-semibold cursor-pointer shrink-0"
+              >
+                <Plus className="h-3.5 w-3.5 mr-1 text-red-400" /> Novo Serviço de Instalação
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {linhasServico.map((linha, idx) => (
+                <div
+                  key={linha.id}
+                  className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 transition-all hover:border-slate-700"
+                >
+                  <div className="grid sm:grid-cols-12 gap-3 items-start">
+                    <div className="sm:col-span-6 space-y-1">
+                      <Label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        Nome do Serviço #{idx + 1}
+                      </Label>
+                      <Input
+                        value={linha.nome}
+                        onChange={(e) => atualizarLinhaServico(linha.id, "nome", e.target.value)}
+                        placeholder="Ex.: Instalação câmera IP + configuração"
+                        className="bg-slate-900 border-slate-700 text-white text-xs font-semibold"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-3 space-y-1">
+                      <Label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        Valor (R$)
+                      </Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-bold">R$</span>
+                        <Input
+                          value={linha.valor}
+                          onChange={(e) => atualizarLinhaServico(linha.id, "valor", e.target.value)}
+                          placeholder="79,99"
+                          className="bg-slate-900 border-slate-700 text-emerald-400 font-mono font-bold text-xs pl-9"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="sm:col-span-3 flex items-end justify-end pt-5 sm:pt-0">
+                      {linha.personalizado ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removerServico(linha.id)}
+                          className="text-xs text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 cursor-pointer h-9 px-3"
+                        >
+                          <Trash2 className="h-3.5 w-3.5 mr-1" /> Remover
+                        </Button>
+                      ) : (
+                        <span className="text-[10px] font-bold text-slate-500 bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                          Serviço Padrão
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-[11px] text-slate-400">
+                      Descrição do que está incluso no serviço
+                    </Label>
+                    <Input
+                      value={linha.descricao}
+                      onChange={(e) => atualizarLinhaServico(linha.id, "descricao", e.target.value)}
+                      placeholder="Ex.: Fixação física, cabeamento/Wi-Fi, configuração no app e teste de gravação."
+                      className="bg-slate-900 border-slate-700 text-slate-300 text-xs"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Seção 2: Garantia Estendida */}
+          <section className="bg-slate-900 rounded-2xl border border-slate-800 p-5 sm:p-6 space-y-4 shadow-md">
+            <div className="border-b border-slate-800 pb-3">
+              <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                Valores da Garantia Estendida (por item/mês)
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Configure os valores mensais cobrados na ficha de cadastro e termo de garantia.
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold text-white">Garantia Curta (+3 meses)</Label>
+                  <span className="text-[10px] text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Total: 6 meses</span>
+                </div>
+                <p className="text-[11px] text-slate-400">Valor cobrado por item por mês contratado</p>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-bold">R$</span>
+                  <Input
+                    value={precoGarantiaCurto}
+                    onChange={(e) => setPrecoGarantiaCurto(e.target.value)}
+                    placeholder="12,60"
+                    className="bg-slate-900 border-slate-700 text-emerald-400 font-mono font-bold text-xs pl-9"
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold text-white">Garantia Longa (+6, +9, +12 meses)</Label>
+                  <span className="text-[10px] text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Planos estendidos</span>
+                </div>
+                <p className="text-[11px] text-slate-400">Valor cobrado por item por mês contratado</p>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-bold">R$</span>
+                  <Input
+                    value={precoGarantiaLongo}
+                    onChange={(e) => setPrecoGarantiaLongo(e.target.value)}
+                    placeholder="9,99"
+                    className="bg-slate-900 border-slate-700 text-emerald-400 font-mono font-bold text-xs pl-9"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Botão de Ação Inferior */}
+          <div className="flex justify-end pt-2">
+            <Button
+              size="lg"
+              onClick={salvarValores}
+              disabled={salvandoValores}
+              className="bg-red-600 hover:bg-red-500 text-white font-bold cursor-pointer shadow-lg px-8 gap-2"
+            >
+              <CheckCircle2 className="h-5 w-5" />
+              {salvandoValores ? "Salvando na Nuvem..." : "Salvar Todos os Valores na Nuvem"}
+            </Button>
+          </div>
+        </main>
+      )}
+
+      {/* ── Modal Adicionar / Editar Produto ── */}
       <Dialog open={modalProdutoAberto} onOpenChange={setModalProdutoAberto}>
         <DialogContent className="sm:max-w-md max-h-[85vh] flex flex-col bg-slate-900 border-slate-800 text-slate-100 p-0 overflow-hidden">
           <DialogHeader className="p-5 pb-2 shrink-0 border-b border-slate-800/80">
