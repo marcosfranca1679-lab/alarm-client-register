@@ -380,7 +380,7 @@ function LandingPage({
           <div className="flex items-center gap-3.5">
             <div className="bg-black rounded-2xl p-1">
               <img
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="SeguraAlarm"
                 className="h-9 w-9 rounded-xl object-cover border border-red-500/30 shadow-md"
               />
@@ -881,7 +881,7 @@ function LandingPage({
             <div className="flex items-center gap-3">
               <div className="bg-black rounded-xl p-1">
                 <img
-                  src="/logo.jpg"
+                  src="/logo.png"
                   alt="SeguraAlarm"
                   className="h-10 w-10 rounded-lg object-cover border border-red-500/30"
                 />
@@ -916,7 +916,7 @@ function LandingPage({
           <div className="flex items-center gap-3 text-center md:text-left">
             <div className="bg-black rounded-xl p-1">
               <img
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="SeguraAlarm"
                 className="h-7 w-7 rounded-lg object-cover border border-slate-700"
               />
@@ -1548,7 +1548,7 @@ function PainelAdministrativo({
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="bg-black rounded-xl p-1 shrink-0">
               <img
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="SeguraAlarm"
                 className="h-7 w-7 sm:h-9 sm:w-9 rounded-lg object-cover border border-red-400/30 shadow-sm"
               />
@@ -2439,7 +2439,7 @@ function PainelAdministrativo({
                     { label: "Intelbras", src: "/intelbras.png" },
                     { label: "JFL", src: "/jfl.png" },
                     { label: "Elgin", src: "/elgin.png" },
-                    { label: "Logo WS", src: "/logo.jpg" },
+                    { label: "Logo WS", src: "/logo.png" },
                   ].map((item) => (
                     <button
                       key={item.label}
