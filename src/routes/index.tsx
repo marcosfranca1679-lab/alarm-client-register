@@ -385,7 +385,7 @@ function LandingPage({
             />
             <div>
               <span className="text-base font-extrabold tracking-tight text-white block leading-tight">
-                SEGURAALARM
+                SeguraAlarm
               </span>
               <span className="text-[11px] text-red-400 font-medium tracking-wide">
                 Soluções Inteligentes em Alarmes & CFTV
@@ -883,7 +883,7 @@ function LandingPage({
                 className="h-12 w-12 rounded-xl object-cover border border-red-500/30"
               />
               <div>
-                <h3 className="text-base font-extrabold text-white">SEGURAALARM</h3>
+                <h3 className="text-base font-extrabold text-white">SeguraAlarm</h3>
                 <p className="text-xs text-red-400 font-medium">WhatsApp: {WHATSAPP_FORMATADO}</p>
               </div>
             </div>
@@ -916,7 +916,7 @@ function LandingPage({
               className="h-9 w-9 rounded-xl object-cover border border-slate-700"
             />
             <div>
-              <p className="text-xs font-bold text-white">SEGURAALARM</p>
+              <p className="text-xs font-bold text-white">SeguraAlarm</p>
               <p className="text-[11px] text-slate-500">
                 © {new Date().getFullYear()} Todos os direitos reservados. WhatsApp: {WHATSAPP_FORMATADO}
               </p>

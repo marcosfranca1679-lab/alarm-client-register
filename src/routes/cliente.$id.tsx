@@ -318,7 +318,7 @@ function SeloAutenticidadeCartorio({
             <img src="/logo.jpg" alt="WS" className="h-6 w-6 rounded-full object-cover border border-red-400/80 shadow-xs shrink-0" />
             <div className="min-w-0 flex-1">
               <p className="text-[9.5px] font-extrabold text-red-950 dark:text-red-100 uppercase leading-none truncate">
-                SEGURAALARM
+                SeguraAlarm
               </p>
               <p className="text-[7.5px] text-red-700 dark:text-red-400 leading-tight">
                 Sistemas Eletrônicos de Segurança
@@ -443,7 +443,7 @@ function Documento() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
       doc.setTextColor(15, 23, 42);
-      doc.text("SEGURAALARM", textX, y + 4.5);
+      doc.text("SeguraAlarm", textX, y + 4.5);
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(7.5);
@@ -765,7 +765,7 @@ function Documento() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
       doc.setTextColor(15, 23, 42);
-      doc.text("SEGURAALARM", marg + 13, y2 + 4);
+      doc.text("SeguraAlarm", marg + 13, y2 + 4);
 
       doc.setFontSize(6.8);
       doc.setTextColor(71, 85, 105);
@@ -1013,7 +1013,7 @@ function Documento() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(6.2);
       doc.setTextColor(15, 23, 42);
-      doc.text("SEGURAALARM", seloX + 17, seloY + 7.8);
+      doc.text("SeguraAlarm", seloX + 17, seloY + 7.8);
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(4.5);
@@ -1066,7 +1066,7 @@ function Documento() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
       doc.setTextColor(15, 23, 42);
-      doc.text("SEGURAALARM", sign2X + signW / 2, y2, { align: "center" });
+      doc.text("SeguraAlarm", sign2X + signW / 2, y2, { align: "center" });
 
       doc.setFontSize(6.5);
       doc.setFont("helvetica", "normal");
@@ -1180,7 +1180,7 @@ function Documento() {
               />
               <div>
                 <h1 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-                  SEGURAALARM
+                  SeguraAlarm
                 </h1>
                 <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">
                   Ficha de Cadastro, Valores & Termo de Garantia da Manutenção
@@ -1315,7 +1315,7 @@ function Documento() {
                     TERMO DE GARANTIA DA MANUTENÇÃO
                   </h2>
                   <p className="text-[11px] font-semibold text-red-800 dark:text-red-300">
-                    SEGURAALARM
+                    SeguraAlarm
                   </p>
                 </div>
                 <div className="text-right">
@@ -1560,7 +1560,7 @@ function Documento() {
                   dataHora={`${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`}
                 />
 
-                <p className="font-bold text-slate-900 dark:text-slate-100">SEGURAALARM</p>
+                <p className="font-bold text-slate-900 dark:text-slate-100">SeguraAlarm</p>
                 <p className="text-[11px] text-muted-foreground">Responsável Técnico / Emissor</p>
                 <p className="text-[10px] text-muted-foreground font-mono mt-0.5">Sistema de Alarme e Segurança</p>
               </div>
