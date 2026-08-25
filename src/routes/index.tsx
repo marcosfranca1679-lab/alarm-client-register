@@ -726,62 +726,10 @@ function LandingPage({
         </div>
       </section>
 
-      {/* ── Seção de Garantia & Diferenciais ── */}
-      <section id="garantia" className="py-20 bg-slate-900/40 border-b border-slate-800/80">
-        <div className="mx-auto max-w-6xl px-5 grid md:grid-cols-2 gap-10 items-center">
-          <div className="space-y-5">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-3 py-1 rounded-full">
-              Garantia & Confiança
-            </span>
-            <h2 className="text-3xl font-black text-white leading-tight">
-              Garantia Legal de 90 Dias (CDC) + Planos Estendidos
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Todos os nossos serviços contam com garantia legal obrigatória de 90 dias conforme o
-              Código de Defesa do Consumidor, com opção de garantia estendida por apenas R$ 12,60 ou
-              R$ 9,99/mês por item.
-            </p>
-
-            <div className="space-y-3 pt-2">
-              <div className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                  <Check className="h-3.5 w-3.5" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white">Protocolo e Ficha de Cadastro</h4>
-                  <p className="text-[11px] text-slate-400">
-                    Cada cliente recebe protocolo de atendimento e documento oficial com histórico.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                  <Check className="h-3.5 w-3.5" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white">Cobertura contra Raios e Surtos</h4>
-                  <p className="text-[11px] text-slate-400">
-                    Opção de garantia técnica com reposição de componentes danificados por descargas.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                  <Check className="h-3.5 w-3.5" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white">Troca de Baterias Inclusa</h4>
-                  <p className="text-[11px] text-slate-400">
-                    Planos com manutenção e reposição periódica de pilhas e baterias.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="contato" className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-8 space-y-6 shadow-xl">
+      {/* ── Seção de Contato ── */}
+      <section id="contato" className="py-20 bg-slate-900/40 border-b border-slate-800/80">
+        <div className="mx-auto max-w-6xl px-5 flex justify-center">
+          <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-8 space-y-6 shadow-xl">
             <div className="flex items-center gap-3">
               <img
                 src="/logo.png"
