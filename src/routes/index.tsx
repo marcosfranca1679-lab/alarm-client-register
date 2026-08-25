@@ -400,9 +400,6 @@ function LandingPage({
             <a href="#marcas" className="hover:text-red-400 transition-colors">
               Marcas
             </a>
-            <a href="#garantia" className="hover:text-red-400 transition-colors">
-              Garantia
-            </a>
             <a href="#contato" className="hover:text-red-400 transition-colors">
               Contato
             </a>
