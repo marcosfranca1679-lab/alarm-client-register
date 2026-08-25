@@ -469,6 +469,29 @@ function LandingPage({
         </div>
       </section>
 
+      {/* ── Logo SeguraAlarm em Destaque ── */}
+      <section className="py-16 md:py-24 bg-slate-950 border-b border-slate-800/80 overflow-hidden">
+        <div className="mx-auto max-w-6xl px-5 flex flex-col items-center text-center">
+          <div className="relative group">
+            {/* Moldura com brilho */}
+            <div className="absolute -inset-1 rounded-[2rem] bg-gradient-to-tr from-red-600 via-red-400 to-amber-400 opacity-75 blur-sm group-hover:opacity-100 transition duration-500" />
+            <div className="relative rounded-[1.8rem] border-4 border-slate-800 bg-black p-6 md:p-10 shadow-2xl shadow-red-950/40">
+              <img
+                src="/logo.png"
+                alt="SeguraAlarm"
+                className="h-40 w-40 sm:h-56 sm:w-56 md:h-72 md:w-72 object-contain drop-shadow-2xl"
+              />
+            </div>
+          </div>
+          <p className="mt-6 text-lg md:text-2xl font-black text-white tracking-tight">
+            SeguraAlarm
+          </p>
+          <p className="mt-1 text-xs md:text-sm text-slate-400 font-medium">
+            Instalação e manutenção de câmeras e alarmes residenciais
+          </p>
+        </div>
+      </section>
+
       {/* ── Vitrine / Catálogo de Produtos e Banners ── */}
       <section id="produtos" className="py-20 bg-slate-950 border-b border-slate-800/80">
         <div className="mx-auto max-w-6xl px-5 space-y-10">
