@@ -421,9 +421,9 @@ function LandingPage({
             </div>
 
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
-              A tranquilidade que a sua família merece, com a{" "}
+              Instalação e manutenção de{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-300">
-                tecnologia mais confiável.
+                câmera e alarmes residencial.
               </span>
             </h1>
 
