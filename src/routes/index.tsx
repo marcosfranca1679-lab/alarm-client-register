@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
+import bannerCamerasAsset from "@/assets/banner-cameras.png.asset.json";
+import bannerAlarmesAsset from "@/assets/banner-alarmes.png.asset.json";
 import {
   Search,
   Trash2,
