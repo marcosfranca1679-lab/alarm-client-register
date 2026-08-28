@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
+import bannerCamerasAsset from "@/assets/banner-cameras.png.asset.json";
+import bannerAlarmesAsset from "@/assets/banner-alarmes.png.asset.json";
 import {
   Search,
   Trash2,
@@ -466,6 +468,30 @@ function LandingPage({
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* ── Banners Promocionais em Destaque ── */}
+      <section className="py-10 md:py-16 bg-slate-950 border-b border-slate-800/80">
+        <div className="mx-auto max-w-6xl px-5 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="relative group rounded-2xl border-2 border-slate-800 bg-black overflow-hidden shadow-2xl shadow-red-950/30 hover:border-red-500/60 transition-all">
+              <div className="absolute -inset-0.5 bg-gradient-to-tr from-red-600/40 to-amber-500/40 opacity-0 group-hover:opacity-100 blur-md transition duration-500" />
+              <img
+                src={bannerCamerasAsset.url}
+                alt="Câmeras de Segurança SeguraAlarm"
+                className="relative w-full h-auto object-contain"
+              />
+            </div>
+            <div className="relative group rounded-2xl border-2 border-slate-800 bg-black overflow-hidden shadow-2xl shadow-red-950/30 hover:border-red-500/60 transition-all">
+              <div className="absolute -inset-0.5 bg-gradient-to-tr from-red-600/40 to-amber-500/40 opacity-0 group-hover:opacity-100 blur-md transition duration-500" />
+              <img
+                src={bannerAlarmesAsset.url}
+                alt="Alarmes Residenciais SeguraAlarm"
+                className="relative w-full h-auto object-contain"
+              />
+            </div>
+          </div>
         </div>
       </section>
 
