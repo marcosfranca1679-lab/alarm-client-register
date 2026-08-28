@@ -470,23 +470,23 @@ function LandingPage({
       </section>
 
       {/* ── Banners Promocionais em Destaque ── */}
-      <section className="py-10 md:py-16 bg-slate-950 border-b border-slate-800/80">
-        <div className="mx-auto max-w-6xl px-5 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="relative group rounded-2xl border-2 border-slate-800 bg-black overflow-hidden shadow-2xl shadow-red-950/30 hover:border-red-500/60 transition-all">
-              <div className="absolute -inset-0.5 bg-gradient-to-tr from-red-600/40 to-amber-500/40 opacity-0 group-hover:opacity-100 blur-md transition duration-500" />
+      <section className="py-8 md:py-14 bg-slate-950 border-b border-slate-800/80">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            <div className="relative group rounded-3xl border-2 border-slate-800 bg-black overflow-hidden shadow-2xl shadow-red-950/40 hover:border-red-500/70 transition-all">
+              <div className="absolute -inset-1 bg-gradient-to-tr from-red-600/50 to-amber-500/50 opacity-0 group-hover:opacity-100 blur-lg transition duration-500" />
               <img
                 src="/banner-cameras.png"
                 alt="Câmeras de Segurança SeguraAlarm"
-                className="relative w-full h-auto object-contain"
+                className="relative w-full h-auto object-cover sm:object-contain transition-transform duration-300 group-hover:scale-[1.02]"
               />
             </div>
-            <div className="relative group rounded-2xl border-2 border-slate-800 bg-black overflow-hidden shadow-2xl shadow-red-950/30 hover:border-red-500/60 transition-all">
-              <div className="absolute -inset-0.5 bg-gradient-to-tr from-red-600/40 to-amber-500/40 opacity-0 group-hover:opacity-100 blur-md transition duration-500" />
+            <div className="relative group rounded-3xl border-2 border-slate-800 bg-black overflow-hidden shadow-2xl shadow-red-950/40 hover:border-red-500/70 transition-all">
+              <div className="absolute -inset-1 bg-gradient-to-tr from-red-600/50 to-amber-500/50 opacity-0 group-hover:opacity-100 blur-lg transition duration-500" />
               <img
                 src="/banner-alarmes.png"
                 alt="Alarmes Residenciais SeguraAlarm"
-                className="relative w-full h-auto object-contain"
+                className="relative w-full h-auto object-cover sm:object-contain transition-transform duration-300 group-hover:scale-[1.02]"
               />
             </div>
           </div>
@@ -603,17 +603,17 @@ function LandingPage({
                       }}
                     >
                       {/* Imagem / Banner do Produto */}
-                      <div className="relative h-44 w-full rounded-xl bg-white p-3 flex items-center justify-center overflow-hidden shadow-sm">
+                      <div className="relative h-60 sm:h-72 w-full rounded-xl bg-white p-3 flex items-center justify-center overflow-hidden shadow-sm">
                         <img
                           src={prod.imagemUrl || "/intelbras.png"}
                           alt={prod.nome}
-                          className="max-h-32 max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-105"
+                          className="max-h-52 sm:max-h-60 max-w-[95%] object-contain transition-transform duration-300 group-hover:scale-105"
                         />
-                        <span className="absolute top-2.5 left-2.5 text-[10px] font-bold bg-slate-900/90 text-white px-2 py-0.5 rounded-md shadow">
+                        <span className="absolute top-3 left-3 text-xs font-bold bg-slate-900/90 text-white px-2.5 py-1 rounded-md shadow">
                           {prod.categoria}
                         </span>
                         {prod.destaque && (
-                          <span className="absolute top-2.5 right-2.5 text-[10px] font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md shadow">
+                          <span className="absolute top-3 right-3 text-xs font-black bg-amber-400 text-slate-950 px-2.5 py-1 rounded-md shadow">
                             ★ Destaque
                           </span>
                         )}
@@ -621,7 +621,7 @@ function LandingPage({
                           <img
                             src={obterLogoMarca(prod.marca)}
                             alt={prod.marca ?? ""}
-                            className="absolute bottom-2 right-2 h-5 w-auto object-contain bg-slate-900/90 rounded px-1.5 py-0.5 shadow"
+                            className="absolute bottom-2.5 right-2.5 h-6 w-auto object-contain bg-slate-900/90 rounded px-2 py-0.5 shadow"
                           />
                         )}
                       </div>
@@ -839,11 +839,11 @@ function LandingPage({
         <DialogContent className="sm:max-w-lg max-h-[85vh] bg-slate-900 border-slate-800 text-slate-100 p-0 overflow-hidden flex flex-col">
           {produtoDetalhe && (
             <div className="flex flex-col flex-1 overflow-hidden">
-              <div className="relative h-60 w-full bg-white flex items-center justify-center p-6 border-b border-slate-800 shrink-0">
+              <div className="relative h-72 sm:h-80 w-full bg-white flex items-center justify-center p-6 border-b border-slate-800 shrink-0">
                 <img
                   src={produtoDetalhe.imagemUrl || "/intelbras.png"}
                   alt={produtoDetalhe.nome}
-                  className="max-h-48 max-w-[90%] object-contain"
+                  className="max-h-60 sm:max-h-72 max-w-[95%] object-contain"
                 />
                 <span className="absolute top-4 left-4 text-xs font-bold bg-slate-900/90 text-white px-3 py-1 rounded-lg shadow">
                   {produtoDetalhe.categoria}
