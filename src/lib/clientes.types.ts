@@ -179,7 +179,6 @@ export const CATEGORIAS_PRODUTO = [
   "Câmeras CFTV",
   "Sensores & Barreiras",
   "Dispositivos Smart & Automação",
-  "Cerca Elétrica",
   "Baterias & Acessórios",
 ];
 

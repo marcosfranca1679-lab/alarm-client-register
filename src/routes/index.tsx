@@ -373,7 +373,18 @@ function LandingPage({
 
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen text-slate-900 relative">
+      {/* ── Imagem de fundo com degradê branco ── */}
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
+        style={{ backgroundImage: "url('/residencia-fundo.jpg')" }}
+        aria-hidden="true"
+      />
+      <div
+        className="fixed inset-0 z-0 bg-gradient-to-b from-white/90 via-white/80 to-white/90"
+        aria-hidden="true"
+      />
+
       {/* ── Top Bar / Header ── */}
       <header className="sticky top-0 z-40 bg-black border-b border-slate-800">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
@@ -419,9 +430,9 @@ function LandingPage({
               </span>
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-              Trabalho com instalação e manutenção de alarmes, câmeras e cercas elétricas para
-              residências. Atendimento direto, sem burocracia e com garantia.
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed max-w-2xl">
+              Trabalho com instalação e manutenção de alarmes e câmeras para residências.
+              Atendimento direto, sem burocracia e com garantia.
             </p>
 
             <div className="flex flex-wrap items-center gap-3.5 pt-2">
