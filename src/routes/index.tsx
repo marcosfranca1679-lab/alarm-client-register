@@ -412,22 +412,16 @@ function LandingPage({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-900/20 via-slate-50 to-slate-50 pointer-events-none" />
         <div className="mx-auto max-w-6xl px-5 relative z-10">
           <div className="max-w-3xl space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-3.5 py-1 text-xs font-semibold text-red-300">
-              <ShieldCheck className="h-4 w-4 text-red-400" />
-              <span>Proteção Patrimonial e Residencial de Alto Padrão</span>
-            </div>
-
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-tight">
               Instalação e manutenção de{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-300">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-400">
                 câmera e alarmes residencial.
               </span>
             </h1>
 
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-              Instalação, manutenção preventiva e suporte especializado para centrais de alarme,
-              câmeras de monitoramento CFTV e barreiras perimetrais. Atendimento com agilidade,
-              equipamentos homologados e garantia por escrito.
+              Trabalho com instalação e manutenção de alarmes, câmeras e cercas elétricas para
+              residências. Atendimento direto, sem burocracia e com garantia.
             </p>
 
             <div className="flex flex-wrap items-center gap-3.5 pt-2">
@@ -445,22 +439,17 @@ function LandingPage({
                 href="#produtos"
                 className="inline-flex items-center gap-2 rounded-xl bg-slate-200/80 hover:bg-slate-200 text-slate-800 border border-slate-300 px-5 py-3 text-sm font-semibold transition-colors cursor-pointer"
               >
-                <Package className="h-4 w-4 text-red-400" />
-                <span>Ver Produtos & Banners</span>
+                <span>Ver Produtos</span>
               </a>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 pt-8 border-t border-slate-200/80 max-w-lg">
+            <div className="grid grid-cols-2 gap-4 pt-8 border-t border-slate-200/80 max-w-sm">
               <div>
                 <p className="text-xl font-extrabold text-slate-900">+500</p>
                 <p className="text-[11px] text-slate-600 font-medium">Instalações Realizadas</p>
               </div>
               <div>
-                <p className="text-xl font-extrabold text-red-400">100%</p>
-                <p className="text-[11px] text-slate-600 font-medium">Garantia Registrada</p>
-              </div>
-              <div>
-                <p className="text-xl font-extrabold text-emerald-400">24/7</p>
+                <p className="text-xl font-extrabold text-emerald-500">24/7</p>
                 <p className="text-[11px] text-slate-600 font-medium">Suporte Técnico</p>
               </div>
             </div>
