@@ -375,7 +375,7 @@ function LandingPage({
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* ── Top Bar / Header ── */}
-      <header className="sticky top-0 z-40 bg-slate-50/85 backdrop-blur-md border-b border-slate-200/80">
+      <header className="sticky top-0 z-40 bg-black border-b border-slate-800">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3.5">
             <img
@@ -384,23 +384,23 @@ function LandingPage({
               className="h-10 w-10 object-contain"
             />
             <div>
-              <span className="text-base font-extrabold tracking-tight text-slate-900 block leading-tight">
+              <span className="text-base font-extrabold tracking-tight text-white block leading-tight">
                 SeguraAlarm
               </span>
               <span className="text-[11px] text-red-400 font-medium tracking-wide">
-                Soluções Inteligentes em Alarmes & CFTV
+                Alarmes e Câmeras
               </span>
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-700">
-            <a href="#produtos" className="hover:text-red-400 transition-colors flex items-center gap-1">
-              <Package className="h-3.5 w-3.5 text-red-400" /> Produtos & Banners
+          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
+            <a href="#produtos" className="hover:text-white transition-colors">
+              Produtos
             </a>
-            <a href="#marcas" className="hover:text-red-400 transition-colors">
+            <a href="#marcas" className="hover:text-white transition-colors">
               Marcas
             </a>
-            <a href="#contato" className="hover:text-red-400 transition-colors">
+            <a href="#contato" className="hover:text-white transition-colors">
               Contato
             </a>
           </nav>
@@ -412,22 +412,16 @@ function LandingPage({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-900/20 via-slate-50 to-slate-50 pointer-events-none" />
         <div className="mx-auto max-w-6xl px-5 relative z-10">
           <div className="max-w-3xl space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-3.5 py-1 text-xs font-semibold text-red-300">
-              <ShieldCheck className="h-4 w-4 text-red-400" />
-              <span>Proteção Patrimonial e Residencial de Alto Padrão</span>
-            </div>
-
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-tight">
               Instalação e manutenção de{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-300">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-400">
                 câmera e alarmes residencial.
               </span>
             </h1>
 
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-              Instalação, manutenção preventiva e suporte especializado para centrais de alarme,
-              câmeras de monitoramento CFTV e barreiras perimetrais. Atendimento com agilidade,
-              equipamentos homologados e garantia por escrito.
+              Trabalho com instalação e manutenção de alarmes, câmeras e cercas elétricas para
+              residências. Atendimento direto, sem burocracia e com garantia.
             </p>
 
             <div className="flex flex-wrap items-center gap-3.5 pt-2">
@@ -445,22 +439,17 @@ function LandingPage({
                 href="#produtos"
                 className="inline-flex items-center gap-2 rounded-xl bg-slate-200/80 hover:bg-slate-200 text-slate-800 border border-slate-300 px-5 py-3 text-sm font-semibold transition-colors cursor-pointer"
               >
-                <Package className="h-4 w-4 text-red-400" />
-                <span>Ver Produtos & Banners</span>
+                <span>Ver Produtos</span>
               </a>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 pt-8 border-t border-slate-200/80 max-w-lg">
+            <div className="grid grid-cols-2 gap-4 pt-8 border-t border-slate-200/80 max-w-sm">
               <div>
                 <p className="text-xl font-extrabold text-slate-900">+500</p>
                 <p className="text-[11px] text-slate-600 font-medium">Instalações Realizadas</p>
               </div>
               <div>
-                <p className="text-xl font-extrabold text-red-400">100%</p>
-                <p className="text-[11px] text-slate-600 font-medium">Garantia Registrada</p>
-              </div>
-              <div>
-                <p className="text-xl font-extrabold text-emerald-400">24/7</p>
+                <p className="text-xl font-extrabold text-emerald-500">24/7</p>
                 <p className="text-[11px] text-slate-600 font-medium">Suporte Técnico</p>
               </div>
             </div>
@@ -521,14 +510,9 @@ function LandingPage({
         <div className="mx-auto max-w-6xl px-5 space-y-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="space-y-2 max-w-xl">
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-red-400 bg-red-950/60 border border-red-800/60 px-3 py-1 rounded-full">
-                <Sparkles className="h-3.5 w-3.5 text-red-400" />
-                <span>Nossos Produtos & Equipamentos</span>
-              </div>
-              <h2 className="text-3xl font-black text-slate-900">Catálogo de Equipamentos</h2>
+              <h2 className="text-3xl font-black text-slate-900">Produtos</h2>
               <p className="text-xs sm:text-sm text-slate-600">
-                Centrais de alarme, câmeras, sensores e acessórios com os melhores preços e pronta
-                instalação.
+                Centrais de alarme, câmeras, sensores e acessórios com instalação inclusa.
               </p>
             </div>
 
@@ -536,10 +520,10 @@ function LandingPage({
               href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20consultar%20um%20produto%20específico.`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 border border-emerald-800/60 px-4 py-2 rounded-xl transition-colors"
+              className="inline-flex items-center gap-2 text-xs font-bold text-emerald-600 hover:text-emerald-500 bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-xl transition-colors"
             >
               <MessageCircle className="h-4 w-4" />
-              <span>Pedir orçamento personalizado no WhatsApp</span>
+              <span>Orçamento no WhatsApp</span>
             </a>
           </div>
 
@@ -708,15 +692,11 @@ function LandingPage({
 {/* ── Marcas Parceiras / Homologadas ── */}
 <section id="marcas" className="py-16 bg-slate-100/50 border-b border-slate-200/80">
         <div className="mx-auto max-w-6xl px-5 text-center space-y-6">
-          <p className="text-xs font-bold uppercase tracking-widest text-red-400">
-            Equipamentos Homologados & Linhas Oficiais
-          </p>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-            Trabalhamos com as marcas líderes do mercado
+            Marcas que trabalho
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-            Utilizamos exclusivamente componentes originais com garantia de fábrica, alta
-            durabilidade e compatibilidade com aplicativos no celular.
+            Equipamentos originais com garantia de fábrica.
           </p>
 
           <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto pt-4">
@@ -729,11 +709,7 @@ function LandingPage({
                   className="max-h-12 w-auto object-contain transition-transform group-hover:scale-105"
                 />
               </div>
-              <h3 className="text-sm font-bold text-slate-900">Centrais de Alarme & CFTV Intelbras</h3>
-              <p className="mt-1 text-xs text-slate-600 text-center leading-relaxed">
-                Linhas AMT 8000, AMT 4010, câmeras IP, DVRs e sensores inteligentes com controle por
-                app.
-              </p>
+              <h3 className="text-sm font-bold text-slate-900">Intelbras</h3>
             </div>
 
             {/* Card JFL */}
@@ -745,11 +721,7 @@ function LandingPage({
                   className="max-h-14 w-auto object-contain rounded-lg transition-transform group-hover:scale-105"
                 />
               </div>
-              <h3 className="text-sm font-bold text-slate-900">Sistemas de Alarme JFL</h3>
-              <p className="mt-1 text-xs text-slate-600 text-center leading-relaxed">
-                Centrais Active 20, SmartCloud 18, eletrificadores perimetrais e sensores de alta
-                precisão.
-              </p>
+              <h3 className="text-sm font-bold text-slate-900">JFL</h3>
             </div>
 
             {/* Card Elgin */}
@@ -761,10 +733,7 @@ function LandingPage({
                   className="max-h-12 w-auto object-contain rounded-lg transition-transform group-hover:scale-105"
                 />
               </div>
-              <h3 className="text-sm font-bold text-slate-900">Dispositivos & Automação Elgin</h3>
-              <p className="mt-1 text-xs text-slate-600 text-center leading-relaxed">
-                Fechaduras digitais, câmeras inteligentes, lâmpadas smart, tomadas e automação residencial.
-              </p>
+              <h3 className="text-sm font-bold text-slate-900">Elgin</h3>
             </div>
           </div>
         </div>
