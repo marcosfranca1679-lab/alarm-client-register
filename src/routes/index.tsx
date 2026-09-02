@@ -692,15 +692,11 @@ function LandingPage({
 {/* ── Marcas Parceiras / Homologadas ── */}
 <section id="marcas" className="py-16 bg-slate-100/50 border-b border-slate-200/80">
         <div className="mx-auto max-w-6xl px-5 text-center space-y-6">
-          <p className="text-xs font-bold uppercase tracking-widest text-red-400">
-            Equipamentos Homologados & Linhas Oficiais
-          </p>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-            Trabalhamos com as marcas líderes do mercado
+            Marcas que trabalho
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
-            Utilizamos exclusivamente componentes originais com garantia de fábrica, alta
-            durabilidade e compatibilidade com aplicativos no celular.
+            Equipamentos originais com garantia de fábrica.
           </p>
 
           <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto pt-4">
@@ -713,11 +709,7 @@ function LandingPage({
                   className="max-h-12 w-auto object-contain transition-transform group-hover:scale-105"
                 />
               </div>
-              <h3 className="text-sm font-bold text-slate-900">Centrais de Alarme & CFTV Intelbras</h3>
-              <p className="mt-1 text-xs text-slate-600 text-center leading-relaxed">
-                Linhas AMT 8000, AMT 4010, câmeras IP, DVRs e sensores inteligentes com controle por
-                app.
-              </p>
+              <h3 className="text-sm font-bold text-slate-900">Intelbras</h3>
             </div>
 
             {/* Card JFL */}
@@ -729,11 +721,7 @@ function LandingPage({
                   className="max-h-14 w-auto object-contain rounded-lg transition-transform group-hover:scale-105"
                 />
               </div>
-              <h3 className="text-sm font-bold text-slate-900">Sistemas de Alarme JFL</h3>
-              <p className="mt-1 text-xs text-slate-600 text-center leading-relaxed">
-                Centrais Active 20, SmartCloud 18, eletrificadores perimetrais e sensores de alta
-                precisão.
-              </p>
+              <h3 className="text-sm font-bold text-slate-900">JFL</h3>
             </div>
 
             {/* Card Elgin */}
@@ -745,10 +733,7 @@ function LandingPage({
                   className="max-h-12 w-auto object-contain rounded-lg transition-transform group-hover:scale-105"
                 />
               </div>
-              <h3 className="text-sm font-bold text-slate-900">Dispositivos & Automação Elgin</h3>
-              <p className="mt-1 text-xs text-slate-600 text-center leading-relaxed">
-                Fechaduras digitais, câmeras inteligentes, lâmpadas smart, tomadas e automação residencial.
-              </p>
+              <h3 className="text-sm font-bold text-slate-900">Elgin</h3>
             </div>
           </div>
         </div>
