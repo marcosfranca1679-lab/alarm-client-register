@@ -510,14 +510,9 @@ function LandingPage({
         <div className="mx-auto max-w-6xl px-5 space-y-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="space-y-2 max-w-xl">
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-red-400 bg-red-950/60 border border-red-800/60 px-3 py-1 rounded-full">
-                <Sparkles className="h-3.5 w-3.5 text-red-400" />
-                <span>Nossos Produtos & Equipamentos</span>
-              </div>
-              <h2 className="text-3xl font-black text-slate-900">Catálogo de Equipamentos</h2>
+              <h2 className="text-3xl font-black text-slate-900">Produtos</h2>
               <p className="text-xs sm:text-sm text-slate-600">
-                Centrais de alarme, câmeras, sensores e acessórios com os melhores preços e pronta
-                instalação.
+                Centrais de alarme, câmeras, sensores e acessórios com instalação inclusa.
               </p>
             </div>
 
@@ -525,10 +520,10 @@ function LandingPage({
               href={`https://wa.me/${WHATSAPP_NUMERO}?text=Olá!%20Gostaria%20de%20consultar%20um%20produto%20específico.`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 border border-emerald-800/60 px-4 py-2 rounded-xl transition-colors"
+              className="inline-flex items-center gap-2 text-xs font-bold text-emerald-600 hover:text-emerald-500 bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-xl transition-colors"
             >
               <MessageCircle className="h-4 w-4" />
-              <span>Pedir orçamento personalizado no WhatsApp</span>
+              <span>Orçamento no WhatsApp</span>
             </a>
           </div>
 
