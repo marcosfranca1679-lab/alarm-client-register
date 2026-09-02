@@ -197,9 +197,9 @@ function ModalAssinaturaDigital({
 
   return (
     <Dialog open={aberto} onOpenChange={(open) => !open && onFechar()}>
-      <DialogContent className="sm:max-w-md p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl">
+      <DialogContent className="sm:max-w-md p-5 bg-white dark:bg-slate-100 border border-slate-800 dark:border-slate-200 shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-slate-100">
+          <DialogTitle className="flex items-center gap-2 text-base font-bold text-slate-100 dark:text-slate-900">
             <PenTool className="h-5 w-5 text-red-600 dark:text-red-400" />
             Assinatura na Tela
           </DialogTitle>
@@ -209,7 +209,7 @@ function ModalAssinaturaDigital({
         </DialogHeader>
 
         <div className="space-y-3 py-1">
-          <div className="rounded-xl border-2 border-dashed border-red-400/80 bg-slate-50 dark:bg-slate-950 p-1 relative shadow-inner">
+          <div className="rounded-xl border-2 border-dashed border-red-400/80 bg-slate-950 dark:bg-slate-50 p-1 relative shadow-inner">
             <canvas
               ref={canvasRef}
               width={460}
@@ -221,11 +221,11 @@ function ModalAssinaturaDigital({
               onTouchStart={iniciarDesenho}
               onTouchMove={desenhar}
               onTouchEnd={finalizarDesenho}
-              className="w-full h-44 bg-white dark:bg-slate-950 rounded-lg cursor-crosshair block"
+              className="w-full h-44 bg-white dark:bg-slate-50 rounded-lg cursor-crosshair block"
               style={{ touchAction: "none" }}
             />
             {!temTraco && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-400 text-xs italic select-none">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-600 text-xs italic select-none">
                 ✍️ Assine aqui no quadro
               </div>
             )}
@@ -274,7 +274,7 @@ function SeloAutenticidadeCartorio({
 }) {
   const serial = `WS-${clienteId.slice(0, 8).toUpperCase()}`;
   return (
-    <div className="relative mb-2 w-full max-w-[270px] overflow-hidden rounded-xl border-2 border-red-500/70 bg-gradient-to-br from-red-50/90 via-red-50/80 to-red-50/90 p-0 shadow-lg ring-1 ring-red-400/30 dark:from-slate-900 dark:via-red-950/50 dark:to-slate-900 select-none">
+    <div className="relative mb-2 w-full max-w-[270px] overflow-hidden rounded-xl border-2 border-red-500/70 bg-gradient-to-br from-red-50/90 via-red-50/80 to-red-50/90 p-0 shadow-lg ring-1 ring-red-400/30 dark:from-slate-100 dark:via-red-950/50 dark:to-slate-100 select-none">
       {/* Padrão Guilloché decorativo em SVG (ondas de segurança de cartório) */}
       <svg
         className="pointer-events-none absolute right-0 top-0 h-full w-32 opacity-30 text-red-600 dark:text-red-400"
@@ -293,13 +293,13 @@ function SeloAutenticidadeCartorio({
         {/* Faixa Holográfica Esquerda (Efeito Holograma de Segurança) */}
         <div className="relative w-8 shrink-0 bg-gradient-to-b from-amber-400 via-emerald-400 via-red-400 to-purple-500 p-1 flex flex-col items-center justify-between overflow-hidden shadow-inner border-r border-amber-300/60">
           <div className="absolute inset-0 bg-white/20 backdrop-blur-[0.5px]" />
-          <div className="relative text-[6.5px] font-black uppercase text-slate-950 tracking-tight [writing-mode:vertical-rl] rotate-180 drop-shadow-xs">
+          <div className="relative text-[6.5px] font-black uppercase text-slate-50 tracking-tight [writing-mode:vertical-rl] rotate-180 drop-shadow-xs">
             ★ WS ORIGIN ★
           </div>
-          <div className="relative my-auto h-4 w-4 rounded-full border border-white/90 bg-white/60 shadow-xs flex items-center justify-center text-[7.5px] font-black text-slate-950">
+          <div className="relative my-auto h-4 w-4 rounded-full border border-white/90 bg-white/60 shadow-xs flex items-center justify-center text-[7.5px] font-black text-slate-50">
             WS
           </div>
-          <div className="relative text-[6.5px] font-bold uppercase text-slate-950 tracking-tight [writing-mode:vertical-rl] rotate-180">
+          <div className="relative text-[6.5px] font-bold uppercase text-slate-50 tracking-tight [writing-mode:vertical-rl] rotate-180">
             AUTÊNTICO
           </div>
         </div>
@@ -308,7 +308,7 @@ function SeloAutenticidadeCartorio({
         <div className="flex-1 p-2 space-y-1 relative z-10">
           {/* Faixa Superior: SELO DE AUTENTICIDADE */}
           <div className="rounded bg-gradient-to-r from-red-700 via-red-800 to-red-900 px-2 py-0.5 text-center shadow-xs">
-            <p className="text-[8.5px] font-black tracking-widest text-white uppercase font-sans drop-shadow-xs">
+            <p className="text-[8.5px] font-black tracking-widest text-slate-900 uppercase font-sans drop-shadow-xs">
               SELO DE AUTENTICIDADE
             </p>
           </div>
@@ -329,12 +329,12 @@ function SeloAutenticidadeCartorio({
           </div>
 
           {/* Dados de Validação e Segurança */}
-          <div className="border-t border-red-200/80 dark:border-red-800/80 pt-1 space-y-0.5 text-[7.5px] font-mono text-slate-700 dark:text-slate-300">
+          <div className="border-t border-red-200/80 dark:border-red-800/80 pt-1 space-y-0.5 text-[7.5px] font-mono text-slate-300 dark:text-slate-700">
             <div className="flex justify-between items-center">
               <span className="font-bold text-red-900 dark:text-red-300">SELO Nº:</span>
               <span className="font-bold text-red-950 dark:text-white bg-red-100/90 dark:bg-red-900/80 px-1 rounded border border-red-200 dark:border-red-700">{serial}</span>
             </div>
-            <div className="flex justify-between items-center text-[7px] text-slate-500 dark:text-slate-400 pt-0.5">
+            <div className="flex justify-between items-center text-[7px] text-slate-500 dark:text-slate-600 pt-0.5">
               <span>DATA: {dataHora}</span>
               <span className="text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-100/80 dark:bg-emerald-950/80 px-1 rounded">● AUTÊNTICO</span>
             </div>
@@ -347,7 +347,7 @@ function SeloAutenticidadeCartorio({
 
 function Linha({ rotulo, valor, mono }: { rotulo: string; valor: string; mono?: boolean }) {
   return (
-    <div className="border-b border-slate-200 dark:border-slate-800 py-2.5">
+    <div className="border-b border-slate-800 dark:border-slate-200 py-2.5">
       <p className="field-label text-xs text-muted-foreground">{rotulo}</p>
       <p
         className={`mt-0.5 text-sm font-medium text-slate-900 dark:text-slate-100 ${
@@ -1115,7 +1115,7 @@ function Documento() {
 
 
   return (
-    <div className="min-h-screen py-8 bg-slate-100/60 dark:bg-slate-950">
+    <div className="min-h-screen py-8 bg-slate-900/60 dark:bg-slate-50">
       <div className="mx-auto max-w-3xl px-5">
         <div className="no-print mb-6 flex flex-wrap items-center gap-2">
           <Button asChild variant="ghost" size="sm" className="cursor-pointer">
@@ -1147,7 +1147,7 @@ function Documento() {
             <Button
               size="sm"
               onClick={() => window.print()}
-              className="bg-slate-900 text-white hover:bg-slate-800 cursor-pointer shadow-sm text-xs"
+              className="bg-slate-100 text-slate-900 hover:bg-slate-200 cursor-pointer shadow-sm text-xs"
             >
               <Printer className="h-4 w-4 mr-1.5" />
               Imprimir / Salvar PDF
@@ -1157,13 +1157,13 @@ function Documento() {
 
 
         {isLoading && (
-          <div className="card-elevated p-8 text-center bg-white dark:bg-slate-900">
+          <div className="card-elevated p-8 text-center bg-white dark:bg-slate-100">
             <p className="text-sm text-muted-foreground">Carregando dados do documento...</p>
           </div>
         )}
 
         {!isLoading && !cliente && (
-          <div className="card-elevated p-8 text-center bg-white dark:bg-slate-900">
+          <div className="card-elevated p-8 text-center bg-white dark:bg-slate-100">
             <p className="text-sm text-muted-foreground">Cadastro não encontrado.</p>
           </div>
         )}
@@ -1171,22 +1171,22 @@ function Documento() {
         {cliente && (
           <article
             id="documento-termo-garantia"
-            className="card-elevated print-sheet p-8 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-7"
+            className="card-elevated print-sheet p-8 bg-white dark:bg-slate-100 rounded-xl shadow-sm border border-slate-800 dark:border-slate-200 space-y-7"
           >
             {/* ── Cabeçalho Oficial ── */}
-            <header className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+            <header className="flex items-center gap-4 border-b border-slate-800 dark:border-slate-200 pb-6">
               <div className="bg-black rounded-2xl p-1.5">
                 <img
                   src="/logo.png"
                   alt="SeguraAlarm"
-                  className="h-13 w-13 rounded-xl object-cover border border-slate-200 shadow-sm ring-2 ring-red-500/10"
+                  className="h-13 w-13 rounded-xl object-cover border border-slate-800 shadow-sm ring-2 ring-red-500/10"
                 />
               </div>
               <div>
-                <h1 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+                <h1 className="text-xl font-extrabold text-slate-100 dark:text-slate-900 tracking-tight">
                   SeguraAlarm
                 </h1>
-                <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">
+                <p className="text-xs text-slate-400 dark:text-slate-600 font-semibold">
                   Ficha de Cadastro, Valores & Termo de Garantia da Manutenção
                 </p>
                 <p className="text-[11px] text-muted-foreground">
@@ -1195,7 +1195,7 @@ function Documento() {
               </div>
               <div className="ml-auto text-right">
                 <p className="field-label text-xs">Protocolo</p>
-                <p className="font-mono text-sm font-bold text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border">
+                <p className="font-mono text-sm font-bold text-slate-100 dark:text-slate-900 bg-slate-900 dark:bg-slate-200 px-2.5 py-1 rounded-md border">
                   {cliente.id.slice(0, 8).toUpperCase()}
                 </p>
               </div>
@@ -1203,9 +1203,9 @@ function Documento() {
 
             {/* ── Seção 1: Dados do Cliente ── */}
             <section>
-              <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+              <div className="flex items-center gap-2 border-b border-slate-800 dark:border-slate-200 pb-2">
                 <FileCheck className="h-4 w-4 text-red-600 dark:text-red-400" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200 dark:text-slate-800">
                   1. Dados do Cliente e Instalação
                 </h2>
               </div>
@@ -1220,9 +1220,9 @@ function Documento() {
 
             {/* ── Seção 2: Dados da Central de Alarme ── */}
             <section>
-              <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+              <div className="flex items-center gap-2 border-b border-slate-800 dark:border-slate-200 pb-2">
                 <ShieldCheck className="h-4 w-4 text-red-600 dark:text-red-400" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200 dark:text-slate-800">
                   2. Dados do Equipamento / Central
                 </h2>
               </div>
@@ -1234,29 +1234,29 @@ function Documento() {
             </section>
 
             {/* ── Seção 3: Valores Comerciais & Condições de Pagamento ── */}
-            <section className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-3 dark:border-slate-800 dark:bg-slate-900/40">
-              <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+            <section className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 dark:border-slate-200 dark:bg-slate-100/40">
+              <div className="flex items-center gap-2 border-b border-slate-800 dark:border-slate-200 pb-2">
                 <DollarSign className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-100 dark:text-slate-900">
                   3. Condições Comerciais & Pagamento
                 </h2>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 text-xs">
-                <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border">
+                <div className="bg-white dark:bg-slate-100 p-3 rounded-lg border">
                   <p className="field-label text-[11px] text-muted-foreground">
                     Valor do Serviço / Instalação
                   </p>
                   <p className="text-base font-extrabold text-emerald-700 dark:text-emerald-300 mt-0.5">
                     {garantia.valorServico ? `R$ ${garantia.valorServico}` : "Sob consulta"}
                   </p>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1 flex items-center gap-1">
+                  <p className="text-[11px] text-slate-400 dark:text-slate-600 mt-1 flex items-center gap-1">
                     <CreditCard className="h-3 w-3" /> Forma de Pagamento:{" "}
                     <strong>{garantia.formaPagamento || "PIX"}</strong>
                   </p>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border">
+                <div className="bg-white dark:bg-slate-100 p-3 rounded-lg border">
                   <p className="field-label text-[11px] text-muted-foreground">
                     Cobrança da Garantia Estendida
                   </p>
@@ -1269,7 +1269,7 @@ function Documento() {
                             ? `R$ ${garantia.valorMensalGarantia.toFixed(2).replace(".", ",")}/mês`
                             : "Incluso"}
                       </p>
-                      <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">
+                      <p className="text-[11px] text-slate-400 dark:text-slate-600 mt-1">
                         {garantia.coberturas.length} item(ns) a R${" "}
                         {garantia.valorItemGarantia?.toFixed(2).replace(".", ",") || "12,60"}/item/mês
                         ({garantia.tipoCobrancaGarantia === "total" ? "Valor Total Já" : "Cobrança Mensal"})
@@ -1292,15 +1292,15 @@ function Documento() {
             {/* ── Seção 4: Histórico de Manutenções (se houver) ── */}
             {cliente.manutencoes && cliente.manutencoes.length > 0 && (
               <section>
-                <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                <div className="flex items-center gap-2 border-b border-slate-800 dark:border-slate-200 pb-2">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200 dark:text-slate-800">
                     4. Histórico de Manutenções Registradas
                   </h2>
                 </div>
-                <div className="mt-2 divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                <div className="mt-2 divide-y divide-slate-900 dark:divide-slate-200 text-xs">
                   {cliente.manutencoes.map((m) => (
                     <div key={m.id} className="flex justify-between py-2">
-                      <span className="font-mono font-medium text-slate-800 dark:text-slate-200">
+                      <span className="font-mono font-medium text-slate-200 dark:text-slate-800">
                         📅 {formatarData(m.dataHora)}
                       </span>
                       <span className="text-muted-foreground">{m.descricao}</span>
@@ -1329,7 +1329,7 @@ function Documento() {
                 </div>
               </div>
 
-              <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-300 dark:text-slate-700 leading-relaxed">
                 A <strong>SeguraAlarm</strong> oferece garantia sobre os serviços de manutenção realizados, conforme as condições descritas abaixo.
               </p>
 
@@ -1360,7 +1360,7 @@ function Documento() {
 
               {/* 1. O que a garantia cobre */}
               <div className="space-y-1.5">
-                <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase">
+                <h3 className="text-xs font-bold text-slate-100 dark:text-slate-900 uppercase">
                   1. COBERTURAS DO TERMO:
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
@@ -1376,14 +1376,14 @@ function Documento() {
                         key={item}
                         className={`flex items-start gap-2 rounded-md p-2 text-xs transition-colors ${
                           incluso
-                            ? "bg-white dark:bg-slate-900 font-semibold text-red-950 dark:text-red-200 border border-red-200 dark:border-red-800 shadow-2xs"
-                            : "bg-slate-100/50 dark:bg-slate-800/30 text-muted-foreground line-through opacity-60 border border-dashed border-slate-200"
+                            ? "bg-white dark:bg-slate-100 font-semibold text-red-950 dark:text-red-200 border border-red-200 dark:border-red-800 shadow-2xs"
+                            : "bg-slate-900/50 dark:bg-slate-200/30 text-muted-foreground line-through opacity-60 border border-dashed border-slate-800"
                         }`}
                       >
                         {incluso ? (
                           <CheckCircle className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                         ) : (
-                          <XCircle className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
+                          <XCircle className="h-4 w-4 text-slate-600 shrink-0 mt-0.5" />
                         )}
                         <span className="leading-snug">{item}</span>
                         {incluso ? (
@@ -1391,7 +1391,7 @@ function Documento() {
                             INCLUSO
                           </span>
                         ) : (
-                          <span className="ml-auto text-[10px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border">
+                          <span className="ml-auto text-[10px] font-medium text-slate-500 bg-slate-900 dark:bg-slate-200 px-1.5 py-0.5 rounded border">
                             NÃO CONTRATADO
                           </span>
                         )}
@@ -1402,12 +1402,12 @@ function Documento() {
               </div>
 
               {/* 2. Situações não cobertas */}
-              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
-                <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
+              <div className="space-y-1 text-xs text-slate-300 dark:text-slate-700">
+                <h3 className="font-bold text-slate-100 dark:text-slate-900 uppercase">
                   2. SITUAÇÕES NÃO COBERTAS:
                 </h3>
                 <p className="text-[11px] text-muted-foreground">A garantia não cobre danos provocados por:</p>
-                <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-600 dark:text-slate-400 pl-1">
+                <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-400 dark:text-slate-600 pl-1">
                   <li>Mau uso ou utilização inadequada do equipamento;</li>
                   <li>Quedas, impactos ou danos físicos causados pelo cliente ou terceiros;</li>
                   <li>Alterações, desmontagem ou tentativa de reparo por pessoas não autorizadas;</li>
@@ -1418,8 +1418,8 @@ function Documento() {
               </div>
 
               {/* 3. Avaliação Técnica */}
-              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
-                <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
+              <div className="space-y-1 text-xs text-slate-300 dark:text-slate-700">
+                <h3 className="font-bold text-slate-100 dark:text-slate-900 uppercase">
                   3. AVALIAÇÃO TÉCNICA:
                 </h3>
                 <p className="text-[11px] leading-relaxed">
@@ -1428,14 +1428,14 @@ function Documento() {
               </div>
 
               {/* 4. Validade e Composição */}
-              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
-                <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
+              <div className="space-y-1 text-xs text-slate-300 dark:text-slate-700">
+                <h3 className="font-bold text-slate-100 dark:text-slate-900 uppercase">
                   4. COMPOSIÇÃO DO PRAZO (90 DIAS LEGAIS + PRAZO ESTENDIDO):
                 </h3>
                 <p className="text-[11px] leading-relaxed">
                   A garantia total fornecida pela <strong>SeguraAlarm</strong> é estruturada cumulativamente:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-[11px] pl-1 text-slate-700 dark:text-slate-300">
+                <ul className="list-disc list-inside space-y-1 text-[11px] pl-1 text-slate-300 dark:text-slate-700">
                   <li>
                     <strong>Garantia Legal Obrigatória (90 dias)</strong>: Prevista no Art. 26, II do Código de Defesa do Consumidor (CDC), cobrindo integralmente todos os serviços executados contra falhas técnicas ou vícios de funcionamento.
                   </li>
@@ -1449,7 +1449,7 @@ function Documento() {
               </div>
 
               {/* 5. Política de Inadimplência da Garantia Estendida */}
-              <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+              <div className="space-y-1.5 text-xs text-slate-300 dark:text-slate-700">
                 <h3 className="font-bold text-amber-900 dark:text-amber-300 uppercase flex items-center gap-1.5">
                   <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />
                   5. POLÍTICA DE INADIMPLÊNCIA DA GARANTIA ESTENDIDA:
@@ -1468,8 +1468,8 @@ function Documento() {
               </div>
 
               {/* 6. Cláusula de Cumprimento e Pagamento */}
-              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
-                <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase flex items-center gap-1.5">
+              <div className="space-y-1 text-xs text-slate-300 dark:text-slate-700">
+                <h3 className="font-bold text-slate-100 dark:text-slate-900 uppercase flex items-center gap-1.5">
                   <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
                   6. CLÁUSULA DE CUMPRIMENTO E PAGAMENTO:
                 </h3>
@@ -1487,8 +1487,8 @@ function Documento() {
               </div>
 
               {/* 7. Considerações Finais */}
-              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300">
-                <h3 className="font-bold text-slate-900 dark:text-slate-100 uppercase">
+              <div className="space-y-1 text-xs text-slate-300 dark:text-slate-700">
+                <h3 className="font-bold text-slate-100 dark:text-slate-900 uppercase">
                   7. CONSIDERAÇÕES FINAIS:
                 </h3>
                 <p className="text-[11px] leading-relaxed">
@@ -1500,7 +1500,7 @@ function Documento() {
             {/* ── Assinaturas ── */}
             <div className="pt-6 grid grid-cols-2 gap-8 text-center text-xs">
               {/* Bloco Assinatura do Cliente */}
-              <div className="border-t border-slate-400 pt-2 flex flex-col items-center justify-end min-h-[100px]">
+              <div className="border-t border-slate-600 pt-2 flex flex-col items-center justify-end min-h-[100px]">
                 {assinaturaCliente ? (
                   <div className="relative mb-2 flex flex-col items-center">
                     <img
@@ -1550,7 +1550,7 @@ function Documento() {
                   </div>
                 )}
 
-                <p className="font-bold text-slate-900 dark:text-slate-100">{cliente.nome}</p>
+                <p className="font-bold text-slate-100 dark:text-slate-900">{cliente.nome}</p>
                 <p className="text-[11px] text-muted-foreground">
                   {assinaturaCliente ? "Assinado Digitalmente na Tela" : "Assinatura do Cliente / Contratante"}
                 </p>
@@ -1558,20 +1558,20 @@ function Documento() {
               </div>
 
               {/* Bloco Empresa com Selo Cartorial de Autenticidade */}
-              <div className="border-t border-slate-400 pt-2 flex flex-col items-center justify-end min-h-[100px]">
+              <div className="border-t border-slate-600 pt-2 flex flex-col items-center justify-end min-h-[100px]">
                 <SeloAutenticidadeCartorio
                   clienteId={cliente.id}
                   dataHora={`${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`}
                 />
 
-                <p className="font-bold text-slate-900 dark:text-slate-100">SeguraAlarm</p>
+                <p className="font-bold text-slate-100 dark:text-slate-900">SeguraAlarm</p>
                 <p className="text-[11px] text-muted-foreground">Responsável Técnico / Emissor</p>
                 <p className="text-[10px] text-muted-foreground font-mono mt-0.5">Sistema de Alarme e Segurança</p>
               </div>
             </div>
 
             {/* ── Rodapé ── */}
-            <footer className="border-t border-slate-200 dark:border-slate-800 pt-4 text-center text-[11px] text-muted-foreground">
+            <footer className="border-t border-slate-800 dark:border-slate-200 pt-4 text-center text-[11px] text-muted-foreground">
               <p>Documento oficial emitido por SeguraAlarm.</p>
               <p className="mt-0.5">Data de emissão: {formatarData(new Date().toISOString())}</p>
             </footer>
@@ -1589,17 +1589,17 @@ function Documento() {
 
       {/* Notificação Flutuante de Download Temporário no Supabase (PDF) */}
       {downloadTemp && (
-        <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-2xl border border-emerald-500/50 bg-slate-900/95 p-4 shadow-2xl backdrop-blur-md text-slate-100 space-y-2 animate-in fade-in slide-in-from-bottom-3 no-print">
+        <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-2xl border border-emerald-500/50 bg-slate-100/95 p-4 shadow-2xl backdrop-blur-md text-slate-900 space-y-2 animate-in fade-in slide-in-from-bottom-3 no-print">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Download className="h-4 w-4 text-emerald-400 animate-bounce" />
-              <p className="text-xs font-bold text-white truncate">{downloadTemp.nomeArquivo}</p>
+              <p className="text-xs font-bold text-slate-900 truncate">{downloadTemp.nomeArquivo}</p>
             </div>
             <span className="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full shrink-0">
               {downloadTemp.segundos}s
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 leading-snug">
+          <p className="text-[11px] text-slate-600 leading-snug">
             PDF enviado ao Supabase para download no WebView. Será <strong>auto-excluído da nuvem em {downloadTemp.segundos}s</strong> por segurança.
           </p>
         </div>
