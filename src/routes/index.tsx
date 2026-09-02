@@ -249,7 +249,7 @@ function AppPrincipal() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-red-600 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-red-600 selection:text-white">
       {autenticado ? (
         <PainelAdministrativo
           onLogout={handleLogout}
@@ -272,22 +272,22 @@ function AppPrincipal() {
 
       {/* ── Modal de Login do Técnico / Administrador ── */}
       <Dialog open={modalLoginAberto} onOpenChange={setModalLoginAberto}>
-        <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-slate-100">
+        <DialogContent className="sm:max-w-md bg-slate-100 border-slate-200 text-slate-900">
           <DialogHeader>
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-red-600/20 border border-red-500/30 text-red-400 mb-2">
               <Lock className="h-6 w-6" />
             </div>
-            <DialogTitle className="text-center text-lg font-bold text-white">
+            <DialogTitle className="text-center text-lg font-bold text-slate-900">
               Acesso Restrito — Painel do Técnico
             </DialogTitle>
-            <p className="text-center text-xs text-slate-400">
+            <p className="text-center text-xs text-slate-600">
               Digite suas credenciais de administrador para gerenciar clientes, termos e produtos.
             </p>
           </DialogHeader>
 
           <form onSubmit={handleLogin} className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label className="field-label text-xs text-slate-300" htmlFor="user">
+              <Label className="field-label text-xs text-slate-700" htmlFor="user">
                 Usuário
               </Label>
               <Input
@@ -295,13 +295,13 @@ function AppPrincipal() {
                 value={loginUser}
                 onChange={(e) => setLoginUser(e.target.value)}
                 placeholder="Digite seu usuário"
-                className="bg-slate-800 border-slate-700 text-white focus:border-red-500"
+                className="bg-slate-200 border-slate-300 text-slate-900 focus:border-red-500"
                 autoComplete="username"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label className="field-label text-xs text-slate-300" htmlFor="pass">
+              <Label className="field-label text-xs text-slate-700" htmlFor="pass">
                 Senha de Acesso
               </Label>
               <Input
@@ -310,19 +310,19 @@ function AppPrincipal() {
                 value={loginPass}
                 onChange={(e) => setLoginPass(e.target.value)}
                 placeholder="••••••••"
-                className="bg-slate-800 border-slate-700 text-white focus:border-red-500"
+                className="bg-slate-200 border-slate-300 text-slate-900 focus:border-red-500"
                 autoComplete="current-password"
               />
             </div>
 
             {/* Checkbox para Salvar Login */}
             <div className="pt-1">
-              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none hover:text-white">
+              <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer select-none hover:text-slate-900">
                 <input
                   type="checkbox"
                   checked={lembrarLogin}
                   onChange={(e) => setLembrarLogin(e.target.checked)}
-                  className="rounded border-slate-700 bg-slate-800 text-red-600 focus:ring-red-500 h-4 w-4 cursor-pointer"
+                  className="rounded border-slate-300 bg-slate-200 text-red-600 focus:ring-red-500 h-4 w-4 cursor-pointer"
                 />
                 <span className="text-xs">Lembrar login neste aparelho</span>
               </label>
@@ -373,9 +373,9 @@ function LandingPage({
 
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* ── Top Bar / Header ── */}
-      <header className="sticky top-0 z-40 bg-slate-950/85 backdrop-blur-md border-b border-slate-800/80">
+      <header className="sticky top-0 z-40 bg-slate-50/85 backdrop-blur-md border-b border-slate-200/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3.5">
             <img
@@ -384,7 +384,7 @@ function LandingPage({
               className="h-10 w-10 object-contain"
             />
             <div>
-              <span className="text-base font-extrabold tracking-tight text-white block leading-tight">
+              <span className="text-base font-extrabold tracking-tight text-slate-900 block leading-tight">
                 SeguraAlarm
               </span>
               <span className="text-[11px] text-red-400 font-medium tracking-wide">
@@ -393,7 +393,7 @@ function LandingPage({
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
+          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-700">
             <a href="#produtos" className="hover:text-red-400 transition-colors flex items-center gap-1">
               <Package className="h-3.5 w-3.5 text-red-400" /> Produtos & Banners
             </a>
@@ -408,8 +408,8 @@ function LandingPage({
       </header>
 
       {/* ── Hero Section ── */}
-      <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28 border-b border-slate-800/80">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-900/20 via-slate-950 to-slate-950 pointer-events-none" />
+      <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28 border-b border-slate-200/80">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-900/20 via-slate-50 to-slate-50 pointer-events-none" />
         <div className="mx-auto max-w-6xl px-5 relative z-10">
           <div className="max-w-3xl space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-3.5 py-1 text-xs font-semibold text-red-300">
@@ -417,14 +417,14 @@ function LandingPage({
               <span>Proteção Patrimonial e Residencial de Alto Padrão</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-tight">
               Instalação e manutenção de{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-300">
                 câmera e alarmes residencial.
               </span>
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl">
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
               Instalação, manutenção preventiva e suporte especializado para centrais de alarme,
               câmeras de monitoramento CFTV e barreiras perimetrais. Atendimento com agilidade,
               equipamentos homologados e garantia por escrito.
@@ -443,25 +443,25 @@ function LandingPage({
 
               <a
                 href="#produtos"
-                className="inline-flex items-center gap-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700 px-5 py-3 text-sm font-semibold transition-colors cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-xl bg-slate-200/80 hover:bg-slate-200 text-slate-800 border border-slate-300 px-5 py-3 text-sm font-semibold transition-colors cursor-pointer"
               >
                 <Package className="h-4 w-4 text-red-400" />
                 <span>Ver Produtos & Banners</span>
               </a>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 pt-8 border-t border-slate-800/80 max-w-lg">
+            <div className="grid grid-cols-3 gap-4 pt-8 border-t border-slate-200/80 max-w-lg">
               <div>
-                <p className="text-xl font-extrabold text-white">+500</p>
-                <p className="text-[11px] text-slate-400 font-medium">Instalações Realizadas</p>
+                <p className="text-xl font-extrabold text-slate-900">+500</p>
+                <p className="text-[11px] text-slate-600 font-medium">Instalações Realizadas</p>
               </div>
               <div>
                 <p className="text-xl font-extrabold text-red-400">100%</p>
-                <p className="text-[11px] text-slate-400 font-medium">Garantia Registrada</p>
+                <p className="text-[11px] text-slate-600 font-medium">Garantia Registrada</p>
               </div>
               <div>
                 <p className="text-xl font-extrabold text-emerald-400">24/7</p>
-                <p className="text-[11px] text-slate-400 font-medium">Suporte Técnico</p>
+                <p className="text-[11px] text-slate-600 font-medium">Suporte Técnico</p>
               </div>
             </div>
           </div>
@@ -470,10 +470,10 @@ function LandingPage({
       </section>
 
       {/* ── Banners Promocionais em Destaque ── */}
-      <section className="py-8 md:py-14 bg-slate-950 border-b border-slate-800/80">
+      <section className="py-8 md:py-14 bg-slate-50 border-b border-slate-200/80">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-            <div className="relative group rounded-3xl border-2 border-slate-800 bg-black overflow-hidden shadow-2xl shadow-red-950/40 hover:border-red-500/70 transition-all">
+            <div className="relative group rounded-3xl border-2 border-slate-200 bg-black overflow-hidden shadow-2xl shadow-red-950/40 hover:border-red-500/70 transition-all">
               <div className="absolute -inset-1 bg-gradient-to-tr from-red-600/50 to-amber-500/50 opacity-0 group-hover:opacity-100 blur-lg transition duration-500" />
               <img
                 src="/banner-cameras.png"
@@ -481,7 +481,7 @@ function LandingPage({
                 className="relative w-full h-auto object-cover sm:object-contain transition-transform duration-300 group-hover:scale-[1.02]"
               />
             </div>
-            <div className="relative group rounded-3xl border-2 border-slate-800 bg-black overflow-hidden shadow-2xl shadow-red-950/40 hover:border-red-500/70 transition-all">
+            <div className="relative group rounded-3xl border-2 border-slate-200 bg-black overflow-hidden shadow-2xl shadow-red-950/40 hover:border-red-500/70 transition-all">
               <div className="absolute -inset-1 bg-gradient-to-tr from-red-600/50 to-amber-500/50 opacity-0 group-hover:opacity-100 blur-lg transition duration-500" />
               <img
                 src="/banner-alarmes.png"
@@ -494,12 +494,12 @@ function LandingPage({
       </section>
 
       {/* ── Logo SeguraAlarm em Destaque ── */}
-      <section className="py-16 md:py-24 bg-slate-950 border-b border-slate-800/80 overflow-hidden">
+      <section className="py-16 md:py-24 bg-slate-50 border-b border-slate-200/80 overflow-hidden">
         <div className="mx-auto max-w-6xl px-5 flex flex-col items-center text-center">
           <div className="relative group">
             {/* Moldura com brilho */}
             <div className="absolute -inset-1 rounded-[2rem] bg-gradient-to-tr from-red-600 via-red-400 to-amber-400 opacity-75 blur-sm group-hover:opacity-100 transition duration-500" />
-            <div className="relative rounded-[1.8rem] border-4 border-slate-800 bg-black p-6 md:p-10 shadow-2xl shadow-red-950/40">
+            <div className="relative rounded-[1.8rem] border-4 border-slate-200 bg-black p-6 md:p-10 shadow-2xl shadow-red-950/40">
               <img
                 src="/logo.png"
                 alt="SeguraAlarm"
@@ -507,17 +507,17 @@ function LandingPage({
               />
             </div>
           </div>
-          <p className="mt-6 text-lg md:text-2xl font-black text-white tracking-tight">
+          <p className="mt-6 text-lg md:text-2xl font-black text-slate-900 tracking-tight">
             SeguraAlarm
           </p>
-          <p className="mt-1 text-xs md:text-sm text-slate-400 font-medium">
+          <p className="mt-1 text-xs md:text-sm text-slate-600 font-medium">
             Instalação e manutenção de câmeras e alarmes residenciais
           </p>
         </div>
       </section>
 
       {/* ── Vitrine / Catálogo de Produtos e Banners ── */}
-      <section id="produtos" className="py-20 bg-slate-950 border-b border-slate-800/80">
+      <section id="produtos" className="py-20 bg-slate-50 border-b border-slate-200/80">
         <div className="mx-auto max-w-6xl px-5 space-y-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="space-y-2 max-w-xl">
@@ -525,8 +525,8 @@ function LandingPage({
                 <Sparkles className="h-3.5 w-3.5 text-red-400" />
                 <span>Nossos Produtos & Equipamentos</span>
               </div>
-              <h2 className="text-3xl font-black text-white">Catálogo de Equipamentos</h2>
-              <p className="text-xs sm:text-sm text-slate-400">
+              <h2 className="text-3xl font-black text-slate-900">Catálogo de Equipamentos</h2>
+              <p className="text-xs sm:text-sm text-slate-600">
                 Centrais de alarme, câmeras, sensores e acessórios com os melhores preços e pronta
                 instalação.
               </p>
@@ -553,7 +553,7 @@ function LandingPage({
                 className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
                   categoriaAtiva === cat
                     ? "bg-red-600 text-white font-bold shadow-sm shadow-red-950"
-                    : "bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800 border border-slate-200"
                 }`}
               >
                 {cat}
@@ -563,9 +563,9 @@ function LandingPage({
 
           {/* Grid de Produtos */}
           {produtosFiltrados.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-800 p-12 text-center bg-slate-900/40">
-              <Package className="h-10 w-10 mx-auto text-slate-600 mb-2" />
-              <p className="text-sm font-semibold text-slate-300">
+            <div className="rounded-2xl border border-dashed border-slate-200 p-12 text-center bg-slate-100/40">
+              <Package className="h-10 w-10 mx-auto text-slate-400 mb-2" />
+              <p className="text-sm font-semibold text-slate-700">
                 Nenhum produto ou banner cadastrado no momento.
               </p>
               <p className="text-xs text-slate-500 mt-1">
@@ -593,7 +593,7 @@ function LandingPage({
                 return (
                   <div
                     key={prod.id}
-                    className="group rounded-2xl border border-slate-800 bg-slate-900/80 p-5 flex flex-col justify-between transition-all hover:border-red-500/50 hover:bg-slate-900 shadow-md space-y-4"
+                    className="group rounded-2xl border border-slate-200 bg-slate-100/80 p-5 flex flex-col justify-between transition-all hover:border-red-500/50 hover:bg-slate-100 shadow-md space-y-4"
                   >
                     <div
                       className="cursor-pointer"
@@ -609,11 +609,11 @@ function LandingPage({
                           alt={prod.nome}
                           className="max-h-52 sm:max-h-60 max-w-[95%] object-contain transition-transform duration-300 group-hover:scale-105"
                         />
-                        <span className="absolute top-3 left-3 text-xs font-bold bg-slate-900/90 text-white px-2.5 py-1 rounded-md shadow">
+                        <span className="absolute top-3 left-3 text-xs font-bold bg-slate-100/90 text-slate-900 px-2.5 py-1 rounded-md shadow">
                           {prod.categoria}
                         </span>
                         {prod.destaque && (
-                          <span className="absolute top-3 right-3 text-xs font-black bg-amber-400 text-slate-950 px-2.5 py-1 rounded-md shadow">
+                          <span className="absolute top-3 right-3 text-xs font-black bg-amber-400 text-slate-50 px-2.5 py-1 rounded-md shadow">
                             ★ Destaque
                           </span>
                         )}
@@ -621,16 +621,16 @@ function LandingPage({
                           <img
                             src={obterLogoMarca(prod.marca)}
                             alt={prod.marca ?? ""}
-                            className="absolute bottom-2.5 right-2.5 h-6 w-auto object-contain bg-slate-900/90 rounded px-2 py-0.5 shadow"
+                            className="absolute bottom-2.5 right-2.5 h-6 w-auto object-contain bg-slate-100/90 rounded px-2 py-0.5 shadow"
                           />
                         )}
                       </div>
 
                       <div className="mt-4 space-y-2">
-                        <h3 className="text-sm font-bold text-white group-hover:text-red-300 transition-colors leading-snug">
+                        <h3 className="text-sm font-bold text-slate-900 group-hover:text-red-300 transition-colors leading-snug">
                           {prod.nome}
                         </h3>
-                        <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
                           {prod.descricao}
                         </p>
                       </div>
@@ -638,9 +638,9 @@ function LandingPage({
 
                     {/* Opção de Instalação Especializada no Produto */}
                     {instalacao.id !== "nenhuma" && (
-                      <div className="rounded-xl bg-slate-950/90 border border-red-900/50 p-2.5 space-y-1.5 transition-all">
+                      <div className="rounded-xl bg-slate-50/90 border border-red-900/50 p-2.5 space-y-1.5 transition-all">
                         <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1.5 text-xs text-slate-300 font-medium min-w-0">
+                          <div className="flex items-center gap-1.5 text-xs text-slate-700 font-medium min-w-0">
                             <Wrench className="h-3.5 w-3.5 text-red-400 shrink-0" />
                             <span className="truncate text-[11px] font-semibold">{instalacao.nome}</span>
                           </div>
@@ -649,7 +649,7 @@ function LandingPage({
                           </span>
                         </div>
 
-                        <label className="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer select-none hover:text-white pt-0.5">
+                        <label className="flex items-center gap-2 text-[11px] text-slate-700 cursor-pointer select-none hover:text-slate-900 pt-0.5">
                           <input
                             type="checkbox"
                             checked={incluirInstalacao}
@@ -659,25 +659,25 @@ function LandingPage({
                                 [prod.id]: e.target.checked,
                               }));
                             }}
-                            className="rounded border-slate-700 bg-slate-800 text-red-600 focus:ring-red-500 h-4 w-4 cursor-pointer"
+                            className="rounded border-slate-300 bg-slate-200 text-red-600 focus:ring-red-500 h-4 w-4 cursor-pointer"
                           />
-                          <span className={incluirInstalacao ? "font-bold text-emerald-400" : "text-slate-400"}>
+                          <span className={incluirInstalacao ? "font-bold text-emerald-400" : "text-slate-600"}>
                             {incluirInstalacao ? "✓ Instalação Inclusa no Pedido" : "Adicionar Serviço de Instalação"}
                           </span>
                         </label>
                       </div>
                     )}
 
-                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                    <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between gap-2">
                       <div>
-                        <p className="text-[10px] text-slate-400 font-medium">
+                        <p className="text-[10px] text-slate-600 font-medium">
                           {incluirInstalacao && instalacao.id !== "nenhuma" ? "Total com Instalação:" : "Somente Equipamento:"}
                         </p>
                         <p className="text-sm sm:text-base font-extrabold text-emerald-400">
                           R$ {incluirInstalacao && instalacao.id !== "nenhuma" && valorNum > 0 ? formatarMoeda(valorTotal) : (prod.valor || "Sob consulta")}
                         </p>
                         {incluirInstalacao && instalacao.id !== "nenhuma" && valorNum > 0 && (
-                          <p className="text-[10px] text-slate-400">
+                          <p className="text-[10px] text-slate-600">
                             Equipamento: R$ {prod.valor}
                           </p>
                         )}
@@ -689,7 +689,7 @@ function LandingPage({
                             setProdutoDetalhe(prod);
                             setDetalheComInstalacao(incluirInstalacao);
                           }}
-                          className="inline-flex items-center gap-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-2 text-xs font-semibold transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 border border-slate-300 px-2.5 py-2 text-xs font-semibold transition-colors cursor-pointer"
                           title="Ver detalhes completos"
                         >
                           <Eye className="h-3.5 w-3.5 text-red-400" />
@@ -706,22 +706,22 @@ function LandingPage({
       </section>
 
 {/* ── Marcas Parceiras / Homologadas ── */}
-<section id="marcas" className="py-16 bg-slate-900/50 border-b border-slate-800/80">
+<section id="marcas" className="py-16 bg-slate-100/50 border-b border-slate-200/80">
         <div className="mx-auto max-w-6xl px-5 text-center space-y-6">
           <p className="text-xs font-bold uppercase tracking-widest text-red-400">
             Equipamentos Homologados & Linhas Oficiais
           </p>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
             Trabalhamos com as marcas líderes do mercado
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
             Utilizamos exclusivamente componentes originais com garantia de fábrica, alta
             durabilidade e compatibilidade com aplicativos no celular.
           </p>
 
           <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto pt-4">
             {/* Card Intelbras */}
-            <div className="group rounded-2xl border border-slate-800 bg-slate-900/90 p-6 flex flex-col items-center justify-center transition-all hover:border-emerald-500/50 hover:bg-slate-900 shadow-md">
+            <div className="group rounded-2xl border border-slate-200 bg-slate-100/90 p-6 flex flex-col items-center justify-center transition-all hover:border-emerald-500/50 hover:bg-slate-100 shadow-md">
               <div className="h-16 flex items-center justify-center mb-4">
                 <img
                   src="/intelbras.png"
@@ -729,15 +729,15 @@ function LandingPage({
                   className="max-h-12 w-auto object-contain transition-transform group-hover:scale-105"
                 />
               </div>
-              <h3 className="text-sm font-bold text-white">Centrais de Alarme & CFTV Intelbras</h3>
-              <p className="mt-1 text-xs text-slate-400 text-center leading-relaxed">
+              <h3 className="text-sm font-bold text-slate-900">Centrais de Alarme & CFTV Intelbras</h3>
+              <p className="mt-1 text-xs text-slate-600 text-center leading-relaxed">
                 Linhas AMT 8000, AMT 4010, câmeras IP, DVRs e sensores inteligentes com controle por
                 app.
               </p>
             </div>
 
             {/* Card JFL */}
-            <div className="group rounded-2xl border border-slate-800 bg-slate-900/90 p-6 flex flex-col items-center justify-center transition-all hover:border-amber-500/50 hover:bg-slate-900 shadow-md">
+            <div className="group rounded-2xl border border-slate-200 bg-slate-100/90 p-6 flex flex-col items-center justify-center transition-all hover:border-amber-500/50 hover:bg-slate-100 shadow-md">
               <div className="h-16 flex items-center justify-center mb-4">
                 <img
                   src="/jfl.png"
@@ -745,15 +745,15 @@ function LandingPage({
                   className="max-h-14 w-auto object-contain rounded-lg transition-transform group-hover:scale-105"
                 />
               </div>
-              <h3 className="text-sm font-bold text-white">Sistemas de Alarme JFL</h3>
-              <p className="mt-1 text-xs text-slate-400 text-center leading-relaxed">
+              <h3 className="text-sm font-bold text-slate-900">Sistemas de Alarme JFL</h3>
+              <p className="mt-1 text-xs text-slate-600 text-center leading-relaxed">
                 Centrais Active 20, SmartCloud 18, eletrificadores perimetrais e sensores de alta
                 precisão.
               </p>
             </div>
 
             {/* Card Elgin */}
-            <div className="group rounded-2xl border border-slate-800 bg-slate-900/90 p-6 flex flex-col items-center justify-center transition-all hover:border-red-500/50 hover:bg-slate-900 shadow-md">
+            <div className="group rounded-2xl border border-slate-200 bg-slate-100/90 p-6 flex flex-col items-center justify-center transition-all hover:border-red-500/50 hover:bg-slate-100 shadow-md">
               <div className="h-16 flex items-center justify-center mb-4">
                 <img
                   src="/elgin.png"
@@ -761,8 +761,8 @@ function LandingPage({
                   className="max-h-12 w-auto object-contain rounded-lg transition-transform group-hover:scale-105"
                 />
               </div>
-              <h3 className="text-sm font-bold text-white">Dispositivos & Automação Elgin</h3>
-              <p className="mt-1 text-xs text-slate-400 text-center leading-relaxed">
+              <h3 className="text-sm font-bold text-slate-900">Dispositivos & Automação Elgin</h3>
+              <p className="mt-1 text-xs text-slate-600 text-center leading-relaxed">
                 Fechaduras digitais, câmeras inteligentes, lâmpadas smart, tomadas e automação residencial.
               </p>
             </div>
@@ -771,9 +771,9 @@ function LandingPage({
       </section>
 
       {/* ── Seção de Contato ── */}
-      <section id="contato" className="py-20 bg-slate-900/40 border-b border-slate-800/80">
+      <section id="contato" className="py-20 bg-slate-100/40 border-b border-slate-200/80">
         <div className="mx-auto max-w-6xl px-5 flex justify-center">
-          <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950 p-8 space-y-6 shadow-xl">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-100 to-slate-50 p-8 space-y-6 shadow-xl">
             <div className="flex items-center gap-3">
               <img
                 src="/logo.png"
@@ -781,12 +781,12 @@ function LandingPage({
                 className="h-10 w-10 object-contain"
               />
               <div>
-                <h3 className="text-base font-extrabold text-white">SeguraAlarm</h3>
+                <h3 className="text-base font-extrabold text-slate-900">SeguraAlarm</h3>
                 <p className="text-xs text-red-400 font-medium">WhatsApp: {WHATSAPP_FORMATADO}</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-700 leading-relaxed">
               Precisa de uma avaliação no seu imóvel, orçamento para alarmes ou manutenção na sua
               central? Clique no botão abaixo e fale direto no WhatsApp.
             </p>
@@ -805,7 +805,7 @@ function LandingPage({
       </section>
 
       {/* ── Footer ── */}
-      <footer className="py-12 bg-slate-950 border-t border-slate-800/80">
+      <footer className="py-12 bg-slate-50 border-t border-slate-200/80">
         <div className="mx-auto max-w-6xl px-5 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3 text-center md:text-left">
             <img
@@ -814,7 +814,7 @@ function LandingPage({
               className="h-8 w-8 object-contain"
             />
             <div>
-              <p className="text-xs font-bold text-white">SeguraAlarm</p>
+              <p className="text-xs font-bold text-slate-900">SeguraAlarm</p>
               <p className="text-[11px] text-slate-500">
                 © {new Date().getFullYear()} Todos os direitos reservados. WhatsApp: {WHATSAPP_FORMATADO}
               </p>
@@ -825,7 +825,7 @@ function LandingPage({
             {/* Botão de Acesso ao Painel */}
             <button
               onClick={onAbrirLogin}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/90 hover:bg-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 px-3.5 py-1.5 text-xs font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-100/90 hover:bg-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-800 px-3.5 py-1.5 text-xs font-medium transition-colors cursor-pointer"
             >
               <Lock className="h-3.5 w-3.5 text-red-400" />
               <span>Acesso ao Painel do Técnico</span>
@@ -836,23 +836,23 @@ function LandingPage({
 
       {/* ── Modal Ver Mais Detalhes do Produto ── */}
       <Dialog open={!!produtoDetalhe} onOpenChange={(open) => { if (!open) setProdutoDetalhe(null); }}>
-        <DialogContent className="sm:max-w-lg max-h-[85vh] bg-slate-900 border-slate-800 text-slate-100 p-0 overflow-hidden flex flex-col">
+        <DialogContent className="sm:max-w-lg max-h-[85vh] bg-slate-100 border-slate-200 text-slate-900 p-0 overflow-hidden flex flex-col">
           {produtoDetalhe && (
             <div className="flex flex-col flex-1 overflow-hidden">
-              <div className="relative h-72 sm:h-80 w-full bg-white flex items-center justify-center p-6 border-b border-slate-800 shrink-0">
+              <div className="relative h-72 sm:h-80 w-full bg-white flex items-center justify-center p-6 border-b border-slate-200 shrink-0">
                 <img
                   src={produtoDetalhe.imagemUrl || "/intelbras.png"}
                   alt={produtoDetalhe.nome}
                   className="max-h-60 sm:max-h-72 max-w-[95%] object-contain"
                 />
-                <span className="absolute top-4 left-4 text-xs font-bold bg-slate-900/90 text-white px-3 py-1 rounded-lg shadow">
+                <span className="absolute top-4 left-4 text-xs font-bold bg-slate-100/90 text-slate-900 px-3 py-1 rounded-lg shadow">
                   {produtoDetalhe.categoria}
                 </span>
                 {obterLogoMarca(produtoDetalhe.marca) && produtoDetalhe.imagemUrl !== obterLogoMarca(produtoDetalhe.marca) && (
                   <img
                     src={obterLogoMarca(produtoDetalhe.marca)}
                     alt={produtoDetalhe.marca ?? ""}
-                    className="absolute bottom-3 right-3 h-6 w-auto object-contain bg-slate-900/90 rounded-lg px-2 py-1 shadow"
+                    className="absolute bottom-3 right-3 h-6 w-auto object-contain bg-slate-100/90 rounded-lg px-2 py-1 shadow"
                   />
                 )}
               </div>
@@ -872,14 +872,14 @@ function LandingPage({
                       </span>
                     )}
                   </div>
-                  <h3 className="text-xl font-bold text-white">{produtoDetalhe.nome}</h3>
+                  <h3 className="text-xl font-bold text-slate-900">{produtoDetalhe.nome}</h3>
                 </div>
 
-                <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-4 space-y-1.5">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                <div className="rounded-xl bg-slate-50/80 border border-slate-200 p-4 space-y-1.5">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-600">
                     Descrição & Funções
                   </p>
-                  <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+                  <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
                     {produtoDetalhe.descricao || "Equipamento de alta tecnologia e confiabilidade homologado para segurança residencial e comercial."}
                   </p>
                 </div>
@@ -905,7 +905,7 @@ function LandingPage({
                           <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2">
                               <Wrench className="h-4 w-4 text-red-400 shrink-0" />
-                              <span className="text-xs font-bold text-white uppercase tracking-wider">
+                              <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                                 Serviço de Instalação Especializada
                               </span>
                             </div>
@@ -914,7 +914,7 @@ function LandingPage({
                             </span>
                           </div>
 
-                          <p className="text-xs text-slate-300 leading-relaxed">
+                          <p className="text-xs text-slate-700 leading-relaxed">
                             {inst.descricao}
                           </p>
 
@@ -925,10 +925,10 @@ function LandingPage({
                               className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
                                 detalheComInstalacao
                                   ? "border-emerald-500 bg-emerald-950/40 text-emerald-300 ring-1 ring-emerald-500"
-                                  : "border-slate-800 bg-slate-900/60 text-slate-400 hover:bg-slate-800"
+                                  : "border-slate-200 bg-slate-100/60 text-slate-600 hover:bg-slate-200"
                               }`}
                             >
-                              <p className="text-xs font-bold text-white flex items-center gap-1">
+                              <p className="text-xs font-bold text-slate-900 flex items-center gap-1">
                                 {detalheComInstalacao && <Check className="h-3.5 w-3.5 text-emerald-400" />}
                                 Com Instalação
                               </p>
@@ -943,14 +943,14 @@ function LandingPage({
                               className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
                                 !detalheComInstalacao
                                   ? "border-red-500 bg-red-950/40 text-red-300 ring-1 ring-red-500"
-                                  : "border-slate-800 bg-slate-900/60 text-slate-400 hover:bg-slate-800"
+                                  : "border-slate-200 bg-slate-100/60 text-slate-600 hover:bg-slate-200"
                               }`}
                             >
-                              <p className="text-xs font-bold text-white flex items-center gap-1">
+                              <p className="text-xs font-bold text-slate-900 flex items-center gap-1">
                                 {!detalheComInstalacao && <Check className="h-3.5 w-3.5 text-red-400" />}
                                 Sem Instalação
                               </p>
-                              <p className="text-[11px] text-slate-400 mt-0.5">
+                              <p className="text-[11px] text-slate-600 mt-0.5">
                                 Apenas equipamento
                               </p>
                             </button>
@@ -958,9 +958,9 @@ function LandingPage({
                         </div>
                       )}
 
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-slate-800">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-slate-200">
                         <div>
-                          <p className="text-xs text-slate-400">
+                          <p className="text-xs text-slate-600">
                             {detalheComInstalacao && inst.id !== "nenhuma" ? "Total (Equipamento + Instalação)" : "Valor do Equipamento"}
                           </p>
                           <p className="text-2xl font-black text-emerald-400">
@@ -1473,9 +1473,9 @@ function PainelAdministrativo({
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* ── Header do Painel ── */}
-      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-md">
+      <header className="bg-slate-100 border-b border-slate-200 sticky top-0 z-30 shadow-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 sm:px-5 py-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <img
@@ -1485,14 +1485,14 @@ function PainelAdministrativo({
             />
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <h1 className="text-xs sm:text-sm font-black text-white tracking-tight truncate">
+                <h1 className="text-xs sm:text-sm font-black text-slate-900 tracking-tight truncate">
                   PAINEL ADMINISTRATIVO
                 </h1>
                 <span className="text-[9px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full shrink-0">
                   Online
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 font-medium truncate hidden sm:block">
+              <p className="text-[10px] text-slate-600 font-medium truncate hidden sm:block">
                 SeguraAlarm — Clientes, Garantias & Produtos
               </p>
             </div>
@@ -1503,17 +1503,17 @@ function PainelAdministrativo({
               variant="outline"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="text-xs h-8 bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hidden md:inline-flex"
+              className="text-xs h-8 bg-slate-200 hover:bg-slate-300 text-slate-800 border-slate-300 hidden md:inline-flex"
             >
-              <Upload className="h-3.5 w-3.5 mr-1 text-slate-400" /> Importar
+              <Upload className="h-3.5 w-3.5 mr-1 text-slate-600" /> Importar
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={exportarJson}
-              className="text-xs h-8 bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hidden md:inline-flex"
+              className="text-xs h-8 bg-slate-200 hover:bg-slate-300 text-slate-800 border-slate-300 hidden md:inline-flex"
             >
-              <Download className="h-3.5 w-3.5 mr-1 text-slate-400" /> Exportar
+              <Download className="h-3.5 w-3.5 mr-1 text-slate-600" /> Exportar
             </Button>
 
             <Button
@@ -1530,14 +1530,14 @@ function PainelAdministrativo({
 
         {/* Abas de Navegação Responsivas em Grid 2 Colunas */}
         <div className="mx-auto max-w-6xl px-3 sm:px-5 pb-2">
-          <div className="grid grid-cols-3 gap-2 bg-slate-950/60 p-1 rounded-xl border border-slate-800">
+          <div className="grid grid-cols-3 gap-2 bg-slate-50/60 p-1 rounded-xl border border-slate-200">
             <button
               type="button"
               onClick={() => setAbaAtiva("clientes")}
               className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer truncate ${
                 abaAtiva === "clientes"
                   ? "bg-red-600 text-white shadow-md"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                  : "text-slate-600 hover:bg-slate-200 hover:text-slate-800"
               }`}
             >
               <UserCheck className="h-3.5 w-3.5 shrink-0" />
@@ -1550,7 +1550,7 @@ function PainelAdministrativo({
               className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer truncate ${
                 abaAtiva === "produtos"
                   ? "bg-red-600 text-white shadow-md"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                  : "text-slate-600 hover:bg-slate-200 hover:text-slate-800"
               }`}
             >
               <Package className="h-3.5 w-3.5 shrink-0" />
@@ -1563,7 +1563,7 @@ function PainelAdministrativo({
               className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer truncate ${
                 abaAtiva === "valores"
                   ? "bg-red-600 text-white shadow-md"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                  : "text-slate-600 hover:bg-slate-200 hover:text-slate-800"
               }`}
             >
               <SlidersHorizontal className="h-3.5 w-3.5 shrink-0" />
@@ -1578,16 +1578,16 @@ function PainelAdministrativo({
       {abaAtiva === "clientes" && (
         <main className="mx-auto grid max-w-6xl gap-4 sm:gap-6 px-3 sm:px-5 py-4 sm:py-8 lg:grid-cols-[minmax(0,450px)_1fr] w-full max-w-full overflow-hidden">
           {/* Formulário de Cadastro */}
-          <section className="card-elevated h-fit p-4 sm:p-6 bg-slate-900 border-slate-800 text-slate-100 rounded-2xl border shadow-md w-full max-w-full overflow-hidden">
-            <h2 className="text-base font-bold text-white">Novo cadastro de cliente</h2>
-            <p className="mt-1 text-xs text-slate-400">
+          <section className="card-elevated h-fit p-4 sm:p-6 bg-slate-100 border-slate-200 text-slate-900 rounded-2xl border shadow-md w-full max-w-full overflow-hidden">
+            <h2 className="text-base font-bold text-slate-900">Novo cadastro de cliente</h2>
+            <p className="mt-1 text-xs text-slate-600">
               Preencha os dados cadastrais, valores, forma de pagamento e termo de garantia.
             </p>
 
 
             <form onSubmit={onSubmitCliente} className="mt-6 space-y-4">
               <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300" htmlFor="nome">
+                <Label className="field-label text-xs text-slate-700" htmlFor="nome">
                   Nome completo do cliente
                 </Label>
                 <Input
@@ -1596,13 +1596,13 @@ function PainelAdministrativo({
                   maxLength={120}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   placeholder="Ex.: Marcos Ribeiro de Souza"
-                  className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
+                  className="bg-slate-200/80 border-slate-300 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label className="field-label text-xs text-slate-300" htmlFor="cpf">
+                  <Label className="field-label text-xs text-slate-700" htmlFor="cpf">
                     CPF
                   </Label>
                   <Input
@@ -1611,11 +1611,11 @@ function PainelAdministrativo({
                     value={form.cpf}
                     onChange={(e) => setForm({ ...form, cpf: formatarCpf(e.target.value) })}
                     placeholder="000.000.000-00"
-                    className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
+                    className="bg-slate-200/80 border-slate-300 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="field-label text-xs text-slate-300" htmlFor="telefone">
+                  <Label className="field-label text-xs text-slate-700" htmlFor="telefone">
                     Telefone
                   </Label>
                   <Input
@@ -1624,13 +1624,13 @@ function PainelAdministrativo({
                     value={form.telefone}
                     onChange={(e) => setForm({ ...form, telefone: formatarTelefone(e.target.value) })}
                     placeholder="(00) 00000-0000"
-                    className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
+                    className="bg-slate-200/80 border-slate-300 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300" htmlFor="endereco">
+                <Label className="field-label text-xs text-slate-700" htmlFor="endereco">
                   Endereço da instalação
                 </Label>
                 <Input
@@ -1639,13 +1639,13 @@ function PainelAdministrativo({
                   maxLength={200}
                   onChange={(e) => setForm({ ...form, endereco: e.target.value })}
                   placeholder="Rua, número, bairro, cidade/UF"
-                  className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
+                  className="bg-slate-200/80 border-slate-300 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label className="field-label text-xs text-slate-300" htmlFor="mac">
+                  <Label className="field-label text-xs text-slate-700" htmlFor="mac">
                     MAC da central
                   </Label>
                   <Input
@@ -1653,18 +1653,18 @@ function PainelAdministrativo({
                     value={form.macCentral}
                     onChange={(e) => setForm({ ...form, macCentral: formatarMac(e.target.value) })}
                     placeholder="00:1A:2B:3C:4D:5E"
-                    className="font-mono bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500"
+                    className="font-mono bg-slate-200/80 border-slate-300 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="field-label text-xs text-slate-300" htmlFor="modeloCentral">
+                  <Label className="field-label text-xs text-slate-700" htmlFor="modeloCentral">
                     Modelo da central
                   </Label>
                   <select
                     id="modeloCentral"
                     value={form.modeloCentral}
                     onChange={(e) => setForm({ ...form, modeloCentral: e.target.value })}
-                    className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500 cursor-pointer text-white"
+                    className="flex h-9 w-full rounded-md border border-slate-300 bg-slate-200 px-3 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500 cursor-pointer text-slate-900"
                   >
                     <option value="" disabled>
                       Selecione o modelo
@@ -1679,7 +1679,7 @@ function PainelAdministrativo({
               </div>
 
               {/* Seção de Valores e Pagamento */}
-              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 space-y-3">
+              <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 space-y-3">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
                   <DollarSign className="h-4 w-4" />
                   <span>Valores do Serviço & Forma de Pagamento</span>
@@ -1687,7 +1687,7 @@ function PainelAdministrativo({
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-1">
-                    <Label className="field-label text-xs text-slate-300" htmlFor="valorServico">
+                    <Label className="field-label text-xs text-slate-700" htmlFor="valorServico">
                       Valor do Serviço (R$)
                     </Label>
                     <div className="relative">
@@ -1699,20 +1699,20 @@ function PainelAdministrativo({
                         value={valorServico}
                         onChange={(e) => setValorServico(e.target.value)}
                         placeholder="150,00"
-                        className="pl-8 text-sm font-semibold bg-slate-800 border-slate-700 text-white"
+                        className="pl-8 text-sm font-semibold bg-slate-200 border-slate-300 text-slate-900"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <Label className="field-label text-xs text-slate-300" htmlFor="formaPagamento">
+                    <Label className="field-label text-xs text-slate-700" htmlFor="formaPagamento">
                       Forma de Pagamento
                     </Label>
                     <select
                       id="formaPagamento"
                       value={formaPagamento}
                       onChange={(e) => setFormaPagamento(e.target.value)}
-                      className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500 cursor-pointer text-white font-medium"
+                      className="flex h-9 w-full rounded-md border border-slate-300 bg-slate-200 px-2.5 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500 cursor-pointer text-slate-900 font-medium"
                     >
                       {FORMAS_PAGAMENTO.map((fp) => (
                         <option key={fp} value={fp}>
@@ -1791,13 +1791,13 @@ function PainelAdministrativo({
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="field-label text-xs text-slate-300">
+                  <Label className="field-label text-xs text-slate-700">
                     Período da Garantia Estendida
                   </Label>
                   <select
                     value={validadeGarantia}
                     onChange={(e) => setValidadeGarantia(e.target.value)}
-                    className="flex h-8 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500 cursor-pointer text-white font-medium"
+                    className="flex h-8 w-full rounded-md border border-slate-300 bg-slate-200 px-2.5 py-1 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500 cursor-pointer text-slate-900 font-medium"
                   >
                     {PERIODOS_VALIDADE_GARANTIA.map((p) => (
                       <option key={p} value={p}>
@@ -1822,7 +1822,7 @@ function PainelAdministrativo({
                 </div>
 
                 <div className="space-y-2">
-                  <p className="field-label text-xs font-semibold text-slate-300">
+                  <p className="field-label text-xs font-semibold text-slate-700">
                     Selecione os itens cobertos na garantia:
                   </p>
                   <div className="space-y-1.5">
@@ -1833,8 +1833,8 @@ function PainelAdministrativo({
                           key={op}
                           className={`flex items-start gap-2 rounded-md p-2 text-xs border transition-colors cursor-pointer select-none ${
                             checked
-                              ? "bg-slate-800 border-red-500/50 text-white font-medium"
-                              : "bg-transparent border-dashed border-slate-800 text-slate-500 opacity-70"
+                              ? "bg-slate-200 border-red-500/50 text-slate-900 font-medium"
+                              : "bg-transparent border-dashed border-slate-200 text-slate-500 opacity-70"
                           }`}
                         >
                           <input
@@ -1847,7 +1847,7 @@ function PainelAdministrativo({
                                 setCoberturasGarantia(coberturasGarantia.filter((c) => c !== op));
                               }
                             }}
-                            className="mt-0.5 rounded border-slate-600 text-red-600 focus:ring-red-500 cursor-pointer"
+                            className="mt-0.5 rounded border-slate-400 text-red-600 focus:ring-red-500 cursor-pointer"
                           />
                           <span className="leading-tight">{op}</span>
                         </label>
@@ -1857,8 +1857,8 @@ function PainelAdministrativo({
                 </div>
 
                 {coberturasGarantia.length > 0 && (
-                  <div className="space-y-2 pt-1 border-t border-slate-800">
-                    <Label className="field-label text-xs font-semibold text-slate-300">
+                  <div className="space-y-2 pt-1 border-t border-slate-200">
+                    <Label className="field-label text-xs font-semibold text-slate-700">
                       Como o cliente vai pagar a garantia estendida?
                     </Label>
                     <div className="grid grid-cols-2 gap-2">
@@ -1868,7 +1868,7 @@ function PainelAdministrativo({
                         className={`p-2 rounded-lg border text-left text-xs transition-all cursor-pointer ${
                           tipoCobrancaGarantia === "mensal"
                             ? "border-emerald-500 bg-emerald-950/50 text-emerald-200 font-bold"
-                            : "border-slate-800 bg-slate-800/60 text-slate-400 hover:bg-slate-800"
+                            : "border-slate-200 bg-slate-200/60 text-slate-600 hover:bg-slate-200"
                         }`}
                       >
                         <p className="flex items-center gap-1">
@@ -1877,7 +1877,7 @@ function PainelAdministrativo({
                         </p>
                         <p className="mt-1 text-sm font-extrabold text-emerald-300">
                           R$ {valorMensalGarantia.toFixed(2).replace(".", ",")}
-                          <span className="text-[10px] font-normal text-slate-400">/mês</span>
+                          <span className="text-[10px] font-normal text-slate-600">/mês</span>
                         </p>
                       </button>
 
@@ -1887,7 +1887,7 @@ function PainelAdministrativo({
                         className={`p-2 rounded-lg border text-left text-xs transition-all cursor-pointer ${
                           tipoCobrancaGarantia === "total"
                             ? "border-red-500 bg-red-950/50 text-red-200 font-bold"
-                            : "border-slate-800 bg-slate-800/60 text-slate-400 hover:bg-slate-800"
+                            : "border-slate-200 bg-slate-200/60 text-slate-600 hover:bg-slate-200"
                         }`}
                       >
                         <p className="flex items-center gap-1">
@@ -1896,7 +1896,7 @@ function PainelAdministrativo({
                         </p>
                         <p className="mt-1 text-sm font-extrabold text-red-300">
                           R$ {valorTotalGarantia.toFixed(2).replace(".", ",")}
-                          <span className="text-[10px] font-normal text-slate-400">
+                          <span className="text-[10px] font-normal text-slate-600">
                             {" "}
                             ({mesesEstendidos}x)
                           </span>
@@ -1908,7 +1908,7 @@ function PainelAdministrativo({
               </div>
 
               <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300" htmlFor="obs">
+                <Label className="field-label text-xs text-slate-700" htmlFor="obs">
                   Observações adicionais (opcional)
                 </Label>
                 <Textarea
@@ -1918,7 +1918,7 @@ function PainelAdministrativo({
                   value={form.observacoes}
                   onChange={(e) => setForm({ ...form, observacoes: e.target.value })}
                   placeholder="Zonas, sensores instalados, senha de coação, etc."
-                  className="bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500 text-xs"
+                  className="bg-slate-200/80 border-slate-300 text-slate-900 placeholder:text-slate-500 text-xs"
                 />
               </div>
 
@@ -1934,27 +1934,27 @@ function PainelAdministrativo({
           </section>
 
           {/* Lista de Clientes */}
-          <section className="card-elevated p-4 sm:p-6 bg-slate-900 border-slate-800 text-slate-100 rounded-2xl border shadow-md w-full max-w-full overflow-hidden">
+          <section className="card-elevated p-4 sm:p-6 bg-slate-100 border-slate-200 text-slate-900 rounded-2xl border shadow-md w-full max-w-full overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <h2 className="text-base font-bold text-white">Clientes cadastrados</h2>
+              <h2 className="text-base font-bold text-slate-900">Clientes cadastrados</h2>
               <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                 <Input
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   placeholder="Buscar por nome, CPF ou MAC"
-                  className="pl-9 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-xs"
+                  className="pl-9 bg-slate-200 border-slate-300 text-slate-900 placeholder:text-slate-500 text-xs"
                 />
               </div>
             </div>
 
             <div className="mt-4 space-y-3">
               {isLoading && (
-                <p className="text-sm text-slate-400">Carregando dados do Supabase...</p>
+                <p className="text-sm text-slate-600">Carregando dados do Supabase...</p>
               )}
               {!isLoading && filtrados.length === 0 && (
-                <div className="rounded-lg border border-dashed border-slate-800 p-8 text-center">
-                  <p className="text-sm text-slate-400">
+                <div className="rounded-lg border border-dashed border-slate-200 p-8 text-center">
+                  <p className="text-sm text-slate-600">
                     Nenhum cadastro encontrado. Registre o primeiro cliente acima.
                   </p>
                 </div>
@@ -1968,27 +1968,27 @@ function PainelAdministrativo({
                 return (
                   <article
                     key={c.id}
-                    className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 sm:p-4 transition-all hover:border-slate-700 space-y-3 w-full max-w-full overflow-hidden"
+                    className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 sm:p-4 transition-all hover:border-slate-300 space-y-3 w-full max-w-full overflow-hidden"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5">
                       <div className="space-y-0.5 min-w-0 flex-1">
-                        <h3 className="text-sm font-bold text-white leading-tight break-words">{c.nome}</h3>
-                        <p className="text-xs text-slate-400 break-words">
+                        <h3 className="text-sm font-bold text-slate-900 leading-tight break-words">{c.nome}</h3>
+                        <p className="text-xs text-slate-600 break-words">
                           <span>{c.cpf}</span> · <span>{c.telefone}</span>
                         </p>
                         <p className="text-xs text-slate-500 break-words">{c.endereco}</p>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2 text-xs bg-slate-900/80 p-2 rounded-lg border border-slate-800/80 shrink-0">
+                      <div className="grid grid-cols-2 gap-2 text-xs bg-slate-100/80 p-2 rounded-lg border border-slate-200/80 shrink-0">
                         <div>
                           <p className="text-slate-500 text-[10px] font-semibold uppercase">Central</p>
-                          <p className="font-medium text-slate-200 truncate max-w-[130px]">{c.modeloCentral}</p>
-                          <p className="font-mono text-[10px] text-slate-400">{c.macCentral}</p>
+                          <p className="font-medium text-slate-800 truncate max-w-[130px]">{c.modeloCentral}</p>
+                          <p className="font-mono text-[10px] text-slate-600">{c.macCentral}</p>
                         </div>
 
                         <div>
                           <p className="text-slate-500 text-[10px] font-semibold uppercase">Cadastro</p>
-                          <p className="text-slate-300 text-[11px]">{formatarData(c.criadoEm)}</p>
+                          <p className="text-slate-700 text-[11px]">{formatarData(c.criadoEm)}</p>
                         </div>
                       </div>
                     </div>
@@ -2007,9 +2007,9 @@ function PainelAdministrativo({
                         <Wrench className="h-3.5 w-3.5 mr-1 text-amber-400" /> Manutenção
                       </Button>
 
-                      <Button asChild variant="secondary" size="sm" className="text-xs h-8 flex-1 sm:flex-initial cursor-pointer bg-slate-800 hover:bg-slate-700 text-white font-semibold shadow-sm">
+                      <Button asChild variant="secondary" size="sm" className="text-xs h-8 flex-1 sm:flex-initial cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-900 font-semibold shadow-sm">
                         <Link to="/cliente/$id" params={{ id: c.id }}>
-                          <FileText className="h-3.5 w-3.5 mr-1 text-slate-300" /> Documento & Termo
+                          <FileText className="h-3.5 w-3.5 mr-1 text-slate-700" /> Documento & Termo
                         </Link>
                       </Button>
 
@@ -2025,7 +2025,7 @@ function PainelAdministrativo({
                     </div>
 
                     {/* Informações Financeiras e Badge de Garantia */}
-                    <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/80">
+                    <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200/80">
                       {garantia.valorServico && (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-emerald-950/60 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-md">
                           <DollarSign className="h-3 w-3 text-emerald-400" />
@@ -2061,7 +2061,7 @@ function PainelAdministrativo({
                       )}
 
                       {obsLimpa && (
-                        <span className="text-[10px] text-slate-400 truncate max-w-full">
+                        <span className="text-[10px] text-slate-600 truncate max-w-full">
                           Obs: {obsLimpa}
                         </span>
                       )}
@@ -2070,7 +2070,7 @@ function PainelAdministrativo({
 
                     {/* Histórico de Manutenções */}
                     {manuts.length > 0 ? (
-                      <div className="mt-2 border-t border-slate-800/80 pt-2">
+                      <div className="mt-2 border-t border-slate-200/80 pt-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5 text-xs text-amber-300 font-medium">
                             <Clock className="h-3.5 w-3.5 text-amber-400" />
@@ -2079,7 +2079,7 @@ function PainelAdministrativo({
                               <strong>{formatarData(ultima?.dataHora || "")}</strong>
                             </span>
                             {ultima?.descricao && (
-                              <span className="text-slate-400 font-normal ml-1">
+                              <span className="text-slate-600 font-normal ml-1">
                                 ({ultima.descricao})
                               </span>
                             )}
@@ -2092,7 +2092,7 @@ function PainelAdministrativo({
                                   historicoExpandido === c.id ? null : c.id
                                 )
                               }
-                              className="text-xs text-slate-400 hover:text-white underline font-medium cursor-pointer"
+                              className="text-xs text-slate-600 hover:text-slate-900 underline font-medium cursor-pointer"
                             >
                               {historicoExpandido === c.id
                                 ? "Ocultar histórico"
@@ -2101,26 +2101,26 @@ function PainelAdministrativo({
                           )}
                         </div>
                         {historicoExpandido === c.id && (
-                          <div className="mt-2 space-y-1.5 rounded-md bg-slate-900 p-2.5 border border-slate-800 text-xs">
-                            <p className="font-semibold text-slate-200 mb-1 flex items-center gap-1">
+                          <div className="mt-2 space-y-1.5 rounded-md bg-slate-100 p-2.5 border border-slate-200 text-xs">
+                            <p className="font-semibold text-slate-800 mb-1 flex items-center gap-1">
                               <History className="h-3.5 w-3.5" /> Histórico completo:
                             </p>
                             {manuts.map((m) => (
                               <div
                                 key={m.id}
-                                className="flex justify-between border-b border-slate-800 pb-1 last:border-0 last:pb-0"
+                                className="flex justify-between border-b border-slate-200 pb-1 last:border-0 last:pb-0"
                               >
-                                <span className="font-mono text-slate-200 font-medium">
+                                <span className="font-mono text-slate-800 font-medium">
                                   📅 {formatarData(m.dataHora)}
                                 </span>
-                                <span className="text-slate-400">{m.descricao}</span>
+                                <span className="text-slate-600">{m.descricao}</span>
                               </div>
                             ))}
                           </div>
                         )}
                       </div>
                     ) : (
-                      <div className="mt-1 border-t border-slate-800/60 pt-1.5 text-[11px] text-slate-500 flex items-center gap-1">
+                      <div className="mt-1 border-t border-slate-200/60 pt-1.5 text-[11px] text-slate-500 flex items-center gap-1">
                         <Clock className="h-3 w-3 opacity-60" /> Nenhuma manutenção registrada ainda.
                       </div>
                     )}
@@ -2135,13 +2135,13 @@ function PainelAdministrativo({
       {/* ── CONTEÚDO 2: GERENCIADOR DE BANNERS & PRODUTOS DA TELA PRINCIPAL ── */}
       {abaAtiva === "produtos" && (
         <main className="mx-auto max-w-6xl px-3 sm:px-5 py-5 sm:py-8 space-y-4 sm:space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-800 shadow-md">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-100 p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-md">
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
                 <Package className="h-4 w-4 sm:h-5 sm:w-5 text-red-400" />
                 Gerenciador de Banners & Produtos
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-600 mt-0.5">
                 Edite valores, troque fotos e adicione novos itens à tela principal.
               </p>
             </div>
@@ -2151,7 +2151,7 @@ function PainelAdministrativo({
                 variant="outline"
                 size="sm"
                 onClick={restaurarCatalogoPadrao}
-                className="text-xs h-9 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 cursor-pointer flex-1 sm:flex-initial"
+                className="text-xs h-9 bg-slate-200 border-slate-300 text-slate-700 hover:bg-slate-300 cursor-pointer flex-1 sm:flex-initial"
               >
                 <RotateCcw className="h-3.5 w-3.5 mr-1" /> Restaurar
               </Button>
@@ -2169,7 +2169,7 @@ function PainelAdministrativo({
             {produtos.map((prod) => (
               <div
                 key={prod.id}
-                className="rounded-2xl border border-slate-800 bg-slate-900/90 p-4 sm:p-5 flex flex-col justify-between space-y-3 sm:space-y-4 shadow-sm"
+                className="rounded-2xl border border-slate-200 bg-slate-100/90 p-4 sm:p-5 flex flex-col justify-between space-y-3 sm:space-y-4 shadow-sm"
               >
                 <div>
                   <div className="relative h-40 w-full rounded-xl bg-white p-3 flex items-center justify-center overflow-hidden shadow-sm">
@@ -2178,11 +2178,11 @@ function PainelAdministrativo({
                       alt={prod.nome}
                       className="max-h-32 max-w-[90%] object-contain"
                     />
-                    <span className="absolute top-2 left-2 text-[10px] font-bold bg-slate-900/90 text-white px-2 py-0.5 rounded-md shadow">
+                    <span className="absolute top-2 left-2 text-[10px] font-bold bg-slate-100/90 text-slate-900 px-2 py-0.5 rounded-md shadow">
                       {prod.categoria}
                     </span>
                     {prod.destaque && (
-                      <span className="absolute top-2 right-2 text-[10px] font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md shadow">
+                      <span className="absolute top-2 right-2 text-[10px] font-black bg-amber-400 text-slate-50 px-2 py-0.5 rounded-md shadow">
                         ★ Destaque
                       </span>
                     )}
@@ -2190,15 +2190,15 @@ function PainelAdministrativo({
                       <img
                         src={obterLogoMarca(prod.marca)}
                         alt={prod.marca ?? ""}
-                        className="absolute bottom-2 right-2 h-5 w-auto object-contain bg-slate-900/90 rounded px-1.5 py-0.5 shadow"
+                        className="absolute bottom-2 right-2 h-5 w-auto object-contain bg-slate-100/90 rounded px-1.5 py-0.5 shadow"
                       />
                     )}
                   </div>
 
 
                   <div className="mt-3 space-y-1">
-                    <h3 className="text-sm font-bold text-white leading-snug">{prod.nome}</h3>
-                    <p className="text-xs text-slate-400 line-clamp-2">{prod.descricao}</p>
+                    <h3 className="text-sm font-bold text-slate-900 leading-snug">{prod.nome}</h3>
+                    <p className="text-xs text-slate-600 line-clamp-2">{prod.descricao}</p>
                     <div className="flex items-center justify-between pt-1">
                       <p className="text-sm font-extrabold text-emerald-400">
                         R$ {prod.valor || "Sob consulta"}
@@ -2215,7 +2215,7 @@ function PainelAdministrativo({
                   </div>
                 </div>
 
-                <div className="pt-2.5 border-t border-slate-800 flex items-center justify-between">
+                <div className="pt-2.5 border-t border-slate-200 flex items-center justify-between">
                   <span className="text-[10px] text-slate-500 font-mono">
                     ID: {prod.id.slice(0, 8)}
                   </span>
@@ -2224,7 +2224,7 @@ function PainelAdministrativo({
                       variant="outline"
                       size="sm"
                       onClick={() => abrirModalEditarProduto(prod)}
-                      className="text-xs h-8 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 cursor-pointer"
+                      className="text-xs h-8 bg-slate-200 border-slate-300 text-slate-800 hover:bg-slate-300 cursor-pointer"
                     >
                       <Edit3 className="h-3.5 w-3.5 mr-1 text-red-400" /> Editar
                     </Button>
@@ -2248,13 +2248,13 @@ function PainelAdministrativo({
       {abaAtiva === "valores" && (
         <main className="mx-auto max-w-5xl px-3 sm:px-5 py-5 sm:py-8 space-y-6">
           {/* Cabeçalho */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-md">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-100 p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-md">
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
                 <SlidersHorizontal className="h-5 w-5 text-red-400" />
                 Configuração de Valores & Serviços de Instalação
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-600 mt-0.5">
                 Altere os preços da mão de obra de cada produto, adicione novos serviços e configure a garantia estendida.
               </p>
             </div>
@@ -2264,7 +2264,7 @@ function PainelAdministrativo({
                 variant="outline"
                 size="sm"
                 onClick={recarregarLinhasServico}
-                className="text-xs h-9 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 cursor-pointer"
+                className="text-xs h-9 bg-slate-200 border-slate-300 text-slate-700 hover:bg-slate-300 cursor-pointer"
               >
                 <RotateCcw className="h-3.5 w-3.5 mr-1" /> Descartar
               </Button>
@@ -2281,14 +2281,14 @@ function PainelAdministrativo({
           </div>
 
           {/* Seção 1: Serviços de Instalação & Mão de Obra */}
-          <section className="bg-slate-900 rounded-2xl border border-slate-800 p-5 sm:p-6 space-y-5 shadow-md">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <section className="bg-slate-100 rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-5 shadow-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
               <div>
-                <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
                   <Wrench className="h-4 w-4 text-red-400" />
                   Tabela de Serviços de Instalação Técnica
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-600">
                   Estes valores são vinculados automaticamente aos produtos do catálogo e calculados no pedido do cliente.
                 </p>
               </div>
@@ -2297,7 +2297,7 @@ function PainelAdministrativo({
                 type="button"
                 size="sm"
                 onClick={adicionarServico}
-                className="text-xs bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-semibold cursor-pointer shrink-0"
+                className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-900 border border-slate-300 font-semibold cursor-pointer shrink-0"
               >
                 <Plus className="h-3.5 w-3.5 mr-1 text-red-400" /> Novo Serviço de Instalação
               </Button>
@@ -2307,23 +2307,23 @@ function PainelAdministrativo({
               {linhasServico.map((linha, idx) => (
                 <div
                   key={linha.id}
-                  className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 transition-all hover:border-slate-700"
+                  className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-3 transition-all hover:border-slate-300"
                 >
                   <div className="grid sm:grid-cols-12 gap-3 items-start">
                     <div className="sm:col-span-6 space-y-1">
-                      <Label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                      <Label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
                         Nome do Serviço #{idx + 1}
                       </Label>
                       <Input
                         value={linha.nome}
                         onChange={(e) => atualizarLinhaServico(linha.id, "nome", e.target.value)}
                         placeholder="Ex.: Instalação câmera IP + configuração"
-                        className="bg-slate-900 border-slate-700 text-white text-xs font-semibold"
+                        className="bg-slate-100 border-slate-300 text-slate-900 text-xs font-semibold"
                       />
                     </div>
 
                     <div className="sm:col-span-3 space-y-1">
-                      <Label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                      <Label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
                         Valor (R$)
                       </Label>
                       <div className="relative">
@@ -2332,7 +2332,7 @@ function PainelAdministrativo({
                           value={linha.valor}
                           onChange={(e) => atualizarLinhaServico(linha.id, "valor", e.target.value)}
                           placeholder="79,99"
-                          className="bg-slate-900 border-slate-700 text-emerald-400 font-mono font-bold text-xs pl-9"
+                          className="bg-slate-100 border-slate-300 text-emerald-400 font-mono font-bold text-xs pl-9"
                         />
                       </div>
                     </div>
@@ -2349,7 +2349,7 @@ function PainelAdministrativo({
                           <Trash2 className="h-3.5 w-3.5 mr-1" /> Remover
                         </Button>
                       ) : (
-                        <span className="text-[10px] font-bold text-slate-500 bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-lg border border-slate-200">
                           Serviço Padrão
                         </span>
                       )}
@@ -2357,14 +2357,14 @@ function PainelAdministrativo({
                   </div>
 
                   <div className="space-y-1">
-                    <Label className="text-[11px] text-slate-400">
+                    <Label className="text-[11px] text-slate-600">
                       Descrição do que está incluso no serviço
                     </Label>
                     <Input
                       value={linha.descricao}
                       onChange={(e) => atualizarLinhaServico(linha.id, "descricao", e.target.value)}
                       placeholder="Ex.: Fixação física, cabeamento/Wi-Fi, configuração no app e teste de gravação."
-                      className="bg-slate-900 border-slate-700 text-slate-300 text-xs"
+                      className="bg-slate-100 border-slate-300 text-slate-700 text-xs"
                     />
                   </div>
                 </div>
@@ -2373,48 +2373,48 @@ function PainelAdministrativo({
           </section>
 
           {/* Seção 2: Garantia Estendida */}
-          <section className="bg-slate-900 rounded-2xl border border-slate-800 p-5 sm:p-6 space-y-4 shadow-md">
-            <div className="border-b border-slate-800 pb-3">
-              <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+          <section className="bg-slate-100 rounded-2xl border border-slate-200 p-5 sm:p-6 space-y-4 shadow-md">
+            <div className="border-b border-slate-200 pb-3">
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-emerald-400" />
                 Valores da Garantia Estendida (por item/mês)
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-600 mt-0.5">
                 Configure os valores mensais cobrados na ficha de cadastro e termo de garantia.
               </p>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-2">
+              <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs font-bold text-white">Garantia Curta (+3 meses)</Label>
-                  <span className="text-[10px] text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Total: 6 meses</span>
+                  <Label className="text-xs font-bold text-slate-900">Garantia Curta (+3 meses)</Label>
+                  <span className="text-[10px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Total: 6 meses</span>
                 </div>
-                <p className="text-[11px] text-slate-400">Valor cobrado por item por mês contratado</p>
+                <p className="text-[11px] text-slate-600">Valor cobrado por item por mês contratado</p>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-bold">R$</span>
                   <Input
                     value={precoGarantiaCurto}
                     onChange={(e) => setPrecoGarantiaCurto(e.target.value)}
                     placeholder="12,60"
-                    className="bg-slate-900 border-slate-700 text-emerald-400 font-mono font-bold text-xs pl-9"
+                    className="bg-slate-100 border-slate-300 text-emerald-400 font-mono font-bold text-xs pl-9"
                   />
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-2">
+              <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs font-bold text-white">Garantia Longa (+6, +9, +12 meses)</Label>
-                  <span className="text-[10px] text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Planos estendidos</span>
+                  <Label className="text-xs font-bold text-slate-900">Garantia Longa (+6, +9, +12 meses)</Label>
+                  <span className="text-[10px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Planos estendidos</span>
                 </div>
-                <p className="text-[11px] text-slate-400">Valor cobrado por item por mês contratado</p>
+                <p className="text-[11px] text-slate-600">Valor cobrado por item por mês contratado</p>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-bold">R$</span>
                   <Input
                     value={precoGarantiaLongo}
                     onChange={(e) => setPrecoGarantiaLongo(e.target.value)}
                     placeholder="9,99"
-                    className="bg-slate-900 border-slate-700 text-emerald-400 font-mono font-bold text-xs pl-9"
+                    className="bg-slate-100 border-slate-300 text-emerald-400 font-mono font-bold text-xs pl-9"
                   />
                 </div>
               </div>
@@ -2438,9 +2438,9 @@ function PainelAdministrativo({
 
       {/* ── Modal Adicionar / Editar Produto ── */}
       <Dialog open={modalProdutoAberto} onOpenChange={setModalProdutoAberto}>
-        <DialogContent className="sm:max-w-md max-h-[85vh] flex flex-col bg-slate-900 border-slate-800 text-slate-100 p-0 overflow-hidden">
-          <DialogHeader className="p-5 pb-2 shrink-0 border-b border-slate-800/80">
-            <DialogTitle className="text-white font-bold flex items-center gap-2">
+        <DialogContent className="sm:max-w-md max-h-[85vh] flex flex-col bg-slate-100 border-slate-200 text-slate-900 p-0 overflow-hidden">
+          <DialogHeader className="p-5 pb-2 shrink-0 border-b border-slate-200/80">
+            <DialogTitle className="text-slate-900 font-bold flex items-center gap-2">
               <Package className="h-5 w-5 text-red-400" />
               {produtoEditando ? "Editar Produto / Banner" : "Adicionar Novo Produto / Banner"}
             </DialogTitle>
@@ -2449,32 +2449,32 @@ function PainelAdministrativo({
           <form onSubmit={salvarProdutoModal} className="flex flex-col flex-1 overflow-hidden">
             <div className="space-y-4 p-5 overflow-y-auto flex-1 max-h-[calc(85vh-140px)]">
               <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300">Nome do Produto</Label>
+                <Label className="field-label text-xs text-slate-700">Nome do Produto</Label>
                 <Input
                   value={formProdNome}
                   onChange={(e) => setFormProdNome(e.target.value)}
                   placeholder="Ex.: Câmera Wi-Fi Intelbras Full HD"
-                  className="bg-slate-800 border-slate-700 text-white"
+                  className="bg-slate-200 border-slate-300 text-slate-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="field-label text-xs text-slate-300">Valor (R$)</Label>
+                  <Label className="field-label text-xs text-slate-700">Valor (R$)</Label>
                   <Input
                     value={formProdValor}
                     onChange={(e) => setFormProdValor(e.target.value)}
                     placeholder="299,00"
-                    className="bg-slate-800 border-slate-700 text-white"
+                    className="bg-slate-200 border-slate-300 text-slate-900"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="field-label text-xs text-slate-300">Categoria</Label>
+                  <Label className="field-label text-xs text-slate-700">Categoria</Label>
                   <select
                     value={formProdCategoria}
                     onChange={(e) => setFormProdCategoria(e.target.value)}
-                    className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-white"
+                    className="flex h-9 w-full rounded-md border border-slate-300 bg-slate-200 px-2.5 py-1 text-xs text-slate-900"
                   >
                     {CATEGORIAS_PRODUTO.map((cat) => (
                       <option key={cat} value={cat}>
@@ -2487,13 +2487,13 @@ function PainelAdministrativo({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="field-label text-xs text-slate-300">
+                  <Label className="field-label text-xs text-slate-700">
                     Marca do Equipamento
                   </Label>
                   <select
                     value={formProdMarca}
                     onChange={(e) => handleMarcaChange(e.target.value)}
-                    className="flex h-9 w-full rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-white cursor-pointer"
+                    className="flex h-9 w-full rounded-md border border-slate-300 bg-slate-200 px-2.5 py-1 text-xs text-slate-900 cursor-pointer"
                   >
                     {MARCAS_PRODUTO.map((m) => (
                       <option key={m} value={m}>{m}</option>
@@ -2502,14 +2502,14 @@ function PainelAdministrativo({
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="field-label text-xs text-slate-300 flex items-center gap-1">
+                  <Label className="field-label text-xs text-slate-700 flex items-center gap-1">
                     <Wrench className="h-3.5 w-3.5 text-red-400" />
                     Opção de Instalação Vinculada
                   </Label>
                   <select
                     value={formProdTipoInstalacao}
                     onChange={(e) => setFormProdTipoInstalacao(e.target.value as TipoInstalacao)}
-                    className="flex h-9 w-full rounded-md border border-red-500/50 bg-slate-800 px-2.5 py-1 text-xs text-red-300 cursor-pointer font-medium"
+                    className="flex h-9 w-full rounded-md border border-red-500/50 bg-slate-200 px-2.5 py-1 text-xs text-red-300 cursor-pointer font-medium"
                   >
                     {listarServicosInstalacao().map((op) => (
                       <option key={op.id} value={op.id}>
@@ -2523,22 +2523,22 @@ function PainelAdministrativo({
 
               {/* Preview de Imagem */}
               {formProdImagem && (
-                <div className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-800/50 p-3">
+                <div className="flex items-center gap-3 rounded-lg border border-slate-300 bg-slate-200/50 p-3">
                   <img
                     src={formProdImagem}
                     alt="Preview"
-                    className="h-14 w-14 object-contain rounded-md bg-slate-900"
+                    className="h-14 w-14 object-contain rounded-md bg-slate-100"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                   />
-                  <div className="text-xs text-slate-400">
-                    <p className="font-semibold text-slate-200">Preview da imagem</p>
+                  <div className="text-xs text-slate-600">
+                    <p className="font-semibold text-slate-800">Preview da imagem</p>
                     <p className="text-[11px] truncate max-w-[180px]">{formProdMarca}</p>
                   </div>
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label className="field-label text-xs text-slate-300">Imagem do Produto</Label>
+                <Label className="field-label text-xs text-slate-700">Imagem do Produto</Label>
                 {/* Upload de foto do dispositivo */}
                 <input
                   type="file"
@@ -2552,7 +2552,7 @@ function PainelAdministrativo({
                   variant="outline"
                   size="sm"
                   onClick={() => imgUploadRef.current?.click()}
-                  className="w-full text-xs bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 cursor-pointer gap-2"
+                  className="w-full text-xs bg-slate-200 border-slate-300 text-slate-800 hover:bg-slate-300 cursor-pointer gap-2"
                 >
                   <Upload className="h-3.5 w-3.5 text-red-400" />
                   Carregar Imagem do Dispositivo
@@ -2571,7 +2571,7 @@ function PainelAdministrativo({
                       className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${
                         formProdImagem === item.src
                           ? "border-red-500 bg-red-950/40 text-red-300"
-                          : "border-slate-700 bg-slate-800/60 text-slate-400 hover:bg-slate-800"
+                          : "border-slate-300 bg-slate-200/60 text-slate-600 hover:bg-slate-200"
                       }`}
                     >
                       <img src={item.src} alt={item.label} className="h-6 w-auto object-contain" />
@@ -2583,38 +2583,38 @@ function PainelAdministrativo({
                   value={formProdImagem.startsWith("data:") ? "" : formProdImagem}
                   onChange={(e) => setFormProdImagem(e.target.value)}
                   placeholder="Ou cole um link de imagem online..."
-                  className="bg-slate-800/60 border-slate-700 text-xs text-slate-300"
+                  className="bg-slate-200/60 border-slate-300 text-xs text-slate-700"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="field-label text-xs text-slate-300">Descrição do Produto</Label>
+                <Label className="field-label text-xs text-slate-700">Descrição do Produto</Label>
                 <Textarea
                   rows={3}
                   value={formProdDescricao}
                   onChange={(e) => setFormProdDescricao(e.target.value)}
                   placeholder="Principais funções, zonas, alcance, resolução..."
-                  className="bg-slate-800 border-slate-700 text-white text-xs"
+                  className="bg-slate-200 border-slate-300 text-slate-900 text-xs"
                 />
               </div>
 
-              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formProdDestaque}
                   onChange={(e) => setFormProdDestaque(e.target.checked)}
-                  className="rounded border-slate-700 text-red-600 focus:ring-red-500"
+                  className="rounded border-slate-300 text-red-600 focus:ring-red-500"
                 />
                 <span>Destacar este produto na tela principal pública</span>
               </label>
             </div>
 
-            <DialogFooter className="p-4 border-t border-slate-800 shrink-0 bg-slate-900 flex items-center justify-end gap-2">
+            <DialogFooter className="p-4 border-t border-slate-200 shrink-0 bg-slate-100 flex items-center justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setModalProdutoAberto(false)}
-                className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 cursor-pointer"
+                className="bg-slate-200 border-slate-300 text-slate-700 hover:bg-slate-300 cursor-pointer"
               >
                 Cancelar
               </Button>
@@ -2636,7 +2636,7 @@ function PainelAdministrativo({
           if (!open) setClienteManutencao(null);
         }}
       >
-        <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-slate-100">
+        <DialogContent className="sm:max-w-md bg-slate-100 border-slate-200 text-slate-900">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-amber-400">
               <Wrench className="h-5 w-5 text-amber-400" /> Salvar Nova Manutenção
@@ -2645,21 +2645,21 @@ function PainelAdministrativo({
           {clienteManutencao && (
             <div className="space-y-4 py-2">
               <div className="rounded-lg bg-amber-950/30 border border-amber-800/40 p-3 text-xs">
-                <p className="font-semibold text-white text-sm">{clienteManutencao.nome}</p>
-                <p className="text-slate-400 mt-0.5">
+                <p className="font-semibold text-slate-900 text-sm">{clienteManutencao.nome}</p>
+                <p className="text-slate-600 mt-0.5">
                   Central: {clienteManutencao.modeloCentral} ({clienteManutencao.macCentral})
                 </p>
               </div>
               <div className="space-y-1">
-                <Label className="field-label text-xs text-slate-300 flex items-center gap-1">
-                  <Clock className="h-3.5 w-3.5 text-slate-400" /> Data e Hora do Registro:
+                <Label className="field-label text-xs text-slate-700 flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5 text-slate-600" /> Data e Hora do Registro:
                 </Label>
-                <div className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-mono font-medium text-slate-200">
+                <div className="rounded-md border border-slate-300 bg-slate-200 px-3 py-2 text-sm font-mono font-medium text-slate-800">
                   {formatarData(new Date().toISOString())}
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="descManut" className="field-label text-xs text-slate-300">
+                <Label htmlFor="descManut" className="field-label text-xs text-slate-700">
                   Descrição dos serviços executados:
                 </Label>
                 <Textarea
@@ -2668,7 +2668,7 @@ function PainelAdministrativo({
                   value={descricaoManutencao}
                   onChange={(e) => setDescricaoManutencao(e.target.value)}
                   placeholder="Ex.: Troca de bateria da central, testes de sirene e ajuste dos sensores das zonas..."
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-xs"
+                  className="bg-slate-200 border-slate-300 text-slate-900 placeholder:text-slate-500 text-xs"
                 />
               </div>
             </div>
@@ -2678,7 +2678,7 @@ function PainelAdministrativo({
               type="button"
               variant="outline"
               onClick={() => setClienteManutencao(null)}
-              className="cursor-pointer bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700"
+              className="cursor-pointer bg-slate-200 border-slate-300 text-slate-700 hover:bg-slate-300"
             >
               Cancelar
             </Button>
@@ -2703,17 +2703,17 @@ function PainelAdministrativo({
 
       {/* Notificação Flutuante de Download Temporário no Supabase */}
       {downloadTemp && (
-        <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-2xl border border-emerald-500/50 bg-slate-900/95 p-4 shadow-2xl backdrop-blur-md text-slate-100 space-y-2 animate-in fade-in slide-in-from-bottom-3">
+        <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-2xl border border-emerald-500/50 bg-slate-100/95 p-4 shadow-2xl backdrop-blur-md text-slate-900 space-y-2 animate-in fade-in slide-in-from-bottom-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Download className="h-4 w-4 text-emerald-400 animate-bounce" />
-              <p className="text-xs font-bold text-white truncate">{downloadTemp.nomeArquivo}</p>
+              <p className="text-xs font-bold text-slate-900 truncate">{downloadTemp.nomeArquivo}</p>
             </div>
             <span className="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full shrink-0">
               {downloadTemp.segundos}s
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 leading-snug">
+          <p className="text-[11px] text-slate-600 leading-snug">
             Arquivo enviado ao Supabase para download no WebView. Será <strong>auto-excluído da nuvem em {downloadTemp.segundos}s</strong> por segurança.
           </p>
         </div>
