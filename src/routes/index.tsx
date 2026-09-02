@@ -375,7 +375,7 @@ function LandingPage({
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* ── Top Bar / Header ── */}
-      <header className="sticky top-0 z-40 bg-slate-50/85 backdrop-blur-md border-b border-slate-200/80">
+      <header className="sticky top-0 z-40 bg-black border-b border-slate-800">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3.5">
             <img
@@ -384,23 +384,23 @@ function LandingPage({
               className="h-10 w-10 object-contain"
             />
             <div>
-              <span className="text-base font-extrabold tracking-tight text-slate-900 block leading-tight">
+              <span className="text-base font-extrabold tracking-tight text-white block leading-tight">
                 SeguraAlarm
               </span>
               <span className="text-[11px] text-red-400 font-medium tracking-wide">
-                Soluções Inteligentes em Alarmes & CFTV
+                Alarmes e Câmeras
               </span>
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-700">
-            <a href="#produtos" className="hover:text-red-400 transition-colors flex items-center gap-1">
-              <Package className="h-3.5 w-3.5 text-red-400" /> Produtos & Banners
+          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
+            <a href="#produtos" className="hover:text-white transition-colors">
+              Produtos
             </a>
-            <a href="#marcas" className="hover:text-red-400 transition-colors">
+            <a href="#marcas" className="hover:text-white transition-colors">
               Marcas
             </a>
-            <a href="#contato" className="hover:text-red-400 transition-colors">
+            <a href="#contato" className="hover:text-white transition-colors">
               Contato
             </a>
           </nav>
